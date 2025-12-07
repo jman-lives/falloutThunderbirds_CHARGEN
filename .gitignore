@@ -1,0 +1,68 @@
+# Dependencies & Packages
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+*.egg-info/
+dist/
+build/
+.Python
+
+# Environment & Virtual Envs
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.local
+.env.*.local
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+
+# OS Files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini
+
+# Local Git Credentials (NEVER commit)
+.git-credentials
+.git/config.local
+
+# Build & Runtime Artifacts
+*.log
+*.pyc
+__pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Local dev/test files
+*.tmp
+.cache/
+temp/
+tmp/
+
+# SSH Keys (NEVER commit private keys)
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+!id_ed25519_github.pub
+
+# Misc local overrides
+local.json
+config.local.json

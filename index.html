@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Character Generator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>Character Generator</h1>
+
+    <form id="char-form">
+      <section class="row">
+        <label>Name
+          <input type="text" id="name" name="name" />
+        </label>
+        <label>Age
+          <input type="number" id="age" name="age" min="0" />
+        </label>
+        <label>Gender
+          <select id="gender" name="gender">
+            <option value="">(unspecified)</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Non-binary</option>
+            <option>Other</option>
+          </select>
+        </label>
+      </section>
+
+      <section>
+        <h2>Attributes</h2>
+        <div class="attrs">
+          <label>Strength <input type="number" id="strength" min="1" max="10" value="5"></label>
+          <label>Perception <input type="number" id="perception" min="1" max="10" value="5"></label>
+          <label>Endurance <input type="number" id="endurance" min="1" max="10" value="5"></label>
+          <label>Charisma <input type="number" id="charisma" min="1" max="10" value="5"></label>
+          <label>Intelligence <input type="number" id="intelligence" min="1" max="10" value="5"></label>
+          <label>Agility <input type="number" id="agility" min="1" max="10" value="5"></label>
+          <label>Luck <input type="number" id="luck" min="1" max="10" value="5"></label>
+        </div>
+      </section>
+
+      <section class="row">
+        <label>Occupation
+          <input type="text" id="occupation" name="occupation" />
+        </label>
+        <label>Notes
+          <input type="text" id="notes" name="notes" />
+        </label>
+      </section>
+
+      <div class="controls">
+        <button type="button" id="randomize">Generate Random</button>
+        <button type="button" id="download">Download JSON</button>
+        <input type="file" id="load-file" accept="application/json" />
+        <button type="button" id="fill-sample">Fill Sample</button>
+      </div>
+    </form>
+
+    <pre id="output" aria-live="polite"></pre>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
