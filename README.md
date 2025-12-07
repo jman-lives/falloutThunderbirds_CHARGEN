@@ -1,26 +1,39 @@
 # Fallout: Thunderbirds Character Generator
 
-This is a small static web app for creating characters for the Fallout: Thunderbirds tabletop campaign.
+A static web app for creating and saving characters for the Fallout: Thunderbirds tabletop campaign.
 
-What this repo provides
-- `index.html` — character form UI you can host on GitHub Pages.
-- `styles.css` — minimal styling for a clean layout.
-- `script.js` — client-side logic (randomize, download JSON, load JSON).
+**Live site:** https://jman-lives.github.io/falloutThunderbirds_CHARGEN/
 
-Quick usage
-- Open `index.html` in your browser.
-- Click `Generate Random` to create a character, or fill fields manually.
-- Click `Download JSON` to save the character as a `.json` file.
-- Use the file input to load a saved JSON and repopulate the form.
+## About
 
-Deploy to GitHub Pages
-- Option A — Serve from repository root on `main`: push this repo to GitHub and enable Pages (Settings → Pages → Source: `main` branch / root).
-- Option B — Use `gh-pages` branch: copy these files to a `gh-pages` branch and set Pages to serve from that branch.
-- Option C — Serve from the `docs/` folder: this repo already includes a `docs/` folder with the site copy. In GitHub Pages settings choose Source: `main` branch / `docs` folder.
+This is a fully client-side character generator:
+- Fill in character details or click `Generate Random` for a random character.
+- Click `Download JSON` to save the character as a file to your computer.
+- Use the file input to load a previously saved character JSON.
+- All processing happens locally — nothing is uploaded.
 
-Notes
-- This is a fully client-side solution; no server or database is required.
-- Downloaded JSON files are created locally in the browser; nothing is uploaded.
+## Files
 
-Want changes?
-- Tell me if you'd like additional fields, a printable character sheet, or automation (CI) to keep `docs/` in sync.
+All files are in the `docs/` folder:
+- `index.html` — form UI
+- `styles.css` — styling
+- `script.js` — client-side logic
+- `.nojekyll` — tells GitHub Pages to skip Jekyll processing
+
+## Development
+
+Edit files in `docs/` and commit. GitHub Pages will automatically rebuild.
+
+To test locally:
+```bash
+cd docs
+python3 -m http.server 8000
+# then open http://127.0.0.1:8000
+```
+
+## Notes
+
+- No server or database required.
+- Downloaded JSONs are created locally; nothing is sent elsewhere.
+
+Questions or features? Let me know!
