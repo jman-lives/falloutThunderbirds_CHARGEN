@@ -2,6 +2,7 @@ function qs(id){return document.getElementById(id)}
 
 function getFormData(){
   return {
+    player: qs('player').value||null,
     name: qs('name').value||null,
     age: parseInt(qs('age').value)||null,
     gender: qs('gender').value||null,
@@ -14,7 +15,7 @@ function getFormData(){
       agility: Number(qs('agility').value)||0,
       luck: Number(qs('luck').value)||0,
     },
-    occupation: qs('occupation').value||null,
+    // occupation: qs('occupation').value||null,
     notes: qs('notes').value||null,
     createdAt: new Date().toISOString()
   }
@@ -42,7 +43,7 @@ function randInt(min,max){return Math.floor(Math.random()*(max-min+1))+min}
 
 function randomizeCharacter(){
   const sampleNames = ['Alex','Riley','Mack','Nova','Harper','Jules','Casey','Rowan','Rex','Ivy']
-  const genders = ['Male','Female','Non-binary','Other']
+  const genders = ['Male','Female']
   const occupation = ['Scavenger','Engineer','Trader','Medic','Soldier','Mechanic','Scientist']
   const char = {
     name: sampleNames[randInt(0,sampleNames.length-1)],
@@ -68,7 +69,7 @@ function downloadJSON(obj, filename){
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = filename || 'character.json'
+  a.download = filename || `characterSheet_${obj.name || 'characterSheet'}.json`
   document.body.appendChild(a)
   a.click()
   a.remove()
@@ -108,12 +109,39 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const sample = {
       name: 'Sample Vault Dweller',
       age: 28,
-      gender: 'Other',
+      gender: 'Male',
       attributes: {strength:6,perception:7,endurance:5,charisma:4,intelligence:8,agility:6,luck:3},
       occupation: 'Vault Technician',
       notes: 'Ready for adventure.'
     }
     setFormData(sample)
+  })
+
+  // Dropdown change handlers
+  qs('gender').addEventListener('change', (e) => {
+    const selectedGender = e.target.value
+    console.log('Gender selected:', selectedGender)
+    renderOutput(getFormData())
+  })
+
+  qs('race').addEventListener('change', (e) => {
+    const selectedRace = e.target.value
+    console.log('Race selected:', selectedRace)
+    
+    const ageInput = qs('age')
+    const currentAge = parseInt(ageInput.value) || 0
+    
+    if(selectedRace === 'Ghoul') {
+      ageInput.max = '200'
+    } else {
+      ageInput.max = '80'
+      // Clamp age to max if it exceeds the new max
+      if(currentAge > 80) {
+        ageInput.value = '80'
+      }
+    }
+    
+    renderOutput(getFormData())
   })
 
   // initial render

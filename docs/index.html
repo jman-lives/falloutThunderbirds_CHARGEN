@@ -12,19 +12,29 @@
 
     <form id="char-form">
       <section class="row">
-        <label>Name
+        <label>Player
+          <input type="text" id="player" name="player" />
+        </label>
+      </section>
+      <section class="row">
+        <label>Character Name
           <input type="text" id="name" name="name" />
         </label>
+        <label>Race
+          <select id="race" name="race">
+            <option value="">(unspecified)</option>
+            <option>Human</option>
+            <option>Ghoul</option>
+          </select>
+        </label>
         <label>Age
-          <input type="number" id="age" name="age" min="0" />
+          <input type="number" id="age" name="age" min="16" max="80" value="">
         </label>
         <label>Gender
           <select id="gender" name="gender">
             <option value="">(unspecified)</option>
             <option>Male</option>
             <option>Female</option>
-            <option>Non-binary</option>
-            <option>Other</option>
           </select>
         </label>
       </section>
@@ -43,9 +53,9 @@
       </section>
 
       <section class="row">
-        <label>Occupation
+        <!-- <label>Occupation
           <input type="text" id="occupation" name="occupation" />
-        </label>
+        </label> -->
         <label>Notes
           <input type="text" id="notes" name="notes" />
         </label>
