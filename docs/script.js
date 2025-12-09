@@ -15,7 +15,7 @@ function getFormData(){
       agility: Number(qs('agility').value)||0,
       luck: Number(qs('luck').value)||0,
     },
-    // occupation: qs('occupation').value||null,
+    skills: {},
     notes: qs('notes').value||null,
     createdAt: new Date().toISOString()
   }
@@ -58,6 +58,7 @@ function randomizeCharacter(){
       agility: randInt(1,10),
       luck: randInt(1,10),
     },
+    skills: {},
     occupation: occupation[randInt(0,occupation.length-1)],
     notes: ''
   }
