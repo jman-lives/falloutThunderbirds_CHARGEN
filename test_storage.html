@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Storage</title>
+</head>
+<body>
+  <h1>Testing localStorage</h1>
+  <button onclick="saveTest()">Save Test Data</button>
+  <button onclick="checkStorage()">Check Storage</button>
+  <button onclick="clearStorage()">Clear Storage</button>
+  <pre id="output"></pre>
+  
+  <script>
+    function saveTest() {
+      const testData = {
+        name: 'Test Character',
+        race: 'Human',
+        attributes: {
+          strength: 8,
+          perception: 7,
+          endurance: 6,
+          charisma: 5,
+          intelligence: 9,
+          agility: 6,
+          luck: 3
+        }
+      };
+      localStorage.setItem('falloutCharacter', JSON.stringify(testData));
+      document.getElementById('output').textContent = 'Saved: ' + JSON.stringify(testData, null, 2);
+    }
+    
+    function checkStorage() {
+      const stored = localStorage.getItem('falloutCharacter');
+      document.getElementById('output').textContent = 'Stored data: ' + (stored ? JSON.stringify(JSON.parse(stored), null, 2) : 'Nothing stored');
+    }
+    
+    function clearStorage() {
+      localStorage.removeItem('falloutCharacter');
+      document.getElementById('output').textContent = 'Cleared!';
+    }
+  </script>
+</body>
+</html>
