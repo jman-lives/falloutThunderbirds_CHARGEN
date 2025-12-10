@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Console</title>
+</head>
+<body>
+    <h1>Open Browser DevTools (F12) to see console output</h1>
+    <div id="errors"></div>
+    
+    <script>
+        // Capture any errors
+        window.addEventListener('error', function(e) {
+            console.error('ERROR:', e.error);
+            document.getElementById('errors').innerHTML += '<p style="color: red;">ERROR: ' + e.error + '</p>';
+        });
+        
+        // Load the scripts and test
+        let scriptOrder = [];
+        
+        console.log('Loading advancement.js...');
+        </script>
+        <script src="docs/advancement.js"></script>
+        <script>
+        console.log('advancement.js loaded');
+        console.log('PERKS object:', typeof PERKS);
+        console.log('calculateFinalSkills function:', typeof calculateFinalSkills);
+        console.log('RACIAL_LIMITS:', typeof RACIAL_LIMITS);
+        </script>
+        
+        <script src="docs/script.js"></script>
+        <script>
+        console.log('script.js loaded');
+        console.log('randomizeCharacter function:', typeof randomizeCharacter);
+        console.log('setFormData function:', typeof setFormData);
+        
+        // Try to call randomizeCharacter
+        console.log('Attempting to call randomizeCharacter()...');
+        try {
+            randomizeCharacter();
+            console.log('SUCCESS: randomizeCharacter() executed without error');
+        } catch(e) {
+            console.error('FAILED: randomizeCharacter() threw error:', e.message);
+            console.error('Stack:', e.stack);
+            document.getElementById('errors').innerHTML += '<p style="color: red;">ERROR in randomizeCharacter: ' + e.message + '</p>';
+        }
+        </script>
+</body>
+</html>
