@@ -1,14 +1,34 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Character Generator</title>
+  <title>Character Generator - Debug</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    #debug-console {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #111;
+      color: #0f0;
+      padding: 10px;
+      height: 200px;
+      overflow-y: auto;
+      border-top: 2px solid #FF9800;
+      font-family: monospace;
+      font-size: 0.8rem;
+      z-index: 10000;
+    }
+    main.container {
+      margin-bottom: 220px;
+    }
+  </style>
 </head>
 <body>
   <main class="container">
-    <h1>Character Generator</h1>
+    <h1>Character Generator (Debug Mode)</h1>
 
     <div class="controls" style="margin-bottom: 16px;">
       <button type="button" id="randomize">Generate Random</button>
@@ -87,151 +107,147 @@
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="unarmed">
-              Unarmed <span class="skill-base" id="base_unarmed">30%</span>
+              Unarmed <span class="skill-base" id="base_unarmed">50%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="melee_weapons">
-              Melee Weapons <span class="skill-base" id="base_melee_weapons">20%</span>
+              Melee Weapons <span class="skill-base" id="base_melee_weapons">40%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="throwing">
-              Throwing <span class="skill-base" id="base_throwing">0%</span>
+              Throwing <span class="skill-base" id="base_throwing">20%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="first_aid">
-              First Aid <span class="skill-base" id="base_first_aid">0%</span>
+              First Aid <span class="skill-base" id="base_first_aid">20%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="doctor">
-              Doctor <span class="skill-base" id="base_doctor">5%</span>
+              Doctor <span class="skill-base" id="base_doctor">15%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="sneak">
-              Sneak <span class="skill-base" id="base_sneak">5%</span>
+              Sneak <span class="skill-base" id="base_sneak">20%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="lockpick">
-              Lockpick <span class="skill-base" id="base_lockpick">10%</span>
+              Lockpick <span class="skill-base" id="base_lockpick">20%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="steal">
-              Steal <span class="skill-base" id="base_steal">0%</span>
+              Steal <span class="skill-base" id="base_steal">15%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="traps">
-              Traps <span class="skill-base" id="base_traps">10%</span>
+              Traps <span class="skill-base" id="base_traps">20%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="science">
-              Science <span class="skill-base" id="base_science">0%</span>
+              Science <span class="skill-base" id="base_science">20%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="repair">
-              Repair <span class="skill-base" id="base_repair">0%</span>
+              Repair <span class="skill-base" id="base_repair">15%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="pilot">
-              Pilot <span class="skill-base" id="base_pilot">0%</span>
+              Pilot <span class="skill-base" id="base_pilot">10%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="speech">
-              Speech <span class="skill-base" id="base_speech">0%</span>
+              Speech <span class="skill-base" id="base_speech">25%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="barter">
-              Barter <span class="skill-base" id="base_barter">0%</span>
+              Barter <span class="skill-base" id="base_barter">20%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="gambling">
-              Gambling <span class="skill-base" id="base_gambling">0%</span>
+              Gambling <span class="skill-base" id="base_gambling">25%</span>
             </label>
           </div>
           <div class="skill-row">
             <label class="skill-label">
               <input type="checkbox" class="tag-checkbox" data-skill="outdoorsman">
-              Outdoorsman <span class="skill-base" id="base_outdoorsman">0%</span>
+              Outdoorsman <span class="skill-base" id="base_outdoorsman">20%</span>
             </label>
           </div>
         </div>
-      </section>
-
-      <section>
-        <h2>Stats</h2>
-        <div class="attrs">
-          <label>Hit Points <span id="hit_points">0</span></label>
-          <label>Carry Weight <span id="carry_weight">0</span></label>
-          <label>Action Points <span id="action_points">0</span></label>
-          <label>Sequence <span id="sequence">0</span></label>
-          <label>Melee Damage <span id="melee_damage">0</span></label>
-          <label>Critical Chance (%) <span id="critical_chance">0</span></label>
-          <label>Healing Rate <span id="healing_rate">0</span></label>
-          <label>Poison Resist (%) <span id="poison_resist">0</span></label>
-          <label>Radiation Resist (%) <span id="radiation_resist">0</span></label>
-          <label>Gas Resist (%) <span id="gas_resist">0</span></label>
-          <label>Electricity Resist (%) <span id="electricity_resist">0</span></label>
-          <label>Armor Class <span id="armor_class">0</span></label>
-        </div>
-
-        <div style="margin-top: 12px;">
-          <h3 style="margin: 0 0 8px 0; font-size: 1rem;">Damage Threshold (DT)</h3>
-          <div class="attrs">
-            <label>Normal (%) <span id="dt_normal">0</span></label>
-            <label>Laser (%) <span id="dt_laser">0</span></label>
-            <label>Fire (%) <span id="dt_fire">0</span></label>
-            <label>Plasma (%) <span id="dt_plasma">0</span></label>
-            <label>Explode (%) <span id="dt_explode">0</span></label>
-          </div>
-        </div>
-
-        <div style="margin-top: 12px;">
-          <h3 style="margin: 0 0 8px 0; font-size: 1rem;">Damage Resistance (DR)</h3>
-          <div class="attrs">
-            <label>Normal (%) <span id="dr_normal">0</span></label>
-            <label>Laser (%) <span id="dr_laser">0</span></label>
-            <label>Fire (%) <span id="dr_fire">0</span></label>
-            <label>Plasma (%) <span id="dr_plasma">0</span></label>
-            <label>Explode (%) <span id="dr_explode">0</span></label>
-          </div>
-        </div>
-      </section>
-
-      <section class="row">
-        <label>Notes
-          <input type="text" id="notes" name="notes" />
-        </label>
       </section>
     </form>
 
     <pre id="output" aria-live="polite"></pre>
   </main>
+
+  <div id="debug-console">
+    <strong style="color: #FF9800;">Debug Console:</strong>
+    <div id="console-output"></div>
+  </div>
+
+  <script>
+    // Capture all console logs
+    const consoleOutput = document.getElementById('console-output');
+    const originalLog = console.log;
+    const originalError = console.error;
+
+    console.log = function(...args) {
+      const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' ');
+      const div = document.createElement('div');
+      div.style.color = '#4CAF50';
+      div.textContent = '[LOG] ' + msg;
+      consoleOutput.appendChild(div);
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+      originalLog.apply(console, args);
+    };
+
+    console.error = function(...args) {
+      const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' ');
+      const div = document.createElement('div');
+      div.style.color = '#f44336';
+      div.textContent = '[ERROR] ' + msg;
+      consoleOutput.appendChild(div);
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+      originalError.apply(console, args);
+    };
+
+    window.addEventListener('error', (e) => {
+      const div = document.createElement('div');
+      div.style.color = '#f44336';
+      div.textContent = '[GLOBAL ERROR] ' + e.message;
+      consoleOutput.appendChild(div);
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    });
+
+    console.log('Debug console initialized');
+  </script>
 
   <script src="advancement.js"></script>
   <script src="script.js"></script>

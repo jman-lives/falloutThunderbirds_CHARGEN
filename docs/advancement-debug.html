@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Character Advancement & Perks - DEBUG</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    #debug-console {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+      background-color: #000;
+      color: #0f0;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 0.8rem;
+      padding: 10px;
+      border-top: 2px solid #0f0;
+      z-index: 9999;
+    }
+    body {
+      margin-bottom: 220px;
+    }
+  </style>
+</head>
+<body>
+  <div id="debug-console"></div>
+
+  <main class="container">
+    <h1>Character Advancement & Perks</h1>
+
+    <div class="controls" style="margin-bottom: 16px;">
+      <a href="index.html" style="display: inline-block; padding: 6px 12px; background-color: #2196F3; color: white; border: none; border-radius: 4px; text-decoration: none; cursor: pointer; font-weight: bold;">← Back to Character</a>
+      <button type="button" id="download" style="margin-left: 8px;">Download JSON</button>
+    </div>
+
+    <!-- Character Summary -->
+    <div style="padding: 12px; background-color: #333; border-radius: 4px; margin-bottom: 16px; border-left: 4px solid #FF9800;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;">
+        <div>
+          <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">Character</p>
+          <p style="margin: 0; font-weight: bold;" id="char-name">Unknown</p>
+        </div>
+        <div>
+          <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">Race</p>
+          <p style="margin: 0; font-weight: bold;" id="char-race">Human</p>
+        </div>
+        <div>
+          <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">Attributes</p>
+          <p style="margin: 0; font-size: 0.9rem;" id="char-attrs">S:5 P:5 E:5 C:5 I:5 A:5 L:5</p>
+        </div>
+        <div>
+          <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">Level / XP</p>
+          <p style="margin: 0; font-size: 0.9rem;" id="char-level-xp">1 / 0 XP</p>
+        </div>
+      </div>
+    </div>
+
+    <form id="char-form">
+      <section>
+        <h2>Advancement</h2>
+        <div class="attrs">
+          <label>Current Level <span id="current_level">1</span></label>
+          <button type="button" id="level-up-btn" style="margin-top: 8px; padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Level Up</button>
+          <label style="margin-top: 12px;">Total XP <span id="total_xp" style="font-weight: bold; color: #4CAF50;">0</span></label>
+          <label>XP to Next Level <span id="xp_to_next">1000</span></label>
+          <label>Current Level XP <span id="current_level_xp">0</span> / <span id="needed_xp">1000</span></label>
+        </div>
+        <div style="margin-top: 12px;">
+          <h3 style="margin: 0 0 8px 0; font-size: 1rem;">On Level Up</h3>
+          <div class="attrs">
+            <label>HP Gained per Level: <span id="hp_per_level">3</span></label>
+            <label>Skill Points per Level: <span id="sp_per_level">5</span></label>
+            <label>Total HP (Projected): <span id="total_hp_projected">15</span></label>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Perks</h2>
+        <div style="margin-bottom: 12px;">
+          <label>Perks Gained: <span id="perks_earned">0</span></label>
+          <p style="font-size: 0.9rem; color: #aaa;">Perks are gained at levels 3, 6, 9, 12, 15, 18, 21, 24, etc.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
+          <!-- Available Perks Column -->
+          <div>
+            <h3 style="margin: 0 0 8px 0; font-size: 0.95rem; color: #4CAF50;">Available Perks</h3>
+            <div id="perks-list" style="padding: 8px; background-color: #444; border-radius: 4px; min-height: 300px; max-height: 600px; overflow-y: auto; border: 1px solid #555;">
+              <p id="no-perks-msg" style="margin: 0; color: #999;">No perks available yet.</p>
+              <div id="available-perks-container"></div>
+            </div>
+          </div>
+
+          <!-- Selected Perks Column -->
+          <div>
+            <h3 style="margin: 0 0 8px 0; font-size: 0.95rem; color: #ff9800;">Selected Perks (<span id="selected_perks_count">0</span> / <span id="max_selectable_perks">0</span>)</h3>
+            <div id="selected-perks-list" style="padding: 8px; background-color: #333; border-radius: 4px; min-height: 300px; max-height: 600px; overflow-y: auto; border: 2px solid #ff9800;">
+              <p id="no-selected-perks-msg" style="margin: 0; color: #999;">No perks selected yet.</p>
+              <div id="selected-perks-container"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="row">
+        <label>Notes
+          <input type="text" id="notes" name="notes" />
+        </label>
+      </section>
+    </form>
+
+    <pre id="output" aria-live="polite"></pre>
+  </main>
+
+  <script src="script.js"></script>
+  <script src="advancement.js"></script>
+  
+  <script>
+    // Capture console logs
+    const debugConsole = document.getElementById('debug-console');
+    const originalLog = console.log;
+    const originalError = console.error;
+    
+    console.log = function(...args) {
+      const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+      const div = document.createElement('div');
+      div.style.color = '#0f0';
+      div.textContent = '[LOG] ' + msg;
+      debugConsole.appendChild(div);
+      debugConsole.scrollTop = debugConsole.scrollHeight;
+      originalLog.apply(console, args);
+    };
+    
+    console.error = function(...args) {
+      const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+      const div = document.createElement('div');
+      div.style.color = '#f44';
+      div.textContent = '[ERROR] ' + msg;
+      debugConsole.appendChild(div);
+      debugConsole.scrollTop = debugConsole.scrollHeight;
+      originalError.apply(console, args);
+    };
+    
+    window.addEventListener('error', (e) => {
+      const div = document.createElement('div');
+      div.style.color = '#f44';
+      div.textContent = '[GLOBAL ERROR] ' + e.message + ' at ' + e.filename + ':' + e.lineno;
+      debugConsole.appendChild(div);
+      debugConsole.scrollTop = debugConsole.scrollHeight;
+    });
+    
+    console.log('Debug console initialized');
+  </script>
+
+  <script src="advancement-page.js"></script>
+</body>
+</html>
