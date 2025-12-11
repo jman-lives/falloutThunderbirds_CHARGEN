@@ -5,6 +5,246 @@ const BASE_ATTRIBUTE_VALUE = 5;
 const CHARACTER_POINTS_POOL = 5;
 const ATTRIBUTE_NAMES = ['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'];
 
+// #region TRAITS DEFINITION
+const TRAITS = {
+  fast_metabolism: {
+    name: 'Fast Metabolism',
+    description: 'Your metabolic rate is twice normal.',
+    effects: '+2 Healing Rate, Rad/Poison Resist reset to 0%',
+    restrictions: ['Robots'],
+    briefDescription: 'Faster healing, lower poison/rad resistance'
+  },
+  small_frame: {
+    name: 'Small Frame',
+    description: 'You are smaller than average, but more agile.',
+    effects: '+1 Agility, Carry Weight = 15 × STR',
+    restrictions: [],
+    briefDescription: 'More agile, reduced carrying capacity'
+  },
+  one_hander: {
+    name: 'One Hander',
+    description: 'You favor single-handed weapons.',
+    effects: '+20% to hit with one-handed weapons, −40% with two-handed',
+    restrictions: ['Animals'],
+    briefDescription: 'Better with one-handed weapons'
+  },
+  finesse: {
+    name: 'Finesse',
+    description: 'Your attacks favor precision over raw power.',
+    effects: '30% less damage, +10% Critical Chance',
+    restrictions: [],
+    briefDescription: 'Precise attacks, lower damage'
+  },
+  kamikaze: {
+    name: 'Kamikaze',
+    description: 'You sacrifice defense for speed.',
+    effects: 'No natural Armor Class, +5 Sequence',
+    restrictions: [],
+    briefDescription: 'Faster but vulnerable'
+  },
+  heavy_handed: {
+    name: 'Heavy Handed',
+    description: 'You hit harder, but lack finesse.',
+    effects: '+4 Melee Damage, Critical hits 30% weaker and less likely',
+    restrictions: [],
+    briefDescription: 'More damage, weaker criticals'
+  },
+  fast_shot: {
+    name: 'Fast Shot',
+    description: 'You attack faster but less precisely.',
+    effects: 'Ranged attacks cost 1 less AP, no targeted shots allowed',
+    restrictions: ['Animals'],
+    briefDescription: 'Faster ranged attacks, no targeting'
+  },
+  bloody_mess: {
+    name: 'Bloody Mess',
+    description: 'Violence follows you everywhere.',
+    effects: 'No mechanical effect (flavor trait)',
+    restrictions: [],
+    briefDescription: 'More dramatic deaths (flavor)'
+  },
+  jinxed: {
+    name: 'Jinxed',
+    description: 'Bad luck spreads around you.',
+    effects: 'Combat failures 50% more likely to crit fail',
+    restrictions: [],
+    briefDescription: 'Bad luck affects you and allies'
+  },
+  good_natured: {
+    name: 'Good Natured',
+    description: 'You focused on people, not violence.',
+    effects: '+20% to First Aid/Doctor/Speech/Barter, −10% to combat skills',
+    restrictions: ['Animals', 'Robots'],
+    briefDescription: 'Better at social skills, worse at combat'
+  },
+  chem_reliant: {
+    name: 'Chem Reliant',
+    description: 'You become addicted more easily, but recover faster.',
+    effects: 'Double addiction chance, halved recovery time',
+    restrictions: ['Robots'],
+    briefDescription: 'Easier addiction, faster recovery'
+  },
+  chem_resistant: {
+    name: 'Chem Resistant',
+    description: 'Chems affect you less.',
+    effects: 'Chem effects half as long, 50% less addiction chance',
+    restrictions: ['Robots'],
+    briefDescription: 'Drugs less effective, less addictive'
+  },
+  night_person: {
+    name: 'Night Person',
+    description: 'You function better at night.',
+    effects: 'Day: −1 INT/PE; Night: +1 INT/PE',
+    restrictions: ['Robots'],
+    briefDescription: 'Better at night, worse during day'
+  },
+  skilled: {
+    name: 'Skilled',
+    description: 'You focus on skills rather than perks.',
+    effects: '+5 Skill Points/level, +10% all skills, Perks one level later',
+    restrictions: ['Animals', 'Robots'],
+    briefDescription: 'More skills, fewer perks'
+  },
+  gifted: {
+    name: 'Gifted',
+    description: 'You are naturally talented but undertrained.',
+    effects: '+1 to all attributes, −10% to all skills, −5 Skill Points/level',
+    restrictions: ['Robots'],
+    briefDescription: 'Higher attributes, lower skills'
+  },
+  sex_appeal: {
+    name: 'Sex Appeal',
+    description: 'You are desirable to the opposite sex.',
+    effects: '+1 CHA opposite sex, +40% Speech/Barter opposite sex, −1 CHA same sex',
+    restrictions: ['Humans only'],
+    briefDescription: 'Attractive to opposite sex'
+  },
+  glowing_one: {
+    name: 'Glowing One',
+    description: 'Radiation has permanently altered you.',
+    effects: '+50% Radiation Resistance, nearby characters take 10 rads/hour',
+    restrictions: ['Ghouls only'],
+    briefDescription: 'Radiation resistance, radiation aura'
+  },
+  tech_wizard: {
+    name: 'Tech Wizard',
+    description: 'You are technologically gifted but visually impaired.',
+    effects: '+15% to Science/Repair/Lockpick, −1 Perception',
+    restrictions: ['Deathclaws', 'Dogs'],
+    briefDescription: 'Better at tech, worse vision'
+  },
+  fear_the_reaper: {
+    name: 'Fear the Reaper',
+    description: 'You have escaped death… temporarily.',
+    effects: 'Perks as if Human, 1/month death roll vs Luck',
+    restrictions: ['Ghouls only'],
+    briefDescription: 'Monthly death risk'
+  }
+};
+
+const MAX_TRAITS = 2;
+
+/**
+ * Get selected traits from checkboxes
+ * @returns {array} Array of selected trait IDs
+ */
+function getSelectedTraits() {
+  const checkboxes = document.querySelectorAll('.trait-checkbox');
+  return Array.from(checkboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.dataset.trait);
+}
+
+/**
+ * Update trait selection counter and validation
+ */
+function updateTraitSelectionDisplay() {
+  const selectedTraits = getSelectedTraits();
+  const countEl = qs('traits-count');
+  const warningEl = qs('traits-warning');
+  
+  if (countEl) {
+    countEl.textContent = selectedTraits.length;
+  }
+  
+  if (warningEl) {
+    if (selectedTraits.length > MAX_TRAITS) {
+      warningEl.textContent = `⚠️ Too many traits selected. Maximum is ${MAX_TRAITS}. Current: ${selectedTraits.length}`;
+      warningEl.style.display = 'block';
+    } else {
+      warningEl.style.display = 'none';
+    }
+  }
+  
+  renderOutput(getFormData());
+}
+
+/**
+ * Handle trait checkbox change
+ */
+function handleTraitChange(traitId) {
+  const selectedTraits = getSelectedTraits();
+  
+  // If trying to select more than MAX_TRAITS, prevent it
+  if (selectedTraits.length > MAX_TRAITS) {
+    const checkbox = document.querySelector(`input[data-trait="${traitId}"]`);
+    if (checkbox) {
+      checkbox.checked = false;
+    }
+  }
+  
+  updateTraitSelectionDisplay();
+}
+
+/**
+ * Render traits selection UI
+ */
+function renderTraits() {
+  const container = qs('traits-container');
+  if (!container) return;
+  
+  const race = qs('race')?.value || 'Human';
+  const selectedTraits = getSelectedTraits();
+  
+  let html = '';
+  for (const [traitId, trait] of Object.entries(TRAITS)) {
+    const isRestricted = trait.restrictions.length > 0 && 
+      (trait.restrictions.includes(race) || 
+       trait.restrictions.some(r => r.includes('only') && !r.toLowerCase().includes(race.toLowerCase())));
+    
+    const isSelected = selectedTraits.includes(traitId);
+    
+    html += `<div class="trait-card ${isSelected ? 'selected' : ''} ${isRestricted ? 'restricted' : ''}" 
+         ${isRestricted ? 'style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+      <label class="trait-card-label" ${isRestricted ? 'style="cursor: not-allowed;"' : ''}>
+        <input 
+          type="checkbox" 
+          class="trait-checkbox trait-card-checkbox"
+          data-trait="${traitId}"
+          ${isRestricted ? 'disabled' : ''}
+          ${isSelected ? 'checked' : ''}
+        >
+        <span class="trait-card-name">${trait.name}</span>
+      </label>
+      <div class="trait-card-description">${trait.briefDescription}</div>
+      <div class="trait-card-description" style="font-size: 0.75rem; color: #aaa;">${trait.effects}</div>
+      ${isRestricted ? `<div class="trait-card-restrictions">Not available for ${race}</div>` : ''}
+    </div>`;
+  }
+  
+  console.log('Generated HTML length:', html.length, 'Num traits:', Object.keys(TRAITS).length);
+  container.innerHTML = html;
+  
+  const checkboxes = document.querySelectorAll('.trait-checkbox');
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', (e) => {
+      handleTraitChange(e.target.dataset.trait);
+    });
+  });
+}
+
+// #endregion TRAITS DEFINITION
+
 // #region CHARACTER POINT VALIDATION
 /**
  * Calculate the total character points allocated (sum of adjustments from base value)
@@ -204,6 +444,7 @@ function getFormData(){
       }
     },
     notes: (qs('notes')?.value)||null,
+    selectedTraits: getSelectedTraits(),
     createdAt: new Date().toISOString()
   }
 }
@@ -233,6 +474,15 @@ function setFormData(data){
   if (checkboxes.length > 0) {
     checkboxes.forEach(checkbox => {
       checkbox.checked = tagSkills[checkbox.dataset.skill] || false;
+    });
+  }
+  
+  // Restore selected traits
+  const loadedTraits = data.selectedTraits || [];
+  const traitCheckboxes = document.querySelectorAll('.trait-checkbox');
+  if (traitCheckboxes.length > 0) {
+    traitCheckboxes.forEach(checkbox => {
+      checkbox.checked = loadedTraits.includes(checkbox.dataset.trait) || false;
     });
   }
   
@@ -268,6 +518,7 @@ function setFormData(data){
   const notesEl = qs('notes');
   if (notesEl) notesEl.value = data.notes||''
   updatePointsPoolDisplay()
+  updateTraitSelectionDisplay()
   updateSkillDisplay()
   updateAdvancementDisplay()
   renderOutput(getFormData())
@@ -679,6 +930,35 @@ function randomizeCharacter(){
     tagSkills[shuffledSkills[i]] = true;
   }
   
+  // Select up to 2 random traits (respecting race restrictions)
+  const traitRaceLimits = RACIAL_LIMITS[selectedRace];
+  const availableTraits = Object.entries(TRAITS)
+    .filter(([traitId, trait]) => {
+      // Check if trait is restricted for this race
+      if (trait.restrictions.length === 0) return true; // No restrictions
+      
+      // Check for "only" restrictions (e.g., "Humans only", "Ghouls only")
+      const onlyRestrictions = trait.restrictions.filter(r => r.includes('only'));
+      if (onlyRestrictions.length > 0) {
+        // Must match at least one "only" restriction
+        return onlyRestrictions.some(r => r.toLowerCase().includes(selectedRace.toLowerCase()));
+      }
+      
+      // Check for race exclusions (e.g., "Robots", "Animals")
+      return !trait.restrictions.includes(selectedRace);
+    })
+    .map(([traitId]) => traitId);
+  
+  // Randomly select 0, 1, or 2 traits from available traits
+  const numTraits = randInt(0, Math.min(2, availableTraits.length));
+  const selectedTraits = [];
+  if (numTraits > 0) {
+    const shuffledTraits = availableTraits.sort(() => Math.random() - 0.5);
+    for (let i = 0; i < numTraits; i++) {
+      selectedTraits.push(shuffledTraits[i]);
+    }
+  }
+  
   const char = {
     name: sampleNames[randInt(0,sampleNames.length-1)],
     race: selectedRace,
@@ -686,6 +966,7 @@ function randomizeCharacter(){
     gender: genders[randInt(0,genders.length-1)],
     attributes: attributes,
     tagSkills: tagSkills,
+    selectedTraits: selectedTraits,
     skills: {
       guns: randInt(0,100),
       energy_weapons: randInt(0,100),
@@ -741,6 +1022,7 @@ function randomizeCharacter(){
   setFormData(char)
   console.log('setFormData completed');
   // Save the randomized character to localStorage
+  renderTraits();
   renderOutput(getFormData());
 }
 
@@ -926,6 +1208,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
       }
       
+      // Re-render traits when race changes
+      renderTraits();
+      
       // Update attribute input min/max constraints based on race
       const raceLimits = RACIAL_LIMITS[selectedRace];
       ATTRIBUTE_NAMES.forEach(attrName => {
@@ -945,6 +1230,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       });
       
       updatePointsPoolDisplay();
+      renderTraits();
       renderOutput(getFormData())
     })
 
@@ -989,6 +1275,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     updateSkillDisplay();
     updatePointsPoolDisplay();
     updateAdvancementDisplay();
+    renderTraits();
     
     // initial render
     renderOutput(getFormData())

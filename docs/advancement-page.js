@@ -134,9 +134,14 @@ function updateCharacterSummary() {
     .map(skill => SKILL_DISPLAY_NAMES[skill] || skill);
   const tagsDisplay = tagSkillsList.length > 0 ? tagSkillsList.join(', ') : 'None';
   
-  // Get traits
-  const traits = characterData.traits || [];
-  const traitsDisplay = traits.length > 0 ? traits.join(', ') : 'None';
+  // Get traits - note: saved as selectedTraits from form data
+  const traits = characterData.selectedTraits || characterData.traits || [];
+  // Convert trait IDs to display names
+  const traitsDisplay = traits.length > 0 ? traits.map(traitId => {
+    // Get the trait name from TRAITS object (defined in script.js)
+    const traitObj = typeof TRAITS !== 'undefined' && TRAITS[traitId];
+    return traitObj ? traitObj.name : traitId;
+  }).join(', ') : 'None';
   
   // Find top skill
   const skills = characterData.skills || {};
