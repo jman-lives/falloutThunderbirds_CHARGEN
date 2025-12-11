@@ -779,6 +779,26 @@ document.addEventListener('DOMContentLoaded', ()=>{
   try {
     console.log('DOMContentLoaded fired, setting up event listeners');
     
+    // Try to load dev config for local development
+    fetch('dev-config.json')
+      .then(response => {
+        if (response.ok) return response.json();
+        throw new Error('dev-config.json not found');
+      })
+      .then(config => {
+        if (config.playerName) {
+          const playerField = qs('player');
+          if (playerField && !playerField.value) {
+            playerField.value = config.playerName;
+            console.log('Loaded player name from dev-config:', config.playerName);
+          }
+        }
+      })
+      .catch(err => {
+        // Silently fail if dev-config doesn't exist (production environment)
+        console.log('dev-config.json not available (this is normal in production)');
+      });
+    
     const randomBtn = qs('randomize');
     if (randomBtn) {
       randomBtn.addEventListener('click', randomizeCharacter);
@@ -982,8 +1002,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
       const currentLevel = Number(qs('current_level').textContent) || 1;
       const nextLevelXP = getXPForLevel(currentLevel + 1);
       qs('total_xp').textContent = nextLevelXP;
-      updateAdvancementDisplay();
-      renderOutput(getFormData());
+      
+      // If we're on the advancement page, use updateDisplay() from advancement-page.js
+      // Otherwise use updateAdvancementDisplay()
+      if (typeof updateDisplay === 'function' && qs('char-form')) {
+        updateDisplay();
+        renderOutput(characterData || {});
+      } else {
+        updateAdvancementDisplay();
+        renderOutput(getFormData());
+      }
     });
     console.log('Attached level-up button handler');
   }
@@ -1021,17 +1049,34 @@ function updateAdvancementDisplay() {
   // Skip if we're on the main character creation page (no total_xp element)
   if (!qs('total_xp')) return;
   
+  // On advancement page, attributes come from localStorage character data
+  // On main character page, they come from form fields
+  let attributes = {
+    strength: 5,
+    perception: 5,
+    endurance: 5,
+    charisma: 5,
+    intelligence: 5,
+    agility: 5,
+    luck: 5,
+  };
+  
+  // Try to get attributes from form fields (main character page)
+  const strengthInput = qs('strength');
+  if (strengthInput) {
+    attributes = {
+      strength: Number(strengthInput.value) || 5,
+      perception: Number(qs('perception').value) || 5,
+      endurance: Number(qs('endurance').value) || 5,
+      charisma: Number(qs('charisma').value) || 5,
+      intelligence: Number(qs('intelligence').value) || 5,
+      agility: Number(qs('agility').value) || 5,
+      luck: Number(qs('luck').value) || 5,
+    };
+  }
+  
   const totalXP = Number(qs('total_xp').textContent) || 0;
   const xpProgress = getXPProgress(totalXP);
-  const attributes = {
-    strength: Number(qs('strength').value) || 5,
-    perception: Number(qs('perception').value) || 5,
-    endurance: Number(qs('endurance').value) || 5,
-    charisma: Number(qs('charisma').value) || 5,
-    intelligence: Number(qs('intelligence').value) || 5,
-    agility: Number(qs('agility').value) || 5,
-    luck: Number(qs('luck').value) || 5,
-  };
   
   const currentLevel = xpProgress.level;
   const hpGain = calculateHPGain(attributes.endurance);
@@ -1050,7 +1095,10 @@ function updateAdvancementDisplay() {
   if (qs('total_hp_projected')) qs('total_hp_projected').textContent = totalHP;
   
   // Calculate perks earned based on race and level
-  const race = qs('race').value || 'Human';
+  // On advancement pages, race comes from localStorage via advancement-page.js
+  // On main character page, race comes from form field
+  const raceElement = qs('race');
+  const race = raceElement ? (raceElement.value || 'Human') : 'Human';
   const perksEarned = calculatePerksEarned(currentLevel, race);
   if (qs('perks_earned')) qs('perks_earned').textContent = perksEarned;
   
