@@ -276,7 +276,7 @@ You know how to brace big weapons.
 
 - **Effects:** Gain a bonus when bracing large weapons (e.g., simulated tripod) while standing
 - **Ranks:** 1
-- **Requirements:** Strength 7, Big Guns 80%, Level 4  
+- **Requirements:** Strength 7, Guns 80%, Level 4  
 - **Restrictions:** Deathclaws and Dogs cannot choose this perk
 
 ---
@@ -559,7 +559,7 @@ You’re good at firing from moving vehicles.
 
 - **Effects:** No 10% penalty for shooting from a moving vehicle
 - **Ranks:** 1
-- **Requirements:** Small Guns 40%, Agility 6, Level 3
+- **Requirements:** Guns 40%, Agility 6, Level 3
 
 ---
 
@@ -889,7 +889,7 @@ You do terrible things with fire.
 
 - **Effects:** +5 damage with fire-based weapons (flamethrowers, molotovs, napalm, etc.)
 - **Ranks:** 1
-- **Requirements:** Big Guns 75%, Level 9
+- **Requirements:** Guns 75%, Level 9
 
 ---
 
@@ -1057,7 +1057,7 @@ Your shots tend to be critical.
 
 - **Effects:** With ranged weapons, successful attack rolls that also succeed on a Luck check are critical hits
 - **Ranks:** 1
-- **Requirements:** Agility 8, Perception 8, Small Guns 80%, Level 24  
+- **Requirements:** Agility 8, Perception 8, Guns 80%, Level 24  
 - **Restrictions:** Deathclaws and Dogs cannot choose this perk
 
 ---

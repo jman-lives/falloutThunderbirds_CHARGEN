@@ -182,8 +182,7 @@ You focused on people, not violence.
   - Speech
   - Barter
 - −10% to starting combat skills:
-  - Small Guns
-  - Big Guns
+  - Guns
   - Energy Weapons
   - Unarmed
   - Melee Weapons

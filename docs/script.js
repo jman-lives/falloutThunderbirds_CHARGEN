@@ -482,8 +482,7 @@ function calculateBaseSkills(attributes) {
   const lk = attributes.luck || 0;
 
   return {
-    small_guns: 5 + (4 * ag),
-    big_guns: 0 + (2 * ag),
+    guns: 5 + (4 * ag),
     energy_weapons: 0 + (2 * ag),
     unarmed: 30 + (2 * (ag + str)),
     melee_weapons: 20 + (2 * (ag + str)),
@@ -602,7 +601,7 @@ function randomizeCharacter(){
   const genders = ['Male','Female']
   const races = ['Human','Ghoul']
   const occupation = ['Scavenger','Engineer','Trader','Medic','Soldier','Mechanic','Scientist']
-  const allSkills = ['small_guns', 'big_guns', 'energy_weapons', 'unarmed', 'melee_weapons', 'throwing', 'first_aid', 'doctor', 'sneak', 'lockpick', 'steal', 'traps', 'science', 'repair', 'pilot', 'speech', 'barter', 'gambling', 'outdoorsman']
+  const allSkills = ['guns', 'energy_weapons', 'unarmed', 'melee_weapons', 'throwing', 'first_aid', 'doctor', 'sneak', 'lockpick', 'steal', 'traps', 'science', 'repair', 'pilot', 'speech', 'barter', 'gambling', 'outdoorsman']
   
   // Select random race first
   const selectedRace = races[randInt(0,races.length-1)];

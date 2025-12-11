@@ -198,8 +198,7 @@ function calculateBaseSkills(attributes) {
   const lk = attributes.luck || 0;
 
   return {
-    small_guns: 5 + (4 * ag),
-    big_guns: 0 + (2 * ag),
+    guns: 5 + (4 * ag),
     energy_weapons: 0 + (2 * ag),
     unarmed: 30 + (2 * (ag + str)),
     melee_weapons: 20 + (2 * (ag + str)),
@@ -453,7 +452,7 @@ const PERKS = {
       attributes: { strength: 7 },
       level: 4,
       race: [],
-      skills: { big_guns: 80 }
+      skills: { guns: 80 }
     },
     restrictions: { excludeRace: ['Deathclaw', 'Dog'] }
   },
@@ -901,7 +900,7 @@ const PERKS = {
       attributes: { agility: 6 },
       level: 3,
       race: [],
-      skills: { small_guns: 40 }
+      skills: { guns: 40 }
     },
     restrictions: { excludeRace: [] }
   },
@@ -1336,7 +1335,7 @@ const PERKS = {
       attributes: {},
       level: 9,
       race: [],
-      skills: { big_guns: 75 }
+      skills: { guns: 75 }
     },
     restrictions: { excludeRace: [] }
   },
@@ -1560,7 +1559,7 @@ const PERKS = {
       attributes: { agility: 8, perception: 8 },
       level: 24,
       race: [],
-      skills: { small_guns: 80 }
+      skills: { guns: 80 }
     },
     restrictions: { excludeRace: ['Deathclaw', 'Dog'] }
   },
