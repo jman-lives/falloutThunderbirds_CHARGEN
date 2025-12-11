@@ -99,12 +99,52 @@ function updateCharacterSummary() {
   };
   const totalXP = characterData.totalXP || 0;
   const xpProgress = getXPProgress(totalXP);
+  const occupation = characterData.occupation || '-';
+  const karma = characterData.karma || 0;
+  
+  // Calculate total HP
+  const totalHP = calculateTotalHP(xpProgress.level, attributes);
+  
+  // Get tag skills - stored as tagSkills object with boolean values
+  const tagSkills = characterData.tagSkills || {};
+  const tagSkillsList = Object.keys(tagSkills).filter(skill => tagSkills[skill]);
+  const tagsDisplay = tagSkillsList.length > 0 ? tagSkillsList.join(', ') : 'None';
+  
+  // Get traits
+  const traits = characterData.traits || [];
+  const traitsDisplay = traits.length > 0 ? traits.join(', ') : 'None';
+  
+  // Find top skill
+  const skills = characterData.skills || {};
+  let topSkill = '-';
+  let topValue = 0;
+  for (const [skillName, skillValue] of Object.entries(skills)) {
+    if (skillValue > topValue) {
+      topValue = skillValue;
+      topSkill = `${skillName} (${skillValue}%)`;
+    }
+  }
   
   // Update summary elements
   qs('char-name').textContent = name;
   qs('char-race').textContent = race;
-  qs('char-attrs').textContent = `S:${attributes.strength} P:${attributes.perception} E:${attributes.endurance} C:${attributes.charisma} I:${attributes.intelligence} A:${attributes.agility} L:${attributes.luck}`;
   qs('char-level-xp').textContent = `${xpProgress.level} / ${totalXP} XP`;
+  qs('char-hp').textContent = totalHP;
+  
+  // Update individual attributes
+  qs('char-str').textContent = attributes.strength;
+  qs('char-per').textContent = attributes.perception;
+  qs('char-end').textContent = attributes.endurance;
+  qs('char-chr').textContent = attributes.charisma;
+  qs('char-int').textContent = attributes.intelligence;
+  qs('char-agi').textContent = attributes.agility;
+  qs('char-lck').textContent = attributes.luck;
+  
+  // Update additional info
+  qs('char-tags').textContent = tagsDisplay;
+  qs('char-traits').textContent = traitsDisplay;
+  qs('char-top-skill').textContent = topSkill;
+  
   console.log('Character summary updated');
 }
 
