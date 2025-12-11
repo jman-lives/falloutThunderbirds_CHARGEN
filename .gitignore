@@ -55,6 +55,18 @@ build/
 .cache/
 temp/
 tmp/
+test.js
+test.html
+test_storage.html
+test_*.js
+
+# Documentation & Implementation notes (local reference)
+ADVANCEMENT_GUIDE.md
+IMPLEMENTATION_NOTES.md
+COMPLETION_SUMMARY.md
+API_REFERENCE.md
+LEVELUP_BUTTON_CHANGE.md
+README_ADVANCEMENT.txt
 
 # SSH Keys (NEVER commit private keys)
 *.pem
