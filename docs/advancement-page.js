@@ -3,6 +3,28 @@
 
 function qs(id){return document.getElementById(id)}
 
+// Skill display name mappings
+const SKILL_DISPLAY_NAMES = {
+  guns: 'Guns',
+  energy_weapons: 'Energy Weapons',
+  unarmed: 'Unarmed',
+  melee_weapons: 'Melee Weapons',
+  throwing: 'Throwing',
+  first_aid: 'First Aid',
+  doctor: 'Doctor',
+  sneak: 'Sneak',
+  lockpick: 'Lockpick',
+  steal: 'Steal',
+  traps: 'Traps',
+  science: 'Science',
+  repair: 'Repair',
+  pilot: 'Pilot',
+  speech: 'Speech',
+  barter: 'Barter',
+  gambling: 'Gambling',
+  outdoorsman: 'Outdoorsman'
+}
+
 // Store character data
 let characterData = {};
 
@@ -107,7 +129,9 @@ function updateCharacterSummary() {
   
   // Get tag skills - stored as tagSkills object with boolean values
   const tagSkills = characterData.tagSkills || {};
-  const tagSkillsList = Object.keys(tagSkills).filter(skill => tagSkills[skill]);
+  const tagSkillsList = Object.keys(tagSkills)
+    .filter(skill => tagSkills[skill])
+    .map(skill => SKILL_DISPLAY_NAMES[skill] || skill);
   const tagsDisplay = tagSkillsList.length > 0 ? tagSkillsList.join(', ') : 'None';
   
   // Get traits
@@ -118,10 +142,13 @@ function updateCharacterSummary() {
   const skills = characterData.skills || {};
   let topSkill = '-';
   let topValue = 0;
+  let topSkillKey = '';
   for (const [skillName, skillValue] of Object.entries(skills)) {
     if (skillValue > topValue) {
       topValue = skillValue;
-      topSkill = `${skillName} (${skillValue}%)`;
+      topSkillKey = skillName;
+      const displayName = SKILL_DISPLAY_NAMES[skillName] || skillName;
+      topSkill = `${displayName} (${skillValue}%)`;
     }
   }
   
@@ -181,6 +208,7 @@ function updateDisplay() {
   // Calculate perks earned based on race and level
   const race = characterData.race || 'Human';
   const perksEarned = calculatePerksEarned(currentLevel, race);
+  console.log(`DEBUG: Race="${race}", Level=${currentLevel}, PerksEarned=${perksEarned}`);
   qs('perks_earned').textContent = perksEarned;
   
   // Build character object for perk eligibility checking

@@ -241,6 +241,39 @@ function calculateFinalSkills(attributes, tagSkills = {}) {
   return finalSkills;
 }
 
+/**
+ * Calculate total perks earned by a character at their current level
+ * Respects race-specific perk progression:
+ * - Human: 1 perk every 3 levels (3, 6, 9, 12, 15, 18, 21, 24...)
+ * - Ghoul: 1 perk every 4 levels (4, 8, 12, 16, 20, 24...)
+ * @param {number} level - Character's current level
+ * @param {string} race - Character's race (Human, Ghoul, etc.)
+ * @returns {number} Total number of perks earned so far
+ */
+function calculatePerksEarned(level, race) {
+  if (level < 1) return 0;
+  
+  // Normalize race name (trim whitespace, case-sensitive comparison)
+  const normalizedRace = (race || 'Human').trim();
+  
+  // Determine perk frequency based on race
+  let perkFrequency = 3; // Default for Human
+  
+  if (normalizedRace === 'Ghoul') {
+    perkFrequency = 4;
+  }
+  // Other races can be added here with their own frequencies
+  
+  // Calculate how many perks have been earned
+  // A character gets their first perk at level equal to perkFrequency
+  // Then another every perkFrequency levels after that
+  const perksEarned = Math.floor(level / perkFrequency);
+  
+  console.log(`[calculatePerksEarned] race="${race}" normalized="${normalizedRace}" frequency=${perkFrequency} level=${level} result=${perksEarned}`);
+  
+  return perksEarned;
+}
+
 // #endregion
 
 // #region PERKS DATABASE
