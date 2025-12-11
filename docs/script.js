@@ -842,7 +842,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
         // Detect if we're on debug page and navigate to corresponding advancement page
         const currentPage = window.location.pathname;
         const target = currentPage.includes('debug') ? 'advancement-debug.html' : 'advancement.html';
-        window.location.href = target;
+        // Use absolute path from root to handle GitHub Pages correctly
+        const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+        window.location.href = basePath + target;
       })
       console.log('Event listener attached to advancement button');
     } else {
