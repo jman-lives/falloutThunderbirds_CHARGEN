@@ -787,6 +787,19 @@ document.addEventListener('DOMContentLoaded', ()=>{
       console.warn('randomize button not found');
     }
     
+    const randomAgeBtn = qs('random-age-btn');
+    if (randomAgeBtn) {
+      randomAgeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const randomAge = Math.floor(Math.random() * (39 - 21 + 1)) + 21; // Random between 21-39
+        qs('age').value = randomAge;
+        console.log('Random age set to:', randomAge);
+      });
+      console.log('Attached random-age handler');
+    } else {
+      console.warn('random-age-btn button not found');
+    }
+    
     const downloadBtn = qs('download');
     if (downloadBtn) {
       downloadBtn.addEventListener('click', ()=>{
@@ -834,6 +847,23 @@ document.addEventListener('DOMContentLoaded', ()=>{
     if (advBtn) {
       advBtn.addEventListener('click', ()=>{
         console.log('Go to advancement button clicked');
+        const playerName = qs('player').value.trim();
+        const characterName = qs('name').value.trim();
+        
+        // Check if Player field is filled
+        if (!playerName) {
+          alert('Please enter a Player name before accessing Advancement & Perks');
+          console.warn('Player field is empty, navigation blocked');
+          return;
+        }
+        
+        // Check if Character Name field is filled
+        if (!characterName) {
+          alert('Please enter a Character Name before accessing Advancement & Perks');
+          console.warn('Character Name field is empty, navigation blocked');
+          return;
+        }
+        
         const formData = getFormData();
         console.log('Current form data:', formData);
         saveCharacterData();
