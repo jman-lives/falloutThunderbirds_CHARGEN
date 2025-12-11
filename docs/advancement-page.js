@@ -247,6 +247,20 @@ function levelUp() {
   const currentLevel = getLevelFromXP(characterData.totalXP || 0);
   const nextLevelXP = getXPForLevel(currentLevel + 1);
   characterData.totalXP = nextLevelXP;
+  
+  // Lock in currently selected perks at this level (they become locked for future level-ups)
+  const selectedPerks = characterData.selectedPerks || [];
+  selectedPerks.forEach(perk => {
+    // Mark perks as locked at current level if not already locked
+    // This means these perks can't be changed once we level up past this level
+    if (!perk.lockedAtLevel) {
+      perk.lockedAtLevel = currentLevel;
+    }
+    // Clear the modifiedAtLevel so they can't be removed after level up
+    perk.modifiedAtLevel = undefined;
+  });
+  
+  characterData.selectedPerks = selectedPerks;
   saveCharacterData();
   updateCharacterSummary();
   updateDisplay();
@@ -259,7 +273,16 @@ function renderAvailablePerks(eligiblePerkIds) {
   const noPerksMsg = qs('no-perks-msg');
   const selectedPerks = characterData.selectedPerks || [];
   
-  if (eligiblePerkIds.length === 0) {
+  // Filter out perks that have reached maximum rank
+  const availablePerkIds = eligiblePerkIds.filter(perkId => {
+    const perk = PERKS[perkId];
+    const selectedPerk = selectedPerks.find(p => p.id === perkId);
+    const currentRank = selectedPerk ? selectedPerk.rank : 0;
+    // Only show perks that haven't reached max rank, or perks not yet selected
+    return currentRank < perk.ranks;
+  });
+  
+  if (availablePerkIds.length === 0) {
     container.innerHTML = '';
     noPerksMsg.style.display = 'block';
     return;
@@ -267,25 +290,27 @@ function renderAvailablePerks(eligiblePerkIds) {
   
   noPerksMsg.style.display = 'none';
   
-  container.innerHTML = eligiblePerkIds.map(perkId => {
+  container.innerHTML = availablePerkIds.map(perkId => {
     const perk = PERKS[perkId];
     if (!perk) return '';
     
-    const isSelected = selectedPerks.some(p => p.id === perkId);
-    const borderColor = isSelected ? '#4CAF50' : '#666';
-    const bgColor = isSelected ? '#2a3a2a' : '#333';
+    const selectedPerk = selectedPerks.find(p => p.id === perkId);
+    const currentRank = selectedPerk ? selectedPerk.rank : 0;
+    const rankDisplay = currentRank > 0 ? `${currentRank}/${perk.ranks}` : `0/${perk.ranks}`;
+    const borderColor = currentRank > 0 ? '#4CAF50' : '#666';
+    const bgColor = currentRank > 0 ? '#2a3a2a' : '#333';
     
     return `
       <div 
         class="perk-item" 
         data-perk-id="${perkId}"
         style="margin-bottom: 8px; padding: 8px; background-color: ${bgColor}; border-left: 3px solid ${borderColor}; border-radius: 2px; cursor: pointer; transition: all 0.2s;"
-        onmouseenter="this.style.backgroundColor='${isSelected ? '#3a4a3a' : '#3a3a3a'}';"
+        onmouseenter="this.style.backgroundColor='${currentRank > 0 ? '#3a4a3a' : '#3a3a3a'}';"
         onmouseleave="this.style.backgroundColor='${bgColor}';"
       >
-        <div style="font-weight: bold; color: #4CAF50;">${perk.name}</div>
+        <div style="font-weight: bold; color: #4CAF50;">${perk.name} <span style="color: #4CAF50; font-size: 0.9rem;">[${rankDisplay}]</span></div>
         <div style="font-size: 0.9rem; color: #ddd; margin: 4px 0;">${perk.description}</div>
-        <div style="font-size: 0.85rem; color: #aaa;">Ranks: ${perk.ranks} | ${perk.effects}</div>
+        <div style="font-size: 0.85rem; color: #aaa;">${perk.effects}</div>
       </div>
     `;
   }).join('');
@@ -304,16 +329,38 @@ function togglePerkSelection(perkId) {
   const currentLevel = getLevelFromXP(characterData.totalXP || 0);
   const perksEarned = calculatePerksEarned(currentLevel, characterData.race || 'Human');
   let selectedPerks = characterData.selectedPerks || [];
+  const perk = PERKS[perkId];
   
-  const isAlreadySelected = selectedPerks.some(p => p.id === perkId);
+  if (!perk) return;
   
-  if (isAlreadySelected) {
-    selectedPerks = selectedPerks.filter(p => p.id !== perkId);
-  } else {
-    if (selectedPerks.length < perksEarned) {
-      selectedPerks.push({ id: perkId, rank: 1 });
+  const selectedPerkIndex = selectedPerks.findIndex(p => p.id === perkId);
+  const selectedPerk = selectedPerkIndex !== -1 ? selectedPerks[selectedPerkIndex] : null;
+  
+  // Count how many perk selections are used (each rank takes one slot)
+  const usedPerkSlots = selectedPerks.reduce((sum, p) => sum + p.rank, 0);
+  
+  if (selectedPerk) {
+    // Perk is already selected, try to add another rank
+    if (selectedPerk.rank >= perk.ranks) {
+      alert(`${perk.name} is already at maximum rank (${perk.ranks}).`);
+      return;
+    }
+    
+    // Check if there's a perk slot available
+    if (usedPerkSlots < perksEarned) {
+      selectedPerk.rank += 1;
+      // Mark when this perk was last modified
+      selectedPerk.modifiedAtLevel = currentLevel;
     } else {
-      alert(`You can only select ${perksEarned} perk${perksEarned !== 1 ? 's' : ''} at this level.`);
+      alert(`You can only select ${perksEarned} perk rank${perksEarned !== 1 ? 's' : ''} at this level.`);
+      return;
+    }
+  } else {
+    // Perk not selected yet, add it with rank 1
+    if (usedPerkSlots < perksEarned) {
+      selectedPerks.push({ id: perkId, rank: 1, modifiedAtLevel: currentLevel });
+    } else {
+      alert(`You can only select ${perksEarned} perk rank${perksEarned !== 1 ? 's' : ''} at this level.`);
       return;
     }
   }
@@ -341,8 +388,11 @@ function renderSelectedPerks(maxPerks) {
   const container = qs('selected-perks-container');
   const noSelectedMsg = qs('no-selected-perks-msg');
   const selectedPerks = characterData.selectedPerks || [];
+  const currentLevel = getLevelFromXP(characterData.totalXP || 0);
   
-  qs('selected_perks_count').textContent = selectedPerks.length;
+  // Count total perk ranks used
+  const totalRanksUsed = selectedPerks.reduce((sum, p) => sum + p.rank, 0);
+  qs('selected_perks_count').textContent = totalRanksUsed;
   qs('max_selectable_perks').textContent = maxPerks;
   
   if (selectedPerks.length === 0) {
@@ -357,37 +407,90 @@ function renderSelectedPerks(maxPerks) {
     const perk = PERKS[selection.id];
     if (!perk) return '';
     
+    const isLocked = selection.lockedAtLevel && selection.lockedAtLevel < currentLevel;
+    const isMaxRank = selection.rank >= perk.ranks;
+    // Can remove rank only if the perk was modified at the current level (not locked in yet)
+    const canRemoveRank = selection.modifiedAtLevel === currentLevel;
+    
     return `
       <div 
         class="selected-perk-item" 
         data-perk-id="${selection.id}"
-        style="margin-bottom: 8px; padding: 8px; background-color: #3a3a3a; border-left: 3px solid #ff9800; border-radius: 2px; cursor: pointer; transition: all 0.2s;"
-        onmouseenter="this.style.backgroundColor='#4a4a3a';"
-        onmouseleave="this.style.backgroundColor='#3a3a3a';"
+        style="margin-bottom: 8px; padding: 8px; background-color: ${isLocked ? '#2a3a2a' : '#3a3a3a'}; border-left: 3px solid ${isLocked ? '#8BC34A' : '#ff9800'}; border-radius: 2px; transition: all 0.2s;"
       >
-        <div style="font-weight: bold; color: #ff9800;">${perk.name}</div>
+        <div style="font-weight: bold; color: ${isLocked ? '#8BC34A' : '#ff9800'};">${perk.name} <span style="color: ${isMaxRank ? '#8BC34A' : '#aaa'}; font-size: 0.9rem;">[${selection.rank}/${perk.ranks}]</span></div>
         <div style="font-size: 0.9rem; color: #ddd; margin: 4px 0;">${perk.description}</div>
-        <div style="font-size: 0.85rem; color: #aaa;">Ranks: ${perk.ranks}</div>
-        <button 
-          type="button"
-          class="remove-perk-btn"
-          data-perk-id="${selection.id}"
-          style="margin-top: 6px; padding: 4px 8px; background-color: #d32f2f; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 0.85rem;"
-        >
-          Remove
-        </button>
+        <div style="font-size: 0.85rem; color: #aaa;">${perk.effects}</div>
+        <div style="margin-top: 6px; display: flex; gap: 4px;">
+          ${isLocked ? 
+            `<div style="flex: 1; padding: 4px 8px; background-color: #1a4d1a; color: #8BC34A; border-radius: 2px; font-size: 0.85rem; text-align: center;">✓ Locked</div>` :
+            canRemoveRank ?
+            `<button 
+              type="button"
+              class="remove-rank-btn"
+              data-perk-id="${selection.id}"
+              style="flex: 1; padding: 4px 8px; background-color: #d32f2f; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 0.85rem;"
+            >
+              Remove Rank
+            </button>` :
+            ''
+          }
+        </div>
       </div>
     `;
   }).join('');
   
   // Attach remove handlers
-  document.querySelectorAll('.remove-perk-btn').forEach(btn => {
+  document.querySelectorAll('.remove-rank-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const perkId = btn.dataset.perkId;
-      togglePerkSelection(perkId);
+      removeRank(perkId);
     });
   });
+}
+
+// Remove a rank from a perk
+function removeRank(perkId) {
+  const currentLevel = getLevelFromXP(characterData.totalXP || 0);
+  const selectedPerks = characterData.selectedPerks || [];
+  const selectedPerkIndex = selectedPerks.findIndex(p => p.id === perkId);
+  
+  if (selectedPerkIndex === -1) return;
+  
+  const selectedPerk = selectedPerks[selectedPerkIndex];
+  
+  // Check if this perk is locked (cannot remove any ranks from locked perks)
+  if (selectedPerk.lockedAtLevel !== undefined && selectedPerk.lockedAtLevel < currentLevel) {
+    alert(`This perk was locked at level ${selectedPerk.lockedAtLevel} and cannot be removed or ranked down.`);
+    return;
+  }
+  
+  // Decrease rank
+  if (selectedPerk.rank > 1) {
+    selectedPerk.rank -= 1;
+  } else {
+    // Remove the perk entirely if it's the last rank
+    selectedPerks.splice(selectedPerkIndex, 1);
+  }
+  
+  characterData.selectedPerks = selectedPerks;
+  saveCharacterData();
+  
+  // Re-render
+  const perksEarned = calculatePerksEarned(currentLevel, characterData.race || 'Human');
+  const attributes = characterData.attributes || {};
+  const character = {
+    level: currentLevel,
+    race: characterData.race || 'Human',
+    attributes: attributes,
+    skills: calculateFinalSkills(attributes, characterData.tagSkills || {}),
+    karma: 0
+  };
+  
+  const eligiblePerkIds = getEligiblePerks(character);
+  renderAvailablePerks(eligiblePerkIds);
+  renderSelectedPerks(perksEarned);
 }
 
 function downloadJSON(obj, filename){
