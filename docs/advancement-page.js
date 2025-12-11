@@ -163,14 +163,18 @@ function updateCharacterSummary() {
   qs('char-level-xp').textContent = `${xpProgress.level} / ${totalXP} XP`;
   qs('char-hp').textContent = totalHP;
   
-  // Update individual attributes
-  qs('char-str').textContent = attributes.strength;
-  qs('char-per').textContent = attributes.perception;
-  qs('char-end').textContent = attributes.endurance;
-  qs('char-chr').textContent = attributes.charisma;
-  qs('char-int').textContent = attributes.intelligence;
-  qs('char-agi').textContent = attributes.agility;
-  qs('char-lck').textContent = attributes.luck;
+  // Apply trait modifiers to attributes for display
+  const selectedTraits = characterData.selectedTraits || characterData.traits || [];
+  const effectiveAttributes = getEffectiveAttributes(attributes, selectedTraits);
+  
+  // Update individual attributes with trait modifiers applied
+  qs('char-str').textContent = effectiveAttributes.strength;
+  qs('char-per').textContent = effectiveAttributes.perception;
+  qs('char-end').textContent = effectiveAttributes.endurance;
+  qs('char-chr').textContent = effectiveAttributes.charisma;
+  qs('char-int').textContent = effectiveAttributes.intelligence;
+  qs('char-agi').textContent = effectiveAttributes.agility;
+  qs('char-lck').textContent = effectiveAttributes.luck;
   
   // Update additional info
   qs('char-tags').textContent = tagsDisplay;
@@ -194,10 +198,14 @@ function updateDisplay() {
     luck: 5
   };
   
+  // Apply trait modifiers to attributes for calculations
+  const selectedTraits = characterData.selectedTraits || characterData.traits || [];
+  const effectiveAttributes = getEffectiveAttributes(attributes, selectedTraits);
+  
   const currentLevel = xpProgress.level;
-  const hpGain = calculateHPGain(attributes.endurance);
-  const spGain = calculateSkillPointsGain(attributes.intelligence);
-  const totalHP = calculateTotalHP(currentLevel, attributes);
+  const hpGain = calculateHPGain(effectiveAttributes.endurance);
+  const spGain = calculateSkillPointsGain(effectiveAttributes.intelligence);
+  const totalHP = calculateTotalHP(currentLevel, effectiveAttributes);
   
   // Update level display
   qs('current_level').textContent = currentLevel;
@@ -220,8 +228,8 @@ function updateDisplay() {
   const character = {
     level: currentLevel,
     race: race,
-    attributes: attributes,
-    skills: calculateFinalSkills(attributes, characterData.tagSkills || {}),
+    attributes: effectiveAttributes,
+    skills: calculateFinalSkills(effectiveAttributes, characterData.tagSkills || {}, selectedTraits),
     karma: 0
   };
   

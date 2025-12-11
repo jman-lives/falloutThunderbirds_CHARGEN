@@ -176,7 +176,59 @@ function updateTraitSelectionDisplay() {
     }
   }
   
+  updateAttributeDisplay();
+  updateSkillDisplay();
+  updateSecondaryStats();
   renderOutput(getFormData());
+}
+
+/**
+ * Update attribute display with trait modifier indicators
+ */
+function updateAttributeDisplay() {
+  const formData = getFormData();
+  const traitMods = calculateTraitAttributeModifiers(formData.selectedTraits);
+  
+  const attributeNames = ['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'];
+  
+  attributeNames.forEach(attr => {
+    const input = qs(attr);
+    if (input) {
+      const baseValue = Number(input.value) || 0;
+      const traitMod = traitMods[attr] || 0;
+      const effectiveValue = baseValue + traitMod;
+      
+      // Update the input visual to show trait modifiers
+      if (traitMod > 0) {
+        input.style.borderColor = '#34d399';
+        input.style.borderWidth = '2px';
+        input.title = `Base: ${baseValue}, Trait Bonus: +${traitMod}, Effective: ${effectiveValue}`;
+      } else if (traitMod < 0) {
+        input.style.borderColor = '#ff6b6b';
+        input.style.borderWidth = '2px';
+        input.title = `Base: ${baseValue}, Trait Penalty: ${traitMod}, Effective: ${effectiveValue}`;
+      } else {
+        input.style.borderColor = '';
+        input.style.borderWidth = '';
+        input.title = '';
+      }
+      
+      // Update the effective value display
+      const effectiveEl = qs(`${attr}-effective`);
+      if (effectiveEl) {
+        if (traitMod !== 0) {
+          const sign = traitMod > 0 ? '+' : '';
+          effectiveEl.textContent = `→ ${effectiveValue} (${sign}${traitMod})`;
+          effectiveEl.style.color = traitMod > 0 ? '#34d399' : '#ff6b6b';
+          effectiveEl.style.fontWeight = 'bold';
+        } else {
+          effectiveEl.textContent = '';
+          effectiveEl.style.color = '#999';
+          effectiveEl.style.fontWeight = 'normal';
+        }
+      }
+    }
+  });
 }
 
 /**
@@ -193,6 +245,7 @@ function handleTraitChange(traitId) {
     }
   }
   
+  renderTraits();
   updateTraitSelectionDisplay();
 }
 
@@ -345,12 +398,8 @@ function handleAttributeChange(attrId, previousValue) {
     return;
   }
   
-  // Check racial maximum
-  if (attributeLimits && currentValue > attributeLimits.max) {
-    qs(attrId).value = previousValue;
-    updatePointsPoolDisplay();
-    return;
-  }
+  // Allow going above racial maximum (traits can push attributes higher)
+  // But warn if exceeding point pool
   
   const pointsAllocated = calculatePointsAllocated();
   const pointsRemaining = CHARACTER_POINTS_POOL - pointsAllocated;
@@ -403,6 +452,9 @@ function getFormData(){
     luck: Number(qs('luck').value)||0,
   };
 
+  const selectedTraits = getSelectedTraits();
+  const effectiveAttributes = getEffectiveAttributes(attributes, selectedTraits);
+
   return {
     player: qs('player').value||null,
     name: qs('name').value||null,
@@ -411,7 +463,7 @@ function getFormData(){
     gender: qs('gender').value||null,
     attributes: attributes,
     tagSkills: tagSkills,
-    skills: calculateFinalSkills(attributes, tagSkills),
+    skills: calculateFinalSkills(effectiveAttributes, tagSkills, selectedTraits),
     level: Number((qs('current_level')?.textContent)) || 1,
     totalXP: Number((qs('total_xp')?.textContent)) || 0,
     selectedPerks: getSelectedPerks(),
@@ -518,8 +570,10 @@ function setFormData(data){
   const notesEl = qs('notes');
   if (notesEl) notesEl.value = data.notes||''
   updatePointsPoolDisplay()
+  updateAttributeDisplay()
   updateTraitSelectionDisplay()
   updateSkillDisplay()
+  updateSecondaryStats()
   updateAdvancementDisplay()
   renderOutput(getFormData())
 }
@@ -565,6 +619,71 @@ function calculateMaxHp(str, end, level = 1) {
 // AGI: Agility (number), ArmorAC: armor bonus (default 0)
 function calculateArmorClass(agi, armorAC = 0) {
   return agi + armorAC;
+}
+// #endregion
+
+// #region TRAIT ATTRIBUTE MODIFIERS
+/**
+ * Calculate attribute modifiers from selected traits
+ * @param {array} selectedTraits - Array of selected trait IDs
+ * @returns {object} Trait modifiers for each attribute
+ */
+function calculateTraitAttributeModifiers(selectedTraits = []) {
+  const modifiers = {
+    strength: 0,
+    perception: 0,
+    endurance: 0,
+    charisma: 0,
+    intelligence: 0,
+    agility: 0,
+    luck: 0
+  };
+
+  // Define trait attribute modifiers
+  const traitAttributeEffects = {
+    'small_frame': {
+      agility: 1
+    },
+    'gifted': {
+      strength: 1,
+      perception: 1,
+      endurance: 1,
+      charisma: 1,
+      intelligence: 1,
+      agility: 1,
+      luck: 1
+    },
+    'tech_wizard': {
+      perception: -1
+    }
+  };
+
+  selectedTraits.forEach(traitId => {
+    if (traitAttributeEffects[traitId]) {
+      Object.keys(traitAttributeEffects[traitId]).forEach(attr => {
+        modifiers[attr] += traitAttributeEffects[traitId][attr];
+      });
+    }
+  });
+
+  return modifiers;
+}
+
+/**
+ * Get effective attributes including trait modifiers
+ * @param {object} baseAttributes - Base character attributes from input
+ * @param {array} selectedTraits - Array of selected trait IDs
+ * @returns {object} Effective attributes with trait bonuses applied
+ */
+function getEffectiveAttributes(baseAttributes, selectedTraits = []) {
+  const traitMods = calculateTraitAttributeModifiers(selectedTraits);
+  const effective = {};
+
+  Object.keys(baseAttributes).forEach(attr => {
+    effective[attr] = (baseAttributes[attr] || 0) + (traitMods[attr] || 0);
+  });
+
+  return effective;
 }
 // #endregion
 
@@ -684,7 +803,7 @@ function calculatePerksEarned(currentLevel, race) {
 // #endregion
 
 // #region MAIN CALCULATION FUNCTION
-function calculateSecondaryStats(attributes, race = 'Human') {
+function calculateSecondaryStats(attributes, race = 'Human', selectedTraits = []) {
   const str = attributes.strength || 0;
   const per = attributes.perception || 0;
   const end = attributes.endurance || 0;
@@ -698,20 +817,77 @@ function calculateSecondaryStats(attributes, race = 'Human') {
   const basePoisonResist = calculatePoisonResistance(end);
   const baseRadiationResist = calculateRadiationResistance(end);
 
-  return {
+  // Calculate carry weight (can be modified by Small Frame trait)
+  let carryWeight = calculateCarryWeight(str);
+  if (selectedTraits.includes('small_frame')) {
+    // Small Frame changes formula to 15 × STR instead of 25 × STR
+    carryWeight = 15 * str;
+  }
+
+  // Calculate armor class (can be affected by Kamikaze trait)
+  let armorClass = calculateArmorClass(agi, 0);
+  if (selectedTraits.includes('kamikaze')) {
+    // Kamikaze: No natural AC, Agility does not contribute
+    armorClass = 0;
+  }
+
+  // Calculate base stats
+  let stats = {
     Hit_Points: calculateMaxHp(str, end, 1),
-    Armor_Class: calculateArmorClass(agi, 0),
+    Armor_Class: armorClass,
     Action_Points: calculateActionPoints(agi),
-    Carry_Weight: calculateCarryWeight(str),
+    Carry_Weight: carryWeight,
     Melee_Damage: calculateMeleeDamage(str),
     Poison_Resist: basePoisonResist + (racialResistances.Poison_Resist || 0),
     Radiation_Resist: baseRadiationResist + (racialResistances.Radiation_Resist || 0),
     Sequence: calculateSequence(per),
     Healing_Rate: calculateHealingRate(end),
     Critical_Chance: calculateCriticalChance(luck),
-    Gas_Resist: 0, // Derived from armor, race, and equipment only
-    Electricity_Resist: racialResistances.Electricity_Resist || 0, // Derived from armor, race, and equipment only
+    Gas_Resist: 0,
+    Electricity_Resist: racialResistances.Electricity_Resist || 0,
   };
+
+  // Apply trait modifiers to secondary stats
+  if (selectedTraits.includes('fast_metabolism')) {
+    stats.Healing_Rate += 2; // +2 Healing Rate
+    stats.Radiation_Resist = 0; // Reset to 0%
+    stats.Poison_Resist = 0; // Reset to 0%
+    // Racial modifiers applied AFTER reset
+    if (race === 'Ghoul') {
+      stats.Radiation_Resist += 80;
+      stats.Poison_Resist += 30;
+    }
+  }
+
+  if (selectedTraits.includes('finesse')) {
+    stats.Critical_Chance += 10; // +10% Critical Chance
+  }
+
+  if (selectedTraits.includes('kamikaze')) {
+    stats.Sequence += 5; // +5 Sequence
+  }
+
+  if (selectedTraits.includes('heavy_handed')) {
+    stats.Melee_Damage += 4; // +4 Melee Damage
+  }
+
+  if (selectedTraits.includes('fast_shot')) {
+    // Note: This affects Action Points for ranged attacks, but we'll note it in AP for now
+    // In actual gameplay, this would be handled during combat
+    // For display purposes, we could mark it somehow, but it's a combat rule not a stat change
+  }
+
+  if (selectedTraits.includes('glowing_one')) {
+    stats.Radiation_Resist += 50; // +50% Radiation Resistance
+  }
+
+  // Clamp all resistance values to reasonable ranges (0-100%)
+  stats.Poison_Resist = Math.max(0, Math.min(100, stats.Poison_Resist));
+  stats.Radiation_Resist = Math.max(0, Math.min(100, stats.Radiation_Resist));
+  stats.Gas_Resist = Math.max(0, Math.min(100, stats.Gas_Resist));
+  stats.Electricity_Resist = Math.max(0, Math.min(100, stats.Electricity_Resist));
+
+  return stats;
 }
 // #endregion
 // #endregion
@@ -755,21 +931,91 @@ function calculateBaseSkills(attributes) {
 }
 
 /**
- * Calculate final skill values with tag bonuses applied
+ * Calculate final skill values with tag bonuses and trait effects applied
  * @param {object} attributes - Character attributes
  * @param {object} tagSkills - Object with skill names as keys and boolean values
- * @returns {object} Final skill percentages with tag bonuses applied
+ * @param {array} selectedTraits - Array of selected trait IDs
+ * @returns {object} Final skill percentages with tag bonuses and trait effects applied
  */
-function calculateFinalSkills(attributes, tagSkills = {}) {
+function calculateFinalSkills(attributes, tagSkills = {}, selectedTraits = []) {
   const baseSkills = calculateBaseSkills(attributes);
   const finalSkills = {};
 
+  // Define trait skill modifiers
+  const traitModifiers = {
+    'good_natured': {
+      first_aid: 20,
+      doctor: 20,
+      speech: 20,
+      barter: 20,
+      guns: -10,
+      energy_weapons: -10,
+      unarmed: -10,
+      melee_weapons: -10
+    },
+    'skilled': {
+      // +10% to all skills
+      guns: 10,
+      energy_weapons: 10,
+      unarmed: 10,
+      melee_weapons: 10,
+      throwing: 10,
+      first_aid: 10,
+      doctor: 10,
+      sneak: 10,
+      lockpick: 10,
+      steal: 10,
+      traps: 10,
+      science: 10,
+      repair: 10,
+      pilot: 10,
+      speech: 10,
+      barter: 10,
+      gambling: 10,
+      outdoorsman: 10
+    },
+    'gifted': {
+      // -10% to all skills
+      guns: -10,
+      energy_weapons: -10,
+      unarmed: -10,
+      melee_weapons: -10,
+      throwing: -10,
+      first_aid: -10,
+      doctor: -10,
+      sneak: -10,
+      lockpick: -10,
+      steal: -10,
+      traps: -10,
+      science: -10,
+      repair: -10,
+      pilot: -10,
+      speech: -10,
+      barter: -10,
+      gambling: -10,
+      outdoorsman: -10
+    },
+    'tech_wizard': {
+      science: 15,
+      repair: 15
+    }
+  };
+
   Object.keys(baseSkills).forEach(skillKey => {
     let value = baseSkills[skillKey];
+    
     // Apply tag bonus: +20% to base value
     if (tagSkills[skillKey]) {
       value += 20;
     }
+    
+    // Apply trait modifiers
+    selectedTraits.forEach(traitId => {
+      if (traitModifiers[traitId] && traitModifiers[traitId][skillKey] !== undefined) {
+        value += traitModifiers[traitId][skillKey];
+      }
+    });
+    
     finalSkills[skillKey] = Math.max(0, Math.min(100, Math.round(value))); // Clamp to 0-100
   });
 
@@ -817,8 +1063,41 @@ function updateTagSkillDisplay() {
  */
 function updateSkillDisplay() {
   const formData = getFormData();
-  const baseSkills = calculateBaseSkills(formData.attributes);
-  const finalSkills = calculateFinalSkills(formData.attributes, formData.tagSkills);
+  const effectiveAttributes = getEffectiveAttributes(formData.attributes, formData.selectedTraits);
+  const baseSkills = calculateBaseSkills(effectiveAttributes);
+  const finalSkills = calculateFinalSkills(effectiveAttributes, formData.tagSkills, formData.selectedTraits);
+  
+  // Define trait skill modifiers for display purposes
+  const traitModifiers = {
+    'good_natured': {
+      first_aid: 20,
+      doctor: 20,
+      speech: 20,
+      barter: 20,
+      guns: -10,
+      energy_weapons: -10,
+      unarmed: -10,
+      melee_weapons: -10
+    },
+    'skilled': {
+      guns: 10, energy_weapons: 10, unarmed: 10, melee_weapons: 10,
+      throwing: 10, first_aid: 10, doctor: 10, sneak: 10,
+      lockpick: 10, steal: 10, traps: 10, science: 10,
+      repair: 10, pilot: 10, speech: 10, barter: 10,
+      gambling: 10, outdoorsman: 10
+    },
+    'gifted': {
+      guns: -10, energy_weapons: -10, unarmed: -10, melee_weapons: -10,
+      throwing: -10, first_aid: -10, doctor: -10, sneak: -10,
+      lockpick: -10, steal: -10, traps: -10, science: -10,
+      repair: -10, pilot: -10, speech: -10, barter: -10,
+      gambling: -10, outdoorsman: -10
+    },
+    'tech_wizard': {
+      science: 15,
+      repair: 15
+    }
+  };
   
   // Update base skill display and final values
   Object.keys(baseSkills).forEach(skillKey => {
@@ -828,16 +1107,45 @@ function updateSkillDisplay() {
       const finalValue = finalSkills[skillKey];
       const isTagged = formData.tagSkills[skillKey];
       
-      // Display final value with tag indicator
+      // Calculate trait modifier for this skill
+      let traitModifier = 0;
+      formData.selectedTraits.forEach(traitId => {
+        if (traitModifiers[traitId] && traitModifiers[traitId][skillKey] !== undefined) {
+          traitModifier += traitModifiers[traitId][skillKey];
+        }
+      });
+      
+      // Build display text with modifiers
+      let displayText = `${finalValue}%`;
+      let indicators = [];
+      
+      // Add tag modifier (always +20 if tagged)
       if (isTagged) {
-        baseEl.textContent = `${finalValue}% (tag)`;
-        baseEl.style.color = '#34d399';
-        baseEl.style.fontWeight = 'bold';
-      } else {
-        baseEl.textContent = `${finalValue}%`;
-        baseEl.style.color = 'inherit';
-        baseEl.style.fontWeight = 'normal';
+        indicators.push('tag +20%');
       }
+      
+      // Add trait modifier with sign
+      if (traitModifier !== 0) {
+        const sign = traitModifier > 0 ? '+' : '';
+        indicators.push(`trait ${sign}${traitModifier}%`);
+      }
+      
+      if (indicators.length > 0) {
+        displayText += ` (${indicators.join(', ')})`;
+      }
+      
+      baseEl.textContent = displayText;
+      
+      // Color based on modifications - prioritize negative traits
+      if (traitModifier < 0) {
+        baseEl.style.color = '#ff6b6b'; // Red for negative traits
+      } else if (isTagged || traitModifier > 0) {
+        baseEl.style.color = '#34d399'; // Green for tags or positive traits
+      } else {
+        baseEl.style.color = 'inherit';
+      }
+      
+      baseEl.style.fontWeight = (isTagged || traitModifier !== 0) ? 'bold' : 'normal';
     }
   });
   
@@ -1239,6 +1547,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     
     attributeInputs.forEach(attrId => {
       qs(attrId).addEventListener('change', () => {
+        updateAttributeDisplay();
         updateSecondaryStats();
         updateSkillDisplay();
         updatePointsPoolDisplay();
@@ -1271,6 +1580,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
 
     // Initialize stats on page load (only on index.html)
+    updateAttributeDisplay();
     updateSecondaryStats();
     updateSkillDisplay();
     updatePointsPoolDisplay();
@@ -1312,7 +1622,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
 function updateSecondaryStats() {
   const formData = getFormData();
   const race = qs('race').value || 'Human';
-  const stats = calculateSecondaryStats(formData.attributes, race);
+  
+  // Get effective attributes with trait modifiers applied
+  const effectiveAttributes = getEffectiveAttributes(formData.attributes, formData.selectedTraits);
+  
+  // Calculate stats using effective attributes and trait modifiers
+  const stats = calculateSecondaryStats(effectiveAttributes, race, formData.selectedTraits);
   
   // Update stat fields with calculated values (only if elements exist)
   if (qs('hit_points')) qs('hit_points').textContent = stats.Hit_Points;

@@ -220,21 +220,91 @@ function calculateBaseSkills(attributes) {
 }
 
 /**
- * Calculate final skill values with tag bonuses applied
+ * Calculate final skill values with tag bonuses and trait effects applied
  * @param {object} attributes - Character attributes
  * @param {object} tagSkills - Object with skill names as keys and boolean values
- * @returns {object} Final skill percentages with tag bonuses applied
+ * @param {array} selectedTraits - Array of selected trait IDs
+ * @returns {object} Final skill percentages with tag bonuses and trait effects applied
  */
-function calculateFinalSkills(attributes, tagSkills = {}) {
+function calculateFinalSkills(attributes, tagSkills = {}, selectedTraits = []) {
   const baseSkills = calculateBaseSkills(attributes);
   const finalSkills = {};
 
+  // Define trait skill modifiers
+  const traitModifiers = {
+    'good_natured': {
+      first_aid: 20,
+      doctor: 20,
+      speech: 20,
+      barter: 20,
+      guns: -10,
+      energy_weapons: -10,
+      unarmed: -10,
+      melee_weapons: -10
+    },
+    'skilled': {
+      // +10% to all skills
+      guns: 10,
+      energy_weapons: 10,
+      unarmed: 10,
+      melee_weapons: 10,
+      throwing: 10,
+      first_aid: 10,
+      doctor: 10,
+      sneak: 10,
+      lockpick: 10,
+      steal: 10,
+      traps: 10,
+      science: 10,
+      repair: 10,
+      pilot: 10,
+      speech: 10,
+      barter: 10,
+      gambling: 10,
+      outdoorsman: 10
+    },
+    'gifted': {
+      // -10% to all skills
+      guns: -10,
+      energy_weapons: -10,
+      unarmed: -10,
+      melee_weapons: -10,
+      throwing: -10,
+      first_aid: -10,
+      doctor: -10,
+      sneak: -10,
+      lockpick: -10,
+      steal: -10,
+      traps: -10,
+      science: -10,
+      repair: -10,
+      pilot: -10,
+      speech: -10,
+      barter: -10,
+      gambling: -10,
+      outdoorsman: -10
+    },
+    'tech_wizard': {
+      science: 15,
+      repair: 15
+    }
+  };
+
   Object.keys(baseSkills).forEach(skillKey => {
     let value = baseSkills[skillKey];
+    
     // Apply tag bonus: +20% to base value
     if (tagSkills[skillKey]) {
       value += 20;
     }
+    
+    // Apply trait modifiers
+    selectedTraits.forEach(traitId => {
+      if (traitModifiers[traitId] && traitModifiers[traitId][skillKey] !== undefined) {
+        value += traitModifiers[traitId][skillKey];
+      }
+    });
+    
     finalSkills[skillKey] = Math.max(0, Math.min(100, Math.round(value))); // Clamp to 0-100
   });
 
