@@ -283,15 +283,36 @@ function updateDisplay() {
   const skillsConfirmed = characterData.skillsConfirmed || false;
   const perksConfirmed = characterData.perksConfirmed || false;
   const selectedPerks = characterData.selectedPerks || [];
-  const totalRanksUsed = selectedPerks.reduce((sum, p) => sum + p.rank, 0);
-  const hasAvailablePerkRanks = totalRanksUsed < perksEarned;
+  
+  // Count perks locked at previous levels (not available for new selections)
+  const lockedRanks = selectedPerks
+    .filter(p => p.lockedAtLevel && p.lockedAtLevel < currentLevel)
+    .reduce((sum, p) => sum + p.rank, 0);
+  
+  // Only count perks selected/modified at THIS level when determining available ranks
+  const totalRanksUsedThisLevel = selectedPerks
+    .filter(p => p.modifiedAtLevel === currentLevel)
+    .reduce((sum, p) => sum + p.rank, 0);
+  
+  // New available ranks = perks earned this level minus locked perks from previous levels
+  const newAvailableRanks = perksEarned - lockedRanks;
+  const hasAvailablePerkRanks = totalRanksUsedThisLevel < newAvailableRanks && newAvailableRanks > 0;
+  
+  // Check if there are actually eligible perks that can be selected
+  const hasEligiblePerks = eligiblePerkIds.some(perkId => {
+    const perk = PERKS[perkId];
+    const selectedPerk = selectedPerks.find(p => p.id === perkId);
+    const currentRank = selectedPerk ? selectedPerk.rank : 0;
+    return currentRank < perk.ranks;
+  });
   
   if (perksSection) {
     // Perks section is shown only if:
     // 1. Skills are confirmed AND
     // 2. Perks are not confirmed AND
-    // 3. There are available perk ranks to spend
-    perksSection.style.display = (skillsConfirmed && !perksConfirmed && hasAvailablePerkRanks) ? '' : 'none';
+    // 3. There are new available perk ranks to spend THIS LEVEL AND
+    // 4. There are eligible perks to select
+    perksSection.style.display = (skillsConfirmed && !perksConfirmed && hasAvailablePerkRanks && hasEligiblePerks) ? '' : 'none';
   }
   
   // Update level up button visibility
@@ -354,7 +375,7 @@ function levelUp() {
   const effectiveAttributes = getEffectiveAttributes(attributes, selectedTraits);
   
   // Check if player is level 1 and needs to spend skill points
-  if (currentLevel > 1) {
+  if (currentLevel > 1 && !characterData.skillsConfirmed) {
     // Calculate available skill points for current level
     const spPerLevel = calculateSkillPointsGain(effectiveAttributes.intelligence);
     const totalUsed = Object.values(characterData.skillPointsSpent).reduce((sum, val) => sum + val, 0);
@@ -370,15 +391,18 @@ function levelUp() {
   // Check if perks are available and if player has selected enough
   const perksEarned = calculatePerksEarned(currentLevel, characterData.race || 'Human');
   console.log('perksEarned:', perksEarned);
-  if (perksEarned > 0) {
-    const selectedPerks = characterData.selectedPerks || [];
-    const totalRanksUsed = selectedPerks.reduce((sum, p) => sum + p.rank, 0);
-    console.log('totalRanksUsed:', totalRanksUsed, 'perksEarned:', perksEarned);
-    
-    if (totalRanksUsed < perksEarned) {
-      alert(`You must select ${perksEarned} perk rank${perksEarned !== 1 ? 's' : ''} before leveling up!`);
-      return;
-    }
+  
+  // Calculate how many perk ranks are actually available to spend at this level
+  const selectedPerks = characterData.selectedPerks || [];
+  const lockedRanks = selectedPerks
+    .filter(p => p.lockedAtLevel && p.lockedAtLevel < currentLevel)
+    .reduce((sum, p) => sum + p.rank, 0);
+  const newAvailableRanks = perksEarned - lockedRanks;
+  
+  // Only require confirmation if there are new ranks available to spend
+  if (newAvailableRanks > 0 && !characterData.perksConfirmed) {
+    alert(`You must select and confirm ${newAvailableRanks} perk rank${newAvailableRanks !== 1 ? 's' : ''} before leveling up!`);
+    return;
   }
   
   console.log('Proceeding with level up');
@@ -387,7 +411,6 @@ function levelUp() {
   characterData.totalXP = nextLevelXP;
   
   // Lock in currently selected perks at this level (they become locked for future level-ups)
-  const selectedPerks = characterData.selectedPerks || [];
   selectedPerks.forEach(perk => {
     // Mark perks as locked at current level if not already locked
     // This means these perks can't be changed once we level up past this level
@@ -415,11 +438,7 @@ function levelUp() {
       const isTag = tagSkills[skillKey];
       const percentGain = isTag ? points * 2 : points * 1;
       characterData.skillIncreases[skillKey] = (characterData.skillIncreases[skillKey] || 0) + percentGain;
-      
-      // Cap individual skill at 100%
-      if (characterData.skillIncreases[skillKey] > 100) {
-        characterData.skillIncreases[skillKey] = 100;
-      }
+      // NOTE: Do NOT cap at 100% here - skills can exceed 100% through skill point spending
     }
   });
   
@@ -839,14 +858,34 @@ function updateSkillRanking() {
     characterData.skillIncreases = {};
   }
   
-  // Calculate used points this level
-  const totalUsed = Object.values(characterData.skillPointsSpent).reduce((sum, val) => sum + val, 0);
-  const availablePoints = spPerLevel - totalUsed;
-  console.log('totalUsed:', totalUsed, 'availablePoints:', availablePoints);
+  // Get base attributes for skill calculations
+  const baseAttributes = attributes;
+  const tagSkills = characterData.tagSkills || {};
+  
+  // Calculate actual SP spent THIS LEVEL (not just count of increases)
+  const baseSkills = calculateBaseSkills(baseAttributes);
+  const allSkills = calculateFinalSkills(baseAttributes, tagSkills, selectedTraits);
+  const skillIncreases = characterData.skillIncreases || {};
+  
+  let totalSPSpent = 0;
+  for (const skillKey of Object.keys(characterData.skillPointsSpent || {})) {
+    const skillPointsThisLevel = characterData.skillPointsSpent[skillKey] || 0;
+    const skillBase = allSkills[skillKey] || 0;
+    const accumulatedIncrease = skillIncreases[skillKey] || 0;
+    
+    // Calculate cost for each +1% we're adding THIS LEVEL
+    for (let i = 0; i < skillPointsThisLevel; i++) {
+      const currentValue = skillBase + accumulatedIncrease + i;
+      totalSPSpent += getSkillProgressionCost(currentValue);
+    }
+  }
+  
+  const availablePoints = spPerLevel - totalSPSpent;
+  console.log('totalSPSpent:', totalSPSpent, 'availablePoints:', availablePoints);
   
   // Update display
   if (qs('skill_points_available')) qs('skill_points_available').textContent = Math.max(0, availablePoints);
-  if (qs('skill_points_used')) qs('skill_points_used').textContent = totalUsed;
+  if (qs('skill_points_used')) qs('skill_points_used').textContent = totalSPSpent;
   
   // Update confirm button state and visibility of skills section
   updateConfirmButtonState(availablePoints);
@@ -883,11 +922,38 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
   
   // Calculate available points for THIS LEVEL ONLY using EFFECTIVE intelligence
   const spPerLevel = calculateSkillPointsGain(effectiveAttributes.intelligence);
-  const totalUsed = Object.values(characterData.skillPointsSpent).reduce((sum, val) => sum + val, 0);
-  const availablePoints = spPerLevel - totalUsed;
   
   // Get accumulated skill increases from previous levels
   const skillIncreases = characterData.skillIncreases || {};
+  
+  // Calculate total SP actually spent THIS LEVEL (not just count of increases)
+  let totalSPSpent = 0;
+  for (const skillKey of Object.keys(characterData.skillPointsSpent || {})) {
+    const skillPointsThisLevel = characterData.skillPointsSpent[skillKey] || 0;
+    const skillBase = allSkills[skillKey] || 0;
+    const accumulatedIncrease = skillIncreases[skillKey] || 0;
+    
+    // Calculate cost for each +1% we're adding THIS LEVEL
+    // Start from the current total (base + accumulated + what we've added so far)
+    for (let i = 0; i < skillPointsThisLevel; i++) {
+      const currentValue = skillBase + accumulatedIncrease + i;
+      totalSPSpent += getSkillProgressionCost(currentValue);
+    }
+  }
+  
+  const availablePoints = spPerLevel - totalSPSpent;
+  
+  // Build header with SP usage info
+  const headerHtml = `
+    <div style="margin-bottom: 12px; padding: 8px; background-color: #444; border-radius: 4px;">
+      <div style="font-size: 0.95rem; color: #fff; font-weight: bold;">
+        Skill Points This Level: <span style="color: #4CAF50;">${totalSPSpent}</span> / <span style="color: #FFD700;">${spPerLevel}</span>
+        <span style="margin-left: 12px; color: ${availablePoints > 0 ? '#8BC34A' : '#d32f2f'};">Remaining: ${availablePoints}</span>
+      </div>
+    </div>
+  `;
+  
+  let skillsHtml = headerHtml;
   
   // Sort skills by display name
   const sortedSkills = Object.keys(allSkills).sort((a, b) => {
@@ -896,22 +962,23 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
     return nameA.localeCompare(nameB);
   });
   
-  container.innerHTML = sortedSkills.map(skillKey => {
+  container.innerHTML = skillsHtml + sortedSkills.map(skillKey => {
     const baseSkillValue = allSkills[skillKey];
     const displayName = SKILL_DISPLAY_NAMES[skillKey] || skillKey;
     const isTag = tagSkills[skillKey];
-    const pointsSpent = characterData.skillPointsSpent[skillKey] || 0;
+    const skillPointsSpent = characterData.skillPointsSpent[skillKey] || 0;
     const accumulatedIncrease = skillIncreases[skillKey] || 0;
     const borderColor = isTag ? '#8BC34A' : '#666';
     const backgroundColor = isTag ? '#2a3a2a' : '#333';
-    const pointsPerRank = isTag ? 2 : 1;
     
     // Calculate current skill value:
     // 1. Base skill value (with tag +20% already applied by calculateFinalSkills)
     // 2. Plus accumulated increases from previous levels
-    // 3. Plus current level bonus
-    const currentLevelBonus = pointsSpent * pointsPerRank;
-    const currentSkillValue = baseSkillValue + accumulatedIncrease + currentLevelBonus;
+    // 3. Plus current level points spent
+    const currentSkillValue = baseSkillValue + accumulatedIncrease + skillPointsSpent;
+    
+    // Calculate cost for next +1% increase
+    const costForNext = getSkillProgressionCost(currentSkillValue);
     
     return `
       <div 
@@ -921,32 +988,33 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
       >
         <div style="font-weight: bold; color: ${isTag ? '#8BC34A' : '#fff'};">${displayName} ${isTag ? '<span style="font-size: 0.75rem; margin-left: 4px; color: #8BC34A;">[TAG]</span>' : ''}</div>
         <div style="font-size: 0.9rem; color: #4CAF50; margin: 4px 0;">
-          Value: <span style="font-weight: bold;">${Math.min(100, currentSkillValue)}%</span>
+          Value: <span style="font-weight: bold;">${currentSkillValue}%</span>
+          ${currentSkillValue > 100 ? `<span style="color: #FFD700; margin-left: 8px; font-weight: bold;">(+${(currentSkillValue - 100).toFixed(0)}% above cap)</span>` : ''}
           ${accumulatedIncrease > 0 ? `<span style="color: #888; margin-left: 8px;">(+${accumulatedIncrease}% from previous)</span>` : ''}
         </div>
-        ${pointsSpent > 0 ? `<div style="font-size: 0.85rem; color: #FF9800; margin: 2px 0;">This level: +${pointsSpent} points = +${currentLevelBonus}%</div>` : ''}
+        ${skillPointsSpent > 0 ? `<div style="font-size: 0.85rem; color: #FF9800; margin: 2px 0;">This level: +${skillPointsSpent} SP spent = +${skillPointsSpent}%</div>` : ''}
         <div style="display: flex; gap: 4px; margin-top: 6px;">
           <button 
             type="button"
             class="skill-decrease-btn" 
             data-skill-key="${skillKey}"
             style="flex: 1; padding: 6px 8px; background-color: #d32f2f; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: all 0.2s;"
-            ${pointsSpent === 0 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}
+            ${skillPointsSpent === 0 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}
             onmouseover="!this.disabled && (this.style.opacity='0.8')"
             onmouseout="!this.disabled && (this.style.opacity='1')"
           >
-            - (${pointsPerRank}% per point)
+            - (${isTag ? '2%' : '1%'} per point)
           </button>
           <button 
             type="button"
             class="skill-increase-btn" 
             data-skill-key="${skillKey}"
             style="flex: 1; padding: 6px 8px; background-color: #4CAF50; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: all 0.2s;"
-            ${availablePoints === 0 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}
+            ${availablePoints < costForNext ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}
             onmouseover="!this.disabled && (this.style.opacity='0.8')"
             onmouseout="!this.disabled && (this.style.opacity='1')"
           >
-            + (${pointsPerRank}% per point)
+            + (${costForNext} SP for 1%)
           </button>
         </div>
       </div>
@@ -978,12 +1046,40 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
 function increaseSkillPoints(skillKey) {
   const attributes = characterData.attributes || {};
   const effectiveAttributes = getEffectiveAttributes(attributes, characterData.selectedTraits || characterData.traits || []);
-  const spPerLevel = calculateSkillPointsGain(effectiveAttributes.intelligence);
-  const totalUsed = Object.values(characterData.skillPointsSpent).reduce((sum, val) => sum + val, 0);
-  const availablePoints = spPerLevel - totalUsed;
+  const baseAttributes = characterData.attributes || { strength: 5, perception: 5, endurance: 5, charisma: 5, intelligence: 5, agility: 5, luck: 5 };
+  const tagSkills = characterData.tagSkills || {};
   
-  if (availablePoints <= 0) {
-    alert('No skill points available this level!');
+  const spPerLevel = calculateSkillPointsGain(effectiveAttributes.intelligence);
+  
+  // Calculate total SP actually spent THIS LEVEL
+  const allSkills = calculateFinalSkills(baseAttributes, tagSkills, characterData.selectedTraits || characterData.traits || []);
+  const skillIncreases = characterData.skillIncreases || {};
+  
+  let totalSPSpent = 0;
+  for (const sk of Object.keys(characterData.skillPointsSpent || {})) {
+    const skillPointsThisLevel = characterData.skillPointsSpent[sk] || 0;
+    const skillBase = allSkills[sk] || 0;
+    const accumulatedIncrease = skillIncreases[sk] || 0;
+    
+    for (let i = 0; i < skillPointsThisLevel; i++) {
+      const currentValue = skillBase + accumulatedIncrease + i;
+      totalSPSpent += getSkillProgressionCost(currentValue);
+    }
+  }
+  
+  const availablePoints = spPerLevel - totalSPSpent;
+  
+  // Calculate current skill value to determine cost of next increase
+  const currentSkillBase = allSkills[skillKey] || 0;
+  const accumulatedIncrease = skillIncreases[skillKey] || 0;
+  const skillPointsSpent = characterData.skillPointsSpent[skillKey] || 0;
+  const currentSkillValue = currentSkillBase + accumulatedIncrease + skillPointsSpent;
+  
+  // Determine cost to increase by 1%
+  const costForNext = getSkillProgressionCost(currentSkillValue);
+  
+  if (availablePoints < costForNext) {
+    alert(`Not enough skill points! Need ${costForNext}, have ${availablePoints}.`);
     return;
   }
   
@@ -991,6 +1087,7 @@ function increaseSkillPoints(skillKey) {
     characterData.skillPointsSpent = {};
   }
   
+  // Spend the appropriate points and gain 1% skill
   characterData.skillPointsSpent[skillKey] = (characterData.skillPointsSpent[skillKey] || 0) + 1;
   saveCharacterData();
   
@@ -999,10 +1096,10 @@ function increaseSkillPoints(skillKey) {
 }
 
 /**
- * Decrease points spent on a skill by 1
+ * Decrease points spent on a skill by 1 (removes 1%)
  */
 function decreaseSkillPoints(skillKey) {
-  if (!characterData.skillPointsSpent || !characterData.skillPointsSpent[skillKey]) {
+  if (!characterData.skillPointsSpent || !characterData.skillPointsSpent[skillKey] || characterData.skillPointsSpent[skillKey] <= 0) {
     return;
   }
   
@@ -1075,40 +1172,14 @@ function confirmSkillAllocation() {
   const skillsSection = qs('skills-section');
   if (skillsSection) skillsSection.style.display = 'none';
   
-  // Calculate available perk ranks to spend (not locked)
-  const currentLevel = getLevelFromXP(characterData.totalXP || 0);
-  const perksEarned = calculatePerksEarned(currentLevel, characterData.race || 'Human');
-  const selectedPerks = characterData.selectedPerks || [];
-  
-  // Count only unlocked perk ranks (those without lockedAtLevel or locked AFTER current level)
-  const unlockedRanksUsed = selectedPerks
-    .filter(p => !p.lockedAtLevel || p.lockedAtLevel > currentLevel)
-    .reduce((sum, p) => sum + p.rank, 0);
-  
-  // Count NEW available ranks (earned at this level that haven't been used yet)
-  // This is perksEarned minus locked perks
-  const lockedRanks = selectedPerks
-    .filter(p => p.lockedAtLevel && p.lockedAtLevel <= currentLevel)
-    .reduce((sum, p) => sum + p.rank, 0);
-  const newAvailableRanks = perksEarned - lockedRanks;
-  
-  const hasAvailablePerkRanks = unlockedRanksUsed < newAvailableRanks;
-  
-  const perksSection = qs('perks-section');
-  if (perksSection) {
-    perksSection.style.display = hasAvailablePerkRanks ? '' : 'none';
-  }
-  
-  // Update perk confirm button state properly (only pass new available ranks, not total)
-  updateConfirmPerkButtonState(unlockedRanksUsed, newAvailableRanks);
-  
   // Update button states for skill confirm buttons
   const confirmBtn = qs('confirm-skill-allocation-btn');
   const unconfirmBtn = qs('unconfirm-skill-allocation-btn');
   if (confirmBtn) confirmBtn.style.display = 'none';
   if (unconfirmBtn) unconfirmBtn.style.display = '';
   
-  // Call updateDisplay to refresh level up button visibility
+  // Call updateDisplay to refresh all sections (skills, perks, level up button)
+  // This will use the same visibility logic and show perks only if applicable
   updateDisplay();
 }
 
