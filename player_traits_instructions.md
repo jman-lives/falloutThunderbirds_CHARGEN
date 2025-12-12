@@ -234,10 +234,10 @@ You function better at night.
   - +1 Perception
 
 **Notes:**
+- These effects are **roleplay only** and not applied mechanically by the system
+- Players and GMs track bonuses/penalties during play based on time of day as appropriate
 - Bonuses and penalties cannot exceed racial maximums or minimums
 
-- Roleplay effect: the character may feel more alert and energetic during night hours, less so during day
-- The character keeps track of time of day and GM-adjudicated effects
 **Restrictions:**
 - Robots cannot choose this trait
 
@@ -273,15 +273,18 @@ You are naturally talented but undertrained.
 
 ### Sex Appeal
 
-You are considered desirable to the opposite sex, but and envied by the same sex.
+You are considered desirable to the opposite sex, but envied by the same sex.
 
 **Effects:**
 - +1 Charisma when talking to the opposite sex
-- +40% to Speech and barter when talking to the opposite sex
-- -1 Charisma when talking to the same sex
-- -40% to Speech and barter when talking to the same sex
-- Roleplay effect
-- The GM keeps track of interaction bonuses/defecits
+- +40% to Speech and Barter when talking to the opposite sex
+- −1 Charisma when talking to the same sex
+- −40% to Speech and Barter when talking to the same sex
+
+**Notes:**
+- These effects are **roleplay only** and not applied mechanically by the system
+- Players and GMs track bonuses/penalties during play as appropriate to the social context
+
 **Restrictions:**
 - Only Humans can choose this trait
 
