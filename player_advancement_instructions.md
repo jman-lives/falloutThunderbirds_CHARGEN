@@ -76,14 +76,29 @@ Skill points are then spent on skills according to the Skill Progression table b
 
 Not all skills increase at the same rate. The cost in skill points to raise a skill by 1% depends on its current value.
 
-| Current Skill % | SP Cost per +1% |
-|----------------:|-----------------|
-| 1–100           | 1 SP            |
-| 101–125         | 2 SP            |
-| 126–150         | 3 SP            |
-| 151–175         | 4 SP            |
-| 176–200         | 5 SP            |
-| 201+            | 6 SP            |
+**For Non-Tagged Skills:**
+
+| Current Skill % | SP Cost per +1% | Gain per SP |
+|----------------:|-----------------|-------------|
+| 1–100           | 1 SP            | +1%         |
+| 101–125         | 2 SP            | +1%         |
+| 126–150         | 3 SP            | +1%         |
+| 151–175         | 4 SP            | +1%         |
+| 176–200         | 5 SP            | +1%         |
+| 201+            | 6 SP            | +1%         |
+
+**For Tagged Skills:**
+
+Tagged skills follow a reduced cost structure. When spending SP on a tagged skill, you gain progress at a faster rate: 2% per SP until the skill reaches 100%. After 100%, tagged skills follow the same progression as normal skills.
+
+| Current Skill % | SP Cost per +1% | Gain per SP |
+|----------------:|-----------------|-------------|
+| 1–100           | 1 SP            | +2%         |
+| 101–125         | 1 SP            | +1%         |
+| 126–150         | 2 SP            | +1%         |
+| 151–175         | 3 SP            | +1%         |
+| 176–200         | 4 SP            | +1%         |
+| 201+            | 5 SP            | +1%         |
 
 ---
 

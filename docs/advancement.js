@@ -130,31 +130,91 @@ function calculateTotalHP(currentLevel, attributes) {
 // #region SKILL PROGRESSION COSTS
 /**
  * Get the cost in skill points to increase a skill by 1%
+ * Cost is based on the NEXT skill value (what you'll reach after spending 1 SP).
+ * This ensures the cost reflects the bracket you're entering.
+ * 
+ * For tagged skills:
+ * - 1-100%: 0.5 SP per 1% (equals +2% per SP spent)
+ * - 101-125%: 1 SP per 1% (equals +1% per SP spent)
+ * - 126-150%: 2 SP per 1%
+ * - 151-175%: 3 SP per 1%
+ * - 176-200%: 4 SP per 1%
+ * - 201+%: 5 SP per 1%
+ * 
+ * For non-tagged skills:
+ * - 1-100%: 1 SP per 1% (equals +1% per SP spent)
+ * - 101-125%: 2 SP per 1%
+ * - 126-150%: 3 SP per 1%
+ * - 151-175%: 4 SP per 1%
+ * - 176-200%: 5 SP per 1%
+ * - 201+%: 6 SP per 1%
+ * 
  * @param {number} currentSkillPercent - Current skill percentage (1+)
+ * @param {boolean} isTagged - Whether this is a tagged skill
  * @returns {number} Skill points required for +1%
  */
-function getSkillProgressionCost(currentSkillPercent) {
-  if (currentSkillPercent >= 1 && currentSkillPercent <= 100) return 1;
-  if (currentSkillPercent >= 101 && currentSkillPercent <= 125) return 2;
-  if (currentSkillPercent >= 126 && currentSkillPercent <= 150) return 3;
-  if (currentSkillPercent >= 151 && currentSkillPercent <= 175) return 4;
-  if (currentSkillPercent >= 176 && currentSkillPercent <= 200) return 5;
-  if (currentSkillPercent >= 201) return 6;
-  return 1; // Default for 0 or invalid
+function getSkillProgressionCost(currentSkillPercent, isTagged = false) {
+  // Check the NEXT skill value (what you'll reach after spending 1 SP)
+  // This ensures the cost reflects the bracket you're entering
+  const nextSkillPercent = currentSkillPercent + 1;
+  
+  const result = (() => {
+    if (isTagged) {
+      // Tagged skills: cost per 1% of progression
+      if (nextSkillPercent <= 100) return 1;
+      if (nextSkillPercent >= 101 && nextSkillPercent <= 125) return 1;
+      if (nextSkillPercent >= 126 && nextSkillPercent <= 150) return 2;
+      if (nextSkillPercent >= 151 && nextSkillPercent <= 175) return 3;
+      if (nextSkillPercent >= 176 && nextSkillPercent <= 200) return 4;
+      if (nextSkillPercent >= 201) return 5;
+    } else {
+      // Non-tagged skills: full progression costs
+      if (nextSkillPercent >= 1 && nextSkillPercent <= 100) return 1;
+      if (nextSkillPercent >= 101 && nextSkillPercent <= 125) return 2;
+      if (nextSkillPercent >= 126 && nextSkillPercent <= 150) return 3;
+      if (nextSkillPercent >= 151 && nextSkillPercent <= 175) return 4;
+      if (nextSkillPercent >= 176 && nextSkillPercent <= 200) return 5;
+      if (nextSkillPercent >= 201) return 6;
+    }
+    return 1; // Default for 0 or invalid
+  })();
+  
+  if (currentSkillPercent === 104) {
+    console.log(`[getSkillProgressionCost] DEBUG: currentSkillPercent=${currentSkillPercent}, nextSkillPercent=${nextSkillPercent}, isTagged=${isTagged}, result=${result}`);
+  }
+  
+  return result;
+}
+
+/**
+ * Calculate the percentage gain when spending 1 SP on a skill at a given value
+ * This properly respects all skill brackets (100%, 125%, 150%, 175%, 200%)
+ * @param {number} currentSkillPercent - Current skill percentage
+ * @param {boolean} isTagged - Whether this is a tagged skill
+ * @returns {number} Percentage gain per 1 SP
+ */
+function getSkillGainPerSP(currentSkillPercent, isTagged = false) {
+  // Both tagged and non-tagged skills gain 1% per SP at 100%+
+  // Tagged skills get 2% per SP below 100%, non-tagged always get 1%
+  if (isTagged && currentSkillPercent < 100) {
+    return 2;  // Tagged skill below 100%: +2% per SP
+  }
+  return 1;    // All other cases: +1% per SP (includes tagged at 100%+, and all non-tagged)
 }
 
 /**
  * Calculate total skill points needed to reach a target from current level
  * @param {number} currentPercent - Current skill percentage
  * @param {number} targetPercent - Target skill percentage
+ * @param {boolean} isTagged - Whether this is a tagged skill
  * @returns {number} Total SP needed
  */
-function calculateSPForSkillIncrease(currentPercent, targetPercent) {
+function calculateSPForSkillIncrease(currentPercent, targetPercent, isTagged = false) {
   if (targetPercent <= currentPercent) return 0;
   
   let totalSP = 0;
   for (let i = currentPercent + 1; i <= targetPercent; i++) {
-    totalSP += getSkillProgressionCost(i - 1);
+    totalSP += getSkillProgressionCost(i - 1, isTagged);
   }
   return totalSP;
 }

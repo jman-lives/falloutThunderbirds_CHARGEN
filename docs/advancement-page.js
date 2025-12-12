@@ -51,9 +51,9 @@ const SKILL_DESCRIPTIONS = {
 let characterData = {};
 
 // Load character data from localStorage when page loads
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   console.log('advancement-page DOMContentLoaded fired');
-  loadCharacterData();
+  await loadCharacterData();
   console.log('characterData after load:', characterData);
   
   // Set up event listeners (only if elements exist)
@@ -110,20 +110,204 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Load character data from localStorage
-function loadCharacterData() {
+async function loadCharacterData() {
+  console.log('[loadCharacterData] Starting...');
+  
+  // First, check if we have stored character data
   const stored = localStorage.getItem('falloutCharacter');
-  console.log('Loading character data from localStorage:', stored);
+  console.log('[loadCharacterData] Stored character exists:', !!stored);
+  
   if (stored) {
+    // We have stored data, use it
     try {
       characterData = JSON.parse(stored);
-      console.log('Loaded character data:', characterData);
+      console.log('[loadCharacterData] Successfully parsed stored data:', characterData);
     } catch (err) {
-      console.error('Failed to load character data:', err);
+      console.error('[loadCharacterData] Failed to parse stored data:', err);
       characterData = {};
     }
   } else {
-    console.log('No character data found in localStorage');
+    // No stored data - check if we should generate a test character
+    console.log('[loadCharacterData] No stored character, checking dev-config...');
+    try {
+      const response = await fetch('dev-config.json');
+      const devConfig = await response.json();
+      console.log('[loadCharacterData] devConfig:', devConfig);
+      
+      if (devConfig.autoLoadTestCharacter) {
+        console.log('[loadCharacterData] autoLoadTestCharacter is true, generating test character...');
+        characterData = generateTestCharacter();
+        console.log('[loadCharacterData] Generated test character:', characterData);
+        localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
+      } else {
+        console.log('[loadCharacterData] autoLoadTestCharacter is false or not set');
+        characterData = {};
+      }
+    } catch (e) {
+      console.warn('[loadCharacterData] Could not load dev-config:', e);
+      characterData = {};
+    }
   }
+  
+  console.log('[loadCharacterData] Finished. characterData:', characterData);
+}
+
+// This function is no longer used - kept for reference
+// Load test character if autoLoadTestCharacter is enabled in dev-config
+async function loadTestCharacterIfConfigured_DEPRECATED() {
+  console.log('[loadTestCharacterIfConfigured] Starting...');
+  try {
+    console.log('[loadTestCharacterIfConfigured] Fetching dev-config.json...');
+    const response = await fetch('dev-config.json');
+    console.log('[loadTestCharacterIfConfigured] Response status:', response.status);
+    const devConfig = await response.json();
+    console.log('[loadTestCharacterIfConfigured] devConfig loaded:', devConfig);
+    console.log('[loadTestCharacterIfConfigured] autoLoadTestCharacter:', devConfig.autoLoadTestCharacter);
+    
+    if (devConfig.autoLoadTestCharacter) {
+      console.log('[loadTestCharacterIfConfigured] Auto-generating test character...');
+      characterData = generateTestCharacter();
+      console.log('[loadTestCharacterIfConfigured] Generated test character:', characterData);
+      localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
+      console.log('[loadTestCharacterIfConfigured] Saved to localStorage');
+    } else {
+      console.log('[loadTestCharacterIfConfigured] autoLoadTestCharacter is false or not set');
+    }
+  } catch (e) {
+    console.warn('[loadTestCharacterIfConfigured] Error:', e);
+  }
+  console.log('[loadTestCharacterIfConfigured] Finished');
+}
+
+// Generate a random test character
+function generateTestCharacter() {
+  console.log('[generateTestCharacter] Starting...');
+  const sampleNames = ['Alex', 'Riley', 'Mack', 'Nova', 'Harper', 'Jules', 'Casey', 'Rowan', 'Rex', 'Ivy'];
+  const genders = ['Male', 'Female'];
+  const races = ['Human', 'Ghoul'];
+  const allSkills = ['guns', 'energy_weapons', 'unarmed', 'melee_weapons', 'throwing', 'first_aid', 'doctor', 'sneak', 'lockpick', 'steal', 'traps', 'science', 'repair', 'pilot', 'speech', 'barter', 'gambling', 'outdoorsman'];
+  
+  const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  
+  // Select random race
+  const selectedRace = races[randInt(0, races.length - 1)];
+  console.log('[generateTestCharacter] Selected race:', selectedRace);
+  const raceLimits = RACIAL_LIMITS[selectedRace];
+  console.log('[generateTestCharacter] raceLimits:', raceLimits);
+  
+  // Generate attributes respecting racial limits
+  const attributes = {
+    strength: 5,
+    perception: 5,
+    endurance: 5,
+    charisma: 5,
+    intelligence: 5,
+    agility: 5,
+    luck: 5,
+  };
+  
+  let pointsAvailable = 5;
+  const attributeNames = ['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'];
+  
+  while (pointsAvailable > 0) {
+    const shuffledAttributes = attributeNames.sort(() => Math.random() - 0.5);
+    let allocated = false;
+    
+    for (const attrName of shuffledAttributes) {
+      const limits = raceLimits[attrName];
+      const currentValue = attributes[attrName];
+      const maxValue = limits.max;
+      
+      if (currentValue < maxValue) {
+        attributes[attrName] += 1;
+        pointsAvailable -= 1;
+        allocated = true;
+        break;
+      }
+    }
+    
+    if (!allocated) break;
+  }
+  
+  // Select 3 random tag skills
+  const tagSkills = {};
+  const shuffledSkills = allSkills.sort(() => Math.random() - 0.5);
+  for (let i = 0; i < 3; i++) {
+    tagSkills[shuffledSkills[i]] = true;
+  }
+  for (const skill of allSkills) {
+    if (!tagSkills[skill]) {
+      tagSkills[skill] = false;
+    }
+  }
+  
+  return {
+    player: 'test',
+    name: sampleNames[randInt(0, sampleNames.length - 1)],
+    race: selectedRace,
+    age: randInt(16, selectedRace === 'Ghoul' ? 236 : 80),
+    gender: genders[randInt(0, genders.length - 1)],
+    attributes: attributes,
+    tagSkills: tagSkills,
+    skills: {
+      guns: randInt(20, 80),
+      energy_weapons: randInt(10, 70),
+      unarmed: randInt(30, 90),
+      melee_weapons: randInt(25, 85),
+      throwing: randInt(15, 75),
+      first_aid: randInt(20, 70),
+      doctor: randInt(10, 60),
+      sneak: randInt(15, 70),
+      lockpick: randInt(15, 70),
+      steal: randInt(10, 65),
+      traps: randInt(15, 70),
+      science: randInt(20, 75),
+      repair: randInt(25, 80),
+      pilot: randInt(10, 60),
+      speech: randInt(25, 80),
+      barter: randInt(20, 75),
+      gambling: randInt(15, 70),
+      outdoorsman: randInt(15, 70),
+    },
+    level: 1,
+    totalXP: 1000,
+    selectedPerks: [],
+    stats: {
+      Hit_Points: 21,
+      Carry_Weight: 150,
+      Action_Points: 7,
+      Sequence: 12,
+      Melee_Damage: 1,
+      Critical_Chance: 5,
+      Healing_Rate: 2,
+      Poison_Resist: 60,
+      Radiation_Resist: 92,
+      Gas_Resist: 0,
+      Electricity_Resist: 0,
+      Armor_Class: 5,
+      DT: {
+        Normal: 18,
+        Laser: 2,
+        Fire: 23,
+        Plasma: 28,
+        Explode: 24
+      },
+      DR: {
+        Normal: 7,
+        Laser: 20,
+        Fire: 25,
+        Plasma: 1,
+        Explode: 5
+      }
+    },
+    notes: null,
+    selectedTraits: ['chem_resistant'],
+    createdAt: new Date().toISOString(),
+    skillIncreases: {},
+    skillPointsSpent: {},
+    skillsConfirmed: false,
+    perksConfirmed: false
+  };
 }
 
 // Save character data to localStorage
@@ -431,13 +615,68 @@ function levelUp() {
     characterData.skillIncreases = {};
   }
   
-  // Add spent points to each skill (tag skills gained 2% per point, normal skills 1% per point)
+  // Add spent points to each skill (tag skills gain 2% per point UNTIL 100%, then 1% per point)
   Object.keys(pointsSpent).forEach(skillKey => {
     const points = pointsSpent[skillKey];
     if (points > 0) {
       const isTag = tagSkills[skillKey];
-      const percentGain = isTag ? points * 2 : points * 1;
-      characterData.skillIncreases[skillKey] = (characterData.skillIncreases[skillKey] || 0) + percentGain;
+      let percentGain = 0;
+      
+      if (isTag) {
+        // For tagged skills, use bracket-aware gain calculation
+        const baseSkills = calculateBaseSkills(characterData.attributes || {});
+        const allSkills = calculateFinalSkills(characterData.attributes || {}, tagSkills, characterData.selectedTraits || characterData.traits || []);
+        const baseSkillValue = allSkills[skillKey] || 0;  // Base from character creation
+        const accumulatedIncrease = characterData.skillIncreases[skillKey] || 0;  // Increases from previous levels
+        
+        // Simulate spending the SP to find the correct gain
+        let simValue = baseSkillValue + accumulatedIncrease;
+        let tempSPSpent = 0;
+        
+        while (tempSPSpent < points) {
+          const costThisSP = getSkillProgressionCost(simValue, true);
+          const gainThisSP = getSkillGainPerSP(simValue, true);
+          
+          // Only advance if we have enough SP left to spend
+          if (tempSPSpent + costThisSP <= points) {
+            percentGain += gainThisSP;
+            simValue += gainThisSP;
+            tempSPSpent += costThisSP;
+          } else {
+            // We've spent all available SP, stop
+            break;
+          }
+        }
+        
+        if (skillKey === 'barter') {
+          console.log(`[levelUp BARTER] baseSkillValue=${baseSkillValue}, accumulatedIncrease=${accumulatedIncrease}, points=${points}, percentGain=${percentGain}`);
+        }
+      } else {
+        // Non-tagged skills: each SP gives 1% gain, but cost per SP varies
+        let simValue = (characterData.skillIncreases[skillKey] || 0);
+        let tempSPSpent = 0;
+        
+        while (tempSPSpent < points) {
+          const costThisSP = getSkillProgressionCost(simValue, false);
+          const gainThisSP = getSkillGainPerSP(simValue, false);
+          
+          // Only advance if we have enough SP left to spend
+          if (tempSPSpent + costThisSP <= points) {
+            percentGain += gainThisSP;
+            simValue += gainThisSP;
+            tempSPSpent += costThisSP;
+          } else {
+            // We've spent all available SP, stop
+            break;
+          }
+        }
+      }
+      
+      const newIncrease = (characterData.skillIncreases[skillKey] || 0) + percentGain;
+      if (skillKey === 'barter') {
+        console.log(`[levelUp BARTER] percentGain=${percentGain}, old=${characterData.skillIncreases[skillKey] || 0}, new=${newIncrease}`);
+      }
+      characterData.skillIncreases[skillKey] = newIncrease;
       // NOTE: Do NOT cap at 100% here - skills can exceed 100% through skill point spending
     }
   });
@@ -862,28 +1101,27 @@ function updateSkillRanking() {
   const baseAttributes = attributes;
   const tagSkills = characterData.tagSkills || {};
   
+  console.log(`[updateSkillRanking] characterData.tagSkills:`, characterData.tagSkills);
+  console.log(`[updateSkillRanking] tagSkills object:`, tagSkills);
+  console.log(`[updateSkillRanking] tagSkills.unarmed:`, tagSkills.unarmed, 'type:', typeof tagSkills.unarmed);
+  
   // Calculate actual SP spent THIS LEVEL (not just count of increases)
   const baseSkills = calculateBaseSkills(baseAttributes);
   const allSkills = calculateFinalSkills(baseAttributes, tagSkills, selectedTraits);
   const skillIncreases = characterData.skillIncreases || {};
   
+  // Each click/SP spent = 1 whole SP, no fractional costs
   let totalSPSpent = 0;
   for (const skillKey of Object.keys(characterData.skillPointsSpent || {})) {
-    const skillPointsThisLevel = characterData.skillPointsSpent[skillKey] || 0;
-    const skillBase = allSkills[skillKey] || 0;
-    const accumulatedIncrease = skillIncreases[skillKey] || 0;
-    
-    // Calculate cost for each +1% we're adding THIS LEVEL
-    for (let i = 0; i < skillPointsThisLevel; i++) {
-      const currentValue = skillBase + accumulatedIncrease + i;
-      totalSPSpent += getSkillProgressionCost(currentValue);
-    }
+    const clicksThisLevel = characterData.skillPointsSpent[skillKey] || 0;
+    // Each click = 1 SP, so total SP = number of clicks
+    totalSPSpent += clicksThisLevel;
   }
   
   const availablePoints = spPerLevel - totalSPSpent;
-  console.log('totalSPSpent:', totalSPSpent, 'availablePoints:', availablePoints);
+  console.log('[updateSkillRanking FINAL] totalSPSpent:', totalSPSpent, 'availablePoints:', availablePoints);
   
-  // Update display
+  // Update display - values are already whole numbers now
   if (qs('skill_points_available')) qs('skill_points_available').textContent = Math.max(0, availablePoints);
   if (qs('skill_points_used')) qs('skill_points_used').textContent = totalSPSpent;
   
@@ -926,32 +1164,20 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
   // Get accumulated skill increases from previous levels
   const skillIncreases = characterData.skillIncreases || {};
   
-  // Calculate total SP actually spent THIS LEVEL (not just count of increases)
+  // Calculate total SP spent THIS LEVEL (each click = 1 whole SP, no fractions)
   let totalSPSpent = 0;
   for (const skillKey of Object.keys(characterData.skillPointsSpent || {})) {
-    const skillPointsThisLevel = characterData.skillPointsSpent[skillKey] || 0;
-    const skillBase = allSkills[skillKey] || 0;
-    const accumulatedIncrease = skillIncreases[skillKey] || 0;
-    
-    // Calculate cost for each +1% we're adding THIS LEVEL
-    // Start from the current total (base + accumulated + what we've added so far)
-    for (let i = 0; i < skillPointsThisLevel; i++) {
-      const currentValue = skillBase + accumulatedIncrease + i;
-      totalSPSpent += getSkillProgressionCost(currentValue);
-    }
+    const clicksThisLevel = characterData.skillPointsSpent[skillKey] || 0;
+    // Each click = 1 SP, so total SP = number of clicks
+    totalSPSpent += clicksThisLevel;
   }
   
   const availablePoints = spPerLevel - totalSPSpent;
   
+  console.log(`[renderSkillsList DEBUG] totalSPSpent=${totalSPSpent}, availablePoints=${availablePoints}, skillPointsSpent=`, characterData.skillPointsSpent);
+  
   // Build header with SP usage info
-  const headerHtml = `
-    <div style="margin-bottom: 12px; padding: 8px; background-color: #444; border-radius: 4px;">
-      <div style="font-size: 0.95rem; color: #fff; font-weight: bold;">
-        Skill Points This Level: <span style="color: #4CAF50;">${totalSPSpent}</span> / <span style="color: #FFD700;">${spPerLevel}</span>
-        <span style="margin-left: 12px; color: ${availablePoints > 0 ? '#8BC34A' : '#d32f2f'};">Remaining: ${availablePoints}</span>
-      </div>
-    </div>
-  `;
+  const headerHtml = ``;
   
   let skillsHtml = headerHtml;
   
@@ -971,14 +1197,82 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
     const borderColor = isTag ? '#8BC34A' : '#666';
     const backgroundColor = isTag ? '#2a3a2a' : '#333';
     
-    // Calculate current skill value:
-    // 1. Base skill value (with tag +20% already applied by calculateFinalSkills)
-    // 2. Plus accumulated increases from previous levels
-    // 3. Plus current level points spent
-    const currentSkillValue = baseSkillValue + accumulatedIncrease + skillPointsSpent;
+    if (skillKey === 'barter') {
+      console.log(`[BARTER_BEFORE_CALC]`, {baseSkillValue, accumulatedIncrease, skillPointsSpent, tagSkills_barter: tagSkills['barter']});
+      console.log(`[BARTER_BEFORE_CALC] allSkills[barter]=${allSkills['barter']}, skillIncreases[barter]=${skillIncreases['barter']}, skillPointsSpent['barter']=${characterData.skillPointsSpent['barter']}`);
+      // Also log to localStorage for debugging
+      localStorage.setItem('barter_debug_before', JSON.stringify({baseSkillValue, accumulatedIncrease, skillPointsSpent, tagSkills_barter: tagSkills['barter']}));
+    }
     
-    // Calculate cost for next +1% increase
-    const costForNext = getSkillProgressionCost(currentSkillValue);
+    // Calculate current skill value:
+    // Use proper skill bracket transitions (100%, 125%, 150%, 175%, 200%)
+    let currentSkillValue;
+    let currentLevelGain;
+    
+    if (isTag) {
+      // Tagged skill: calculate with proper bracket transitions
+      const baseWithAccumulated = baseSkillValue + accumulatedIncrease;
+      
+      // Simulate applying SP spent on this skill to find where we end up
+      let simValue = baseWithAccumulated;
+      let tempSPSpent = 0;
+      
+      // Keep spending SP until we've spent skillPointsSpent
+      while (tempSPSpent < skillPointsSpent) {
+        const costThisSP = getSkillProgressionCost(simValue, isTag);
+        const gainThisSP = getSkillGainPerSP(simValue, isTag);
+        
+        // Only advance if we have enough SP left to spend
+        if (tempSPSpent + costThisSP <= skillPointsSpent) {
+          simValue += gainThisSP;
+          tempSPSpent += costThisSP;
+        } else {
+          // We've spent all available SP, stop
+          break;
+        }
+      }
+      currentLevelGain = simValue - baseWithAccumulated;
+      currentSkillValue = simValue;
+      
+      if (skillKey === 'barter') {
+        console.log(`[BARTER_AFTER_CALC]`, {baseSkillValue, accumulatedIncrease, baseWithAccumulated, skillPointsSpent, currentSkillValue, currentLevelGain, isTag});
+        localStorage.setItem('barter_debug_after', JSON.stringify({baseSkillValue, accumulatedIncrease, baseWithAccumulated, skillPointsSpent, currentSkillValue, currentLevelGain, isTag}));
+      }
+    } else {
+      // Non-tagged skill: 1% gain per SP always, but cost in SP varies by bracket
+      const baseWithAccumulated = baseSkillValue + accumulatedIncrease;
+      let simValue = baseWithAccumulated;
+      let tempSPSpent = 0;
+      
+      // Keep spending SP until we've spent skillPointsSpent
+      while (tempSPSpent < skillPointsSpent) {
+        const costThisSP = getSkillProgressionCost(simValue, isTag);
+        const gainThisSP = getSkillGainPerSP(simValue, isTag);
+        
+        // Only advance if we have enough SP left to spend
+        if (tempSPSpent + costThisSP <= skillPointsSpent) {
+          simValue += gainThisSP;
+          tempSPSpent += costThisSP;
+        } else {
+          // We've spent all available SP, stop
+          break;
+        }
+      }
+      currentLevelGain = simValue - baseWithAccumulated;
+      currentSkillValue = simValue;
+    }
+    
+    // Calculate cost for next increase
+    const costForNext = getSkillProgressionCost(currentSkillValue, isTag);
+    
+    // For display purposes, show what the player actually gains per SP spent
+    // Gain varies based on current skill bracket
+    let displayGain = getSkillGainPerSP(currentSkillValue, isTag) + '%';
+    
+    // DEBUG
+    if (skillKey === 'barter') {
+      console.log(`[BARTER DEBUG] skillKey=${skillKey}, baseSkillValue=${baseSkillValue}, currentSkillValue=${currentSkillValue}, isTag=${isTag}, availablePoints=${availablePoints}, displayGain=${displayGain}`);
+    }
     
     return `
       <div 
@@ -988,33 +1282,32 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
       >
         <div style="font-weight: bold; color: ${isTag ? '#8BC34A' : '#fff'};">${displayName} ${isTag ? '<span style="font-size: 0.75rem; margin-left: 4px; color: #8BC34A;">[TAG]</span>' : ''}</div>
         <div style="font-size: 0.9rem; color: #4CAF50; margin: 4px 0;">
-          Value: <span style="font-weight: bold;">${currentSkillValue}%</span>
-          ${currentSkillValue > 100 ? `<span style="color: #FFD700; margin-left: 8px; font-weight: bold;">(+${(currentSkillValue - 100).toFixed(0)}% above cap)</span>` : ''}
-          ${accumulatedIncrease > 0 ? `<span style="color: #888; margin-left: 8px;">(+${accumulatedIncrease}% from previous)</span>` : ''}
+          Value: <span style="font-weight: bold;">${currentSkillValue}%</span>${skillPointsSpent > 0 ? ` <span style="color: #FF9800;">(+${currentLevelGain}%)</span>` : ''}
         </div>
-        ${skillPointsSpent > 0 ? `<div style="font-size: 0.85rem; color: #FF9800; margin: 2px 0;">This level: +${skillPointsSpent} SP spent = +${skillPointsSpent}%</div>` : ''}
         <div style="display: flex; gap: 4px; margin-top: 6px;">
           <button 
             type="button"
             class="skill-decrease-btn" 
             data-skill-key="${skillKey}"
-            style="flex: 1; padding: 6px 8px; background-color: #d32f2f; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: all 0.2s;"
+            style="flex: 1; padding: 6px 8px; background-color: #d32f2f; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: all 0.2s; display: flex; align-items: center; justify-content: center;"
+            title="Decrease skill"
             ${skillPointsSpent === 0 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}
             onmouseover="!this.disabled && (this.style.opacity='0.8')"
             onmouseout="!this.disabled && (this.style.opacity='1')"
           >
-            - (${isTag ? '2%' : '1%'} per point)
+            ▼
           </button>
           <button 
             type="button"
             class="skill-increase-btn" 
             data-skill-key="${skillKey}"
-            style="flex: 1; padding: 6px 8px; background-color: #4CAF50; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: all 0.2s;"
-            ${availablePoints < costForNext ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}
+            style="flex: 1; padding: 6px 8px; background-color: #4CAF50; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: all 0.2s; display: flex; align-items: center; justify-content: center;"
+            title="Increase skill (1 SP for ${displayGain})"
+            ${availablePoints < 1 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}
             onmouseover="!this.disabled && (this.style.opacity='0.8')"
             onmouseout="!this.disabled && (this.style.opacity='1')"
           >
-            + (${costForNext} SP for 1%)
+            ▲
           </button>
         </div>
       </div>
@@ -1026,6 +1319,10 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const skillKey = btn.dataset.skillKey;
+      console.log(`[INCREASE CLICK] Clicked skill-increase-btn for ${skillKey}, disabled=${btn.disabled}`);
+      if (skillKey === 'barter') {
+        console.log(`[BARTER CLICK] increaseSkillPoints called for barter`);
+      }
       increaseSkillPoints(skillKey);
     });
   });
@@ -1048,23 +1345,17 @@ function increaseSkillPoints(skillKey) {
   const effectiveAttributes = getEffectiveAttributes(attributes, characterData.selectedTraits || characterData.traits || []);
   const baseAttributes = characterData.attributes || { strength: 5, perception: 5, endurance: 5, charisma: 5, intelligence: 5, agility: 5, luck: 5 };
   const tagSkills = characterData.tagSkills || {};
+  const isTaggedSkill = tagSkills[skillKey] || false;
   
   const spPerLevel = calculateSkillPointsGain(effectiveAttributes.intelligence);
   
-  // Calculate total SP actually spent THIS LEVEL
+  // Calculate total SP actually spent THIS LEVEL (sum of actual SP costs, not clicks)
   const allSkills = calculateFinalSkills(baseAttributes, tagSkills, characterData.selectedTraits || characterData.traits || []);
   const skillIncreases = characterData.skillIncreases || {};
   
   let totalSPSpent = 0;
   for (const sk of Object.keys(characterData.skillPointsSpent || {})) {
-    const skillPointsThisLevel = characterData.skillPointsSpent[sk] || 0;
-    const skillBase = allSkills[sk] || 0;
-    const accumulatedIncrease = skillIncreases[sk] || 0;
-    
-    for (let i = 0; i < skillPointsThisLevel; i++) {
-      const currentValue = skillBase + accumulatedIncrease + i;
-      totalSPSpent += getSkillProgressionCost(currentValue);
-    }
+    totalSPSpent += (characterData.skillPointsSpent[sk] || 0);
   }
   
   const availablePoints = spPerLevel - totalSPSpent;
@@ -1072,14 +1363,30 @@ function increaseSkillPoints(skillKey) {
   // Calculate current skill value to determine cost of next increase
   const currentSkillBase = allSkills[skillKey] || 0;
   const accumulatedIncrease = skillIncreases[skillKey] || 0;
-  const skillPointsSpent = characterData.skillPointsSpent[skillKey] || 0;
-  const currentSkillValue = currentSkillBase + accumulatedIncrease + skillPointsSpent;
+  const spAlreadySpentThisLevel = characterData.skillPointsSpent[skillKey] || 0;
   
-  // Determine cost to increase by 1%
-  const costForNext = getSkillProgressionCost(currentSkillValue);
+  // Simulate where the skill is after all the SP already spent this level on this skill
+  let currentSkillValue = currentSkillBase + accumulatedIncrease;
+  let tempValue = currentSkillValue;
+  let tempSPSpent = 0;
   
-  if (availablePoints < costForNext) {
-    alert(`Not enough skill points! Need ${costForNext}, have ${availablePoints}.`);
+  // Rebuild skill value from accumulated increases + SP already spent this level
+  // We need to figure out what the skill is NOW after applying the SP spent
+  // by simulating backwards from SP spent
+  while (tempSPSpent < spAlreadySpentThisLevel) {
+    const costThisSP = getSkillProgressionCost(tempValue, isTaggedSkill);
+    const gainThisSP = getSkillGainPerSP(tempValue, isTaggedSkill);
+    tempValue += gainThisSP;
+    tempSPSpent += costThisSP;
+  }
+  currentSkillValue = tempValue;
+  
+  // Calculate cost to advance by 1% from current position
+  const costForNextGain = getSkillProgressionCost(currentSkillValue, isTaggedSkill);
+  
+  // Check if we have enough SP available for the next increase
+  if (availablePoints < costForNextGain) {
+    alert(`Not enough skill points! This increase costs ${costForNextGain}, you have ${availablePoints}.`);
     return;
   }
   
@@ -1087,8 +1394,8 @@ function increaseSkillPoints(skillKey) {
     characterData.skillPointsSpent = {};
   }
   
-  // Spend the appropriate points and gain 1% skill
-  characterData.skillPointsSpent[skillKey] = (characterData.skillPointsSpent[skillKey] || 0) + 1;
+  // Increase SP spent by the actual cost (not a simple click counter)
+  characterData.skillPointsSpent[skillKey] = (characterData.skillPointsSpent[skillKey] || 0) + costForNextGain;
   saveCharacterData();
   
   // Refresh displays
@@ -1096,14 +1403,43 @@ function increaseSkillPoints(skillKey) {
 }
 
 /**
- * Decrease points spent on a skill by 1 (removes 1%)
+ * Decrease points spent on a skill by 1 percentage point (removes last +1%)
  */
 function decreaseSkillPoints(skillKey) {
   if (!characterData.skillPointsSpent || !characterData.skillPointsSpent[skillKey] || characterData.skillPointsSpent[skillKey] <= 0) {
     return;
   }
   
-  characterData.skillPointsSpent[skillKey] -= 1;
+  const baseAttributes = characterData.attributes || { strength: 5, perception: 5, endurance: 5, charisma: 5, intelligence: 5, agility: 5, luck: 5 };
+  const tagSkills = characterData.tagSkills || {};
+  const isTaggedSkill = tagSkills[skillKey] || false;
+  
+  const allSkills = calculateFinalSkills(baseAttributes, tagSkills, characterData.selectedTraits || characterData.traits || []);
+  const skillIncreases = characterData.skillIncreases || {};
+  
+  // Calculate current skill value considering base + accumulated + SP spent this level
+  const currentSkillBase = allSkills[skillKey] || 0;
+  const accumulatedIncrease = skillIncreases[skillKey] || 0;
+  const spAlreadySpentThisLevel = characterData.skillPointsSpent[skillKey] || 0;
+  
+  // Rebuild skill value by simulating the SP already spent
+  let currentSkillValue = currentSkillBase + accumulatedIncrease;
+  let tempSPSpent = 0;
+  
+  while (tempSPSpent < spAlreadySpentThisLevel) {
+    const costThisSP = getSkillProgressionCost(currentSkillValue, isTaggedSkill);
+    const gainThisSP = getSkillGainPerSP(currentSkillValue, isTaggedSkill);
+    currentSkillValue += gainThisSP;
+    tempSPSpent += costThisSP;
+  }
+  
+  // Now work backwards: what was the skill value before the last increase?
+  // The last increase cost us some amount, we need to subtract that
+  let previousSkillValue = currentSkillValue - 1; // Go back 1%
+  const lastIncreaseCost = getSkillProgressionCost(previousSkillValue, isTaggedSkill);
+  
+  // Subtract the last increase cost from SP spent
+  characterData.skillPointsSpent[skillKey] -= lastIncreaseCost;
   
   // Remove the skill entirely if no points spent
   if (characterData.skillPointsSpent[skillKey] <= 0) {
@@ -1119,9 +1455,12 @@ function decreaseSkillPoints(skillKey) {
  */
 function resetSkillPoints() {
   if (confirm('Are you sure you want to reset all skill point allocations?')) {
+    console.log('[resetSkillPoints] Resetting skill points');
     characterData.skillPointsSpent = {};
     saveCharacterData();
     updateSkillRanking();
+    renderSkillsList();
+    console.log('[resetSkillPoints] Reset complete');
   }
 }
 
