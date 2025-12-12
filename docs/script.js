@@ -1596,9 +1596,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if (levelUpBtn) {
     levelUpBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      const currentLevel = Number(qs('current_level').textContent) || 1;
+      const currentLevelEl = qs('current_level');
+      const currentLevel = currentLevelEl ? Number(currentLevelEl.textContent) || 1 : 1;
       const nextLevelXP = getXPForLevel(currentLevel + 1);
-      qs('total_xp').textContent = nextLevelXP;
+      const totalXpEl = qs('total_xp');
+      if (totalXpEl) totalXpEl.textContent = nextLevelXP;
       
       // If we're on the advancement page, use updateDisplay() from advancement-page.js
       // Otherwise use updateAdvancementDisplay()
@@ -1779,8 +1781,11 @@ function getSelectedPerks() {
 
 // Toggle perk selection
 function togglePerkSelection(perkId) {
-  const currentLevel = Number(qs('current_level').textContent) || 1;
-  const perksEarned = calculatePerksEarned(currentLevel, qs('race').value || 'Human');
+  const currentLevelEl = qs('current_level');
+  const currentLevel = currentLevelEl ? Number(currentLevelEl.textContent) || 1 : 1;
+  const raceEl = qs('race');
+  const race = raceEl ? (raceEl.value || 'Human') : 'Human';
+  const perksEarned = calculatePerksEarned(currentLevel, race);
   const selectedPerks = getSelectedPerks();
   
   const isAlreadySelected = selectedPerks.some(p => p.id === perkId);

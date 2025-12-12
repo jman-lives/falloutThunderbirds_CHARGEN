@@ -64,7 +64,7 @@ This is added to maximum Hit Points.
 
 ### Skill Points Gained
 
-Each level, a character gains:
+Each level, a character has:
 
 > SkillPoints = 5 + (2 × IN)
 
