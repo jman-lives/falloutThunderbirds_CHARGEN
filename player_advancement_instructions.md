@@ -196,7 +196,7 @@ Your critical hits are especially brutal.
   - Chance to damage a limb is increased by 50%
 - **Ranks:** 1
 - **Requirements:** Perception 6, Luck 6, Agility 4, Level 9  
-- **Restrictions:** Mutants cannot choose this perk
+- **Restrictions:** Mutants cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -229,7 +229,7 @@ You have a fruit tree growing from your head.
 - **Effects:** Steady supply of fruit (details up to GM)
 - **Ranks:** 1
 - **Requirements:** Outdoorsman 50%, Science 40%, Level 12  
-- **Restrictions:** Only Ghouls may choose this perk
+- **Restrictions:** Only Ghouls may choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -270,7 +270,7 @@ You do extra damage with ranged weapons.
 - **Effects:** +2 damage per bullet for each rank
 - **Ranks:** 2
 - **Requirements:** Agility 6, Luck 6, Level 6  
-- **Restrictions:** Deathclaws and Dogs cannot choose this perk
+- **Restrictions:** Deathclaws and Dogs cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -281,7 +281,7 @@ Your trigger finger is fast.
 - **Effects:** All ranged weapon attacks cost 1 less AP
 - **Ranks:** 1
 - **Requirements:** Agility 7, Intelligence 6, Perception 6, Level 15  
-- **Restrictions:** Deathclaws and Dogs cannot choose this perk
+- **Restrictions:** Deathclaws and Dogs cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -292,7 +292,7 @@ You know how to brace big weapons.
 - **Effects:** Gain a bonus when bracing large weapons (e.g., simulated tripod) while standing
 - **Ranks:** 1
 - **Requirements:** Strength 7, Guns 80%, Level 4  
-- **Restrictions:** Deathclaws and Dogs cannot choose this perk
+- **Restrictions:** Deathclaws and Dogs cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -313,7 +313,7 @@ You’re good at sucking up to authority.
 - **Effects:** +1 Charisma for reaction rolls with authority figures, per rank
 - **Ranks:** 2
 - **Requirements:** Charisma 5, Intelligence 6, Level 2  
-- **Restrictions:** Dogs and Deathclaws cannot choose this perk
+- **Restrictions:** Dogs and Deathclaws cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -324,7 +324,7 @@ You gain extra HP per level.
 - **Effects:** Double the normal HP gained per level
 - **Ranks:** 1
 - **Requirements:** Strength 7, Endurance 5, Level 8  
-- **Restrictions:** Only Deathclaws can choose this perk
+- **Restrictions:** Only Deathclaws can choose this perk (unless they are a Ghoul with "Fear the Reaper") (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -337,7 +337,7 @@ Radiation has made you hardy.
   - Regenerate a crippled limb in 48 hours
 - **Ranks:** 1
 - **Requirements:** Strength < 7, Level 6  
-- **Restrictions:** Only Ghouls can choose this perk
+- **Restrictions:** Only Ghouls can choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -358,7 +358,7 @@ You get more out of reading.
 - **Effects:** Books grant +50% more skill points (e.g., 10 → 15)
 - **Ranks:** 1
 - **Requirements:** Intelligence 6, Level 3  
-- **Restrictions:** Dogs cannot choose this perk
+- **Restrictions:** Dogs cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -369,7 +369,7 @@ You’re unnaturally safe with explosives.
 - **Effects:** If you fail to set an explosive properly, you instantly know and it will not detonate; you can reset and try again
 - **Ranks:** 1
 - **Requirements:** Traps 60%, Intelligence 6, Level 9  
-- **Restrictions:** Dogs and Deathclaws cannot choose this perk
+- **Restrictions:** Dogs and Deathclaws cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -393,7 +393,7 @@ You see well in darkness and sense danger.
   - +25% bonus to detecting sneaking enemies
 - **Ranks:** (not specified in original text; treat as 1)
 - **Requirements:** Intelligence 5, Level 4  
-- **Restrictions:** Only Deathclaws can choose this perk
+- **Restrictions:** Only Deathclaws can choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -406,7 +406,7 @@ You’re a professional with explosives.
   - Explosives always detonate on time
 - **Ranks:** 1
 - **Requirements:** Agility 4, Traps 90%, Level 9  
-- **Restrictions:** Deathclaws and Dogs cannot choose this perk
+- **Restrictions:** Deathclaws and Dogs cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -585,7 +585,7 @@ You look too innocent to be a thief.
 - **Effects:** +20% Steal
 - **Ranks:** 1
 - **Requirements:** Steal 50%, Karma > 49, Level 6  
-- **Restrictions:** Deathclaws cannot choose this perk
+- **Restrictions:** Deathclaws cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -628,7 +628,7 @@ Your scarred hide is its own armor.
 - **Effects:** +15% to all resistances except fire
 - **Ranks:** 2
 - **Requirements:** Endurance 6, Level 10  
-- **Restrictions:** Only Deathclaws can choose this perk
+- **Restrictions:** Only Deathclaws can choose this perk (unless they are a Ghoul with "Fear the Reaper") (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -744,7 +744,7 @@ You are a consummate thief.
 - **Effects:** One-time +15% to Lockpick and Steal
 - **Ranks:** 1
 - **Requirements:** Lockpick 50%, Steal 50%, Level 12  
-- **Restrictions:** Deathclaws and Dogs cannot choose this perk
+- **Restrictions:** Deathclaws and Dogs cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -755,7 +755,7 @@ You are exceptionally good at trading.
 - **Effects:** One-time +30% to Barter
 - **Ranks:** 1
 - **Requirements:** Charisma 7, Barter 60%, Level 9  
-- **Restrictions:** Deathclaws and Dogs cannot choose this perk
+- **Restrictions:** Deathclaws and Dogs cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -786,7 +786,7 @@ You cause critical hits more often.
 - **Effects:** +5% Critical Chance per rank
 - **Ranks:** 3
 - **Requirements:** Luck 6, Level 6  
-- **Restrictions:** Mutants cannot choose this perk
+- **Restrictions:** Mutants cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -797,7 +797,7 @@ You excel at technical work.
 - **Effects:** One-time +10% to Repair and Science
 - **Ranks:** 1
 - **Requirements:** Repair 40% **or** Science 40%, Level 12  
-- **Restrictions:** Deathclaws and Dogs cannot choose this perk
+- **Restrictions:** Deathclaws and Dogs cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -830,7 +830,7 @@ You’re better at getting deals and persuading.
 - **Effects:** One-time +10% to Speech and Barter
 - **Ranks:** 1
 - **Requirements:** Barter 50%, Speech 50%, Level 6  
-- **Restrictions:** Deathclaws and Dogs cannot choose this perk
+- **Restrictions:** Deathclaws and Dogs cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -871,7 +871,7 @@ You’re very skilled at lifting items.
 - **Effects:** +25% Steal when stealing from characters/NPCs
 - **Ranks:** 1
 - **Requirements:** Agility 8, Steal 80%, Level 15  
-- **Restrictions:** Deathclaws and Dogs cannot choose this perk
+- **Restrictions:** Deathclaws and Dogs cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -894,7 +894,7 @@ You’ve adapted to Psycho.
   - Addiction rate for Psycho is halved
 - **Ranks:** 1
 - **Requirements:** Endurance 5, Level 8  
-- **Restrictions:** Only mutants and half-mutants can choose this perk
+- **Restrictions:** Only mutants and half-mutants can choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -935,7 +935,7 @@ Radiation heals you instead of harming you.
 - **Effects:** When in a radiation source of 10+ rads/hour, +5 Healing Rate
 - **Ranks:** 1
 - **Requirements:** Endurance 6, Level 3  
-- **Restrictions:** Only Ghouls can choose this perk
+- **Restrictions:** Only Ghouls can choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -1179,7 +1179,7 @@ Your claws are venomous.
 - **Effects:** All unarmed attacks inflict Type B poison
 - **Ranks:** 1
 - **Requirements:** Unarmed 60%, Strength 6, Level 12  
-- **Restrictions:** Only Deathclaws can choose this perk
+- **Restrictions:** Only Deathclaws can choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -1200,7 +1200,7 @@ You are broadly skilled in thievery.
 - **Effects:** One-time +10% to Sneak, Lockpick, Steal, and Traps
 - **Ranks:** 1
 - **Requirements:** Level 3  
-- **Restrictions:** Dogs and Deathclaws cannot choose this perk
+- **Restrictions:** Dogs and Deathclaws cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -1213,7 +1213,7 @@ Your hide is hardened by the wastes.
   - +10% to all resistances
 - **Ranks:** 2
 - **Requirements:** Endurance < 8, Level 12  
-- **Restrictions:** Only mutants can choose this perk
+- **Restrictions:** Only mutants can choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 
@@ -1244,7 +1244,7 @@ Fruit has mystical effects on you.
 - **Effects:** For 24 hours after eating fruit, +1 Perception and +1 Agility (respecting racial max/min)
 - **Ranks:** 1
 - **Requirements:** Charisma 6, Level 6  
-- **Restrictions:** Deathclaws and Dogs cannot choose this perk
+- **Restrictions:** Deathclaws and Dogs cannot choose this perk (unless they are a Ghoul with "Fear the Reaper")
 
 ---
 

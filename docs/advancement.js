@@ -2054,22 +2054,28 @@ function checkPerkEligibility(perkId, character, ignoreRaceRestriction = false) 
   
   // Check race restrictions
   if (!ignoreRaceRestriction) {
-    // If perk has required races, check if character is one of them
-    if (perk.requirements.race.length > 0) {
-      if (!perk.requirements.race.includes(character.race)) {
+    // Ghouls with "Fear the Reaper" trait can bypass all racial restrictions
+    const hasFearTheReaper = character.traits && character.traits.includes('Fear the Reaper');
+    const isGhoulWithFTR = character.race === 'Ghoul' && hasFearTheReaper;
+    
+    if (!isGhoulWithFTR) {
+      // If perk has required races, check if character is one of them
+      if (perk.requirements.race.length > 0) {
+        if (!perk.requirements.race.includes(character.race)) {
+          return { 
+            eligible: false, 
+            reason: `Only ${perk.requirements.race.join(', ')} can choose this perk` 
+          };
+        }
+      }
+      
+      // Check excluded races
+      if (perk.restrictions.excludeRace.includes(character.race)) {
         return { 
           eligible: false, 
-          reason: `Only ${perk.requirements.race.join(', ')} can choose this perk` 
+          reason: `${character.race} cannot choose this perk` 
         };
       }
-    }
-    
-    // Check excluded races
-    if (perk.restrictions.excludeRace.includes(character.race)) {
-      return { 
-        eligible: false, 
-        reason: `${character.race} cannot choose this perk` 
-      };
     }
   }
   

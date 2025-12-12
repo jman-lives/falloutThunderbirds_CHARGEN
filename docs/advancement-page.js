@@ -448,7 +448,8 @@ function updateDisplay() {
     race: race,
     attributes: effectiveAttributes,
     skills: calculateFinalSkills(attributes, characterData.tagSkills || {}, selectedTraits),
-    karma: 0
+    karma: 0,
+    traits: selectedTraits
   };
   
   // Get eligible perks and display them
