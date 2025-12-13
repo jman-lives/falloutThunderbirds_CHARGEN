@@ -130,31 +130,91 @@ function calculateTotalHP(currentLevel, attributes) {
 // #region SKILL PROGRESSION COSTS
 /**
  * Get the cost in skill points to increase a skill by 1%
+ * Cost is based on the NEXT skill value (what you'll reach after spending 1 SP).
+ * This ensures the cost reflects the bracket you're entering.
+ * 
+ * For tagged skills:
+ * - 1-100%: 0.5 SP per 1% (equals +2% per SP spent)
+ * - 101-125%: 1 SP per 1% (equals +1% per SP spent)
+ * - 126-150%: 2 SP per 1%
+ * - 151-175%: 3 SP per 1%
+ * - 176-200%: 4 SP per 1%
+ * - 201+%: 5 SP per 1%
+ * 
+ * For non-tagged skills:
+ * - 1-100%: 1 SP per 1% (equals +1% per SP spent)
+ * - 101-125%: 2 SP per 1%
+ * - 126-150%: 3 SP per 1%
+ * - 151-175%: 4 SP per 1%
+ * - 176-200%: 5 SP per 1%
+ * - 201+%: 6 SP per 1%
+ * 
  * @param {number} currentSkillPercent - Current skill percentage (1+)
+ * @param {boolean} isTagged - Whether this is a tagged skill
  * @returns {number} Skill points required for +1%
  */
-function getSkillProgressionCost(currentSkillPercent) {
-  if (currentSkillPercent >= 1 && currentSkillPercent <= 100) return 1;
-  if (currentSkillPercent >= 101 && currentSkillPercent <= 125) return 2;
-  if (currentSkillPercent >= 126 && currentSkillPercent <= 150) return 3;
-  if (currentSkillPercent >= 151 && currentSkillPercent <= 175) return 4;
-  if (currentSkillPercent >= 176 && currentSkillPercent <= 200) return 5;
-  if (currentSkillPercent >= 201) return 6;
-  return 1; // Default for 0 or invalid
+function getSkillProgressionCost(currentSkillPercent, isTagged = false) {
+  // Check the NEXT skill value (what you'll reach after spending 1 SP)
+  // This ensures the cost reflects the bracket you're entering
+  const nextSkillPercent = currentSkillPercent + 1;
+  
+  const result = (() => {
+    if (isTagged) {
+      // Tagged skills: cost per 1% of progression
+      if (nextSkillPercent <= 100) return 1;
+      if (nextSkillPercent >= 101 && nextSkillPercent <= 125) return 1;
+      if (nextSkillPercent >= 126 && nextSkillPercent <= 150) return 2;
+      if (nextSkillPercent >= 151 && nextSkillPercent <= 175) return 3;
+      if (nextSkillPercent >= 176 && nextSkillPercent <= 200) return 4;
+      if (nextSkillPercent >= 201) return 5;
+    } else {
+      // Non-tagged skills: full progression costs
+      if (nextSkillPercent >= 1 && nextSkillPercent <= 100) return 1;
+      if (nextSkillPercent >= 101 && nextSkillPercent <= 125) return 2;
+      if (nextSkillPercent >= 126 && nextSkillPercent <= 150) return 3;
+      if (nextSkillPercent >= 151 && nextSkillPercent <= 175) return 4;
+      if (nextSkillPercent >= 176 && nextSkillPercent <= 200) return 5;
+      if (nextSkillPercent >= 201) return 6;
+    }
+    return 1; // Default for 0 or invalid
+  })();
+  
+  if (currentSkillPercent === 104) {
+    console.log(`[getSkillProgressionCost] DEBUG: currentSkillPercent=${currentSkillPercent}, nextSkillPercent=${nextSkillPercent}, isTagged=${isTagged}, result=${result}`);
+  }
+  
+  return result;
+}
+
+/**
+ * Calculate the percentage gain when spending 1 SP on a skill at a given value
+ * This properly respects all skill brackets (100%, 125%, 150%, 175%, 200%)
+ * @param {number} currentSkillPercent - Current skill percentage
+ * @param {boolean} isTagged - Whether this is a tagged skill
+ * @returns {number} Percentage gain per 1 SP
+ */
+function getSkillGainPerSP(currentSkillPercent, isTagged = false) {
+  // Both tagged and non-tagged skills gain 1% per SP at 100%+
+  // Tagged skills get 2% per SP below 100%, non-tagged always get 1%
+  if (isTagged && currentSkillPercent < 100) {
+    return 2;  // Tagged skill below 100%: +2% per SP
+  }
+  return 1;    // All other cases: +1% per SP (includes tagged at 100%+, and all non-tagged)
 }
 
 /**
  * Calculate total skill points needed to reach a target from current level
  * @param {number} currentPercent - Current skill percentage
  * @param {number} targetPercent - Target skill percentage
+ * @param {boolean} isTagged - Whether this is a tagged skill
  * @returns {number} Total SP needed
  */
-function calculateSPForSkillIncrease(currentPercent, targetPercent) {
+function calculateSPForSkillIncrease(currentPercent, targetPercent, isTagged = false) {
   if (targetPercent <= currentPercent) return 0;
   
   let totalSP = 0;
   for (let i = currentPercent + 1; i <= targetPercent; i++) {
-    totalSP += getSkillProgressionCost(i - 1);
+    totalSP += getSkillProgressionCost(i - 1, isTagged);
   }
   return totalSP;
 }
@@ -198,8 +258,7 @@ function calculateBaseSkills(attributes) {
   const lk = attributes.luck || 0;
 
   return {
-    small_guns: 5 + (4 * ag),
-    big_guns: 0 + (2 * ag),
+    guns: 5 + (4 * ag),
     energy_weapons: 0 + (2 * ag),
     unarmed: 30 + (2 * (ag + str)),
     melee_weapons: 20 + (2 * (ag + str)),
@@ -221,25 +280,128 @@ function calculateBaseSkills(attributes) {
 }
 
 /**
- * Calculate final skill values with tag bonuses applied
+ * Calculate final skill values with tag bonuses and trait effects applied
  * @param {object} attributes - Character attributes
  * @param {object} tagSkills - Object with skill names as keys and boolean values
- * @returns {object} Final skill percentages with tag bonuses applied
+ * @param {array} selectedTraits - Array of selected trait IDs
+ * @returns {object} Final skill percentages with tag bonuses and trait effects applied
  */
-function calculateFinalSkills(attributes, tagSkills = {}) {
+function calculateFinalSkills(attributes, tagSkills = {}, selectedTraits = []) {
   const baseSkills = calculateBaseSkills(attributes);
   const finalSkills = {};
 
+  // Define trait skill modifiers
+  const traitModifiers = {
+    'good_natured': {
+      first_aid: 20,
+      doctor: 20,
+      speech: 20,
+      barter: 20,
+      guns: -10,
+      energy_weapons: -10,
+      unarmed: -10,
+      melee_weapons: -10
+    },
+    'skilled': {
+      // +10% to all skills
+      guns: 10,
+      energy_weapons: 10,
+      unarmed: 10,
+      melee_weapons: 10,
+      throwing: 10,
+      first_aid: 10,
+      doctor: 10,
+      sneak: 10,
+      lockpick: 10,
+      steal: 10,
+      traps: 10,
+      science: 10,
+      repair: 10,
+      pilot: 10,
+      speech: 10,
+      barter: 10,
+      gambling: 10,
+      outdoorsman: 10
+    },
+    'gifted': {
+      // -10% to all skills
+      guns: -10,
+      energy_weapons: -10,
+      unarmed: -10,
+      melee_weapons: -10,
+      throwing: -10,
+      first_aid: -10,
+      doctor: -10,
+      sneak: -10,
+      lockpick: -10,
+      steal: -10,
+      traps: -10,
+      science: -10,
+      repair: -10,
+      pilot: -10,
+      speech: -10,
+      barter: -10,
+      gambling: -10,
+      outdoorsman: -10
+    },
+    'tech_wizard': {
+      science: 15,
+      repair: 15
+    }
+  };
+
   Object.keys(baseSkills).forEach(skillKey => {
     let value = baseSkills[skillKey];
+    
     // Apply tag bonus: +20% to base value
     if (tagSkills[skillKey]) {
       value += 20;
     }
+    
+    // Apply trait modifiers
+    selectedTraits.forEach(traitId => {
+      if (traitModifiers[traitId] && traitModifiers[traitId][skillKey] !== undefined) {
+        value += traitModifiers[traitId][skillKey];
+      }
+    });
+    
     finalSkills[skillKey] = Math.max(0, Math.min(100, Math.round(value))); // Clamp to 0-100
   });
 
   return finalSkills;
+}
+
+/**
+ * Calculate total perks earned by a character at their current level
+ * Respects race-specific perk progression:
+ * - Human: 1 perk every 3 levels (3, 6, 9, 12, 15, 18, 21, 24...)
+ * - Ghoul: 1 perk every 4 levels (4, 8, 12, 16, 20, 24...)
+ * @param {number} level - Character's current level
+ * @param {string} race - Character's race (Human, Ghoul, etc.)
+ * @returns {number} Total number of perks earned so far
+ */
+function calculatePerksEarned(level, race) {
+  if (level < 1) return 0;
+  
+  // Normalize race name (trim whitespace, case-sensitive comparison)
+  const normalizedRace = (race || 'Human').trim();
+  
+  // Determine perk frequency based on race
+  let perkFrequency = 3; // Default for Human
+  
+  if (normalizedRace === 'Ghoul') {
+    perkFrequency = 4;
+  }
+  // Other races can be added here with their own frequencies
+  
+  // Calculate how many perks have been earned
+  // A character gets their first perk at level equal to perkFrequency
+  // Then another every perkFrequency levels after that
+  const perksEarned = Math.floor(level / perkFrequency);
+  
+  console.log(`[calculatePerksEarned] race="${race}" normalized="${normalizedRace}" frequency=${perkFrequency} level=${level} result=${perksEarned}`);
+  
+  return perksEarned;
 }
 
 // #endregion
@@ -453,7 +615,7 @@ const PERKS = {
       attributes: { strength: 7 },
       level: 4,
       race: [],
-      skills: { big_guns: 80 }
+      skills: { guns: 80 }
     },
     restrictions: { excludeRace: ['Deathclaw', 'Dog'] }
   },
@@ -901,7 +1063,7 @@ const PERKS = {
       attributes: { agility: 6 },
       level: 3,
       race: [],
-      skills: { small_guns: 40 }
+      skills: { guns: 40 }
     },
     restrictions: { excludeRace: [] }
   },
@@ -1336,7 +1498,7 @@ const PERKS = {
       attributes: {},
       level: 9,
       race: [],
-      skills: { big_guns: 75 }
+      skills: { guns: 75 }
     },
     restrictions: { excludeRace: [] }
   },
@@ -1560,7 +1722,7 @@ const PERKS = {
       attributes: { agility: 8, perception: 8 },
       level: 24,
       race: [],
-      skills: { small_guns: 80 }
+      skills: { guns: 80 }
     },
     restrictions: { excludeRace: ['Deathclaw', 'Dog'] }
   },
@@ -1892,22 +2054,28 @@ function checkPerkEligibility(perkId, character, ignoreRaceRestriction = false) 
   
   // Check race restrictions
   if (!ignoreRaceRestriction) {
-    // If perk has required races, check if character is one of them
-    if (perk.requirements.race.length > 0) {
-      if (!perk.requirements.race.includes(character.race)) {
+    // Ghouls with "Fear the Reaper" trait can bypass all racial restrictions
+    const hasFearTheReaper = character.traits && character.traits.includes('Fear the Reaper');
+    const isGhoulWithFTR = character.race === 'Ghoul' && hasFearTheReaper;
+    
+    if (!isGhoulWithFTR) {
+      // If perk has required races, check if character is one of them
+      if (perk.requirements.race.length > 0) {
+        if (!perk.requirements.race.includes(character.race)) {
+          return { 
+            eligible: false, 
+            reason: `Only ${perk.requirements.race.join(', ')} can choose this perk` 
+          };
+        }
+      }
+      
+      // Check excluded races
+      if (perk.restrictions.excludeRace.includes(character.race)) {
         return { 
           eligible: false, 
-          reason: `Only ${perk.requirements.race.join(', ')} can choose this perk` 
+          reason: `${character.race} cannot choose this perk` 
         };
       }
-    }
-    
-    // Check excluded races
-    if (perk.restrictions.excludeRace.includes(character.race)) {
-      return { 
-        eligible: false, 
-        reason: `${character.race} cannot choose this perk` 
-      };
     }
   }
   

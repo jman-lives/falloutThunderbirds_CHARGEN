@@ -56,6 +56,7 @@
         </label>
         <label>Age
           <input type="number" id="age" name="age" min="16" max="80" value="25">
+          <button type="button" id="random-age-btn" style="margin-left: 8px; padding: 4px 8px; background-color: #FF9800; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">Random Age</button>
         </label>
         <label>Gender
           <select id="gender" name="gender">
@@ -88,14 +89,8 @@
         <div class="attrs" id="skills-container">
           <div class="skill-row">
             <label class="skill-label">
-              <input type="checkbox" class="tag-checkbox" data-skill="small_guns">
-              Small Guns <span class="skill-base" id="base_small_guns">5%</span>
-            </label>
-          </div>
-          <div class="skill-row">
-            <label class="skill-label">
-              <input type="checkbox" class="tag-checkbox" data-skill="big_guns">
-              Big Guns <span class="skill-base" id="base_big_guns">0%</span>
+              <input type="checkbox" class="tag-checkbox" data-skill="guns">
+              Guns <span class="skill-base" id="base_guns">0%</span>
             </label>
           </div>
           <div class="skill-row">
@@ -249,7 +244,7 @@
     console.log('Debug console initialized');
   </script>
 
-  <script src="advancement.js"></script>
-  <script src="script.js"></script>
+  <script src="advancement.js?v=1"></script>
+  <script src="script.js?v=1"></script>
 </body>
 </html>

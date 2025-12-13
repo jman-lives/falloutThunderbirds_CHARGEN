@@ -48,27 +48,15 @@ For examples below, an “average” character has **5 in every Primary Statisti
 
 ## Skill Descriptions and Base Formulas
 
-### Small Guns
+### Guns
 
 Use of pistols, rifles, shotguns, SMGs, and bows.
 
 **Base Skill:**
 
-Small Guns = 5% + (4 × AG)
+Guns = 5% + (4 × AG)
 
 Average starting value: **25%**
-
----
-
-### Big Guns
-
-Use of heavy weapons such as miniguns, flamethrowers, and rocket launchers.
-
-**Base Skill:**
-
-Big Guns = 0% + (2 × AG)
-
-Average starting value: **10%**
 
 ---
 
@@ -295,15 +283,14 @@ Jack and Jane assign tag skills to their characters, **Harry** and **Maverick**.
 
 ### Tag Skill Selection
 
-- Harry tags: **Unarmed**, **Throwing**, **Big Guns**
+- Harry tags: **Unarmed**, **Throwing**, **Guns**
 - Maverick tags: **Speech**, **Barter**, **Gambling**
 
 ### Final Skill Values
 
 **Harry:**
 
-Small Guns 37%  
-Big Guns (tag) 36%  
+Guns 37%  
 Energy Weapons 16%  
 Unarmed (tag) 80%  
 Melee Weapons 50%  
@@ -324,8 +311,7 @@ Outdoorsman 20%
 
 **Maverick:**
 
-Small Guns 25%  
-Big Guns 10%  
+Guns 25%  
 Energy Weapons 10%  
 Unarmed 48%  
 Melee Weapons 38%  
