@@ -1067,6 +1067,18 @@ function updateSkillDisplay() {
   const baseSkills = calculateBaseSkills(effectiveAttributes);
   const finalSkills = calculateFinalSkills(effectiveAttributes, formData.tagSkills, formData.selectedTraits);
   
+  // Load skill increases from localStorage (applied during leveling)
+  let characterData = {};
+  try {
+    const stored = localStorage.getItem('falloutCharacter');
+    if (stored) {
+      characterData = JSON.parse(stored);
+    }
+  } catch (e) {
+    console.warn('Could not load character data from localStorage:', e);
+  }
+  const skillIncreases = characterData.skillIncreases || {};
+  
   // Define trait skill modifiers for display purposes
   const traitModifiers = {
     'good_natured': {
@@ -1107,6 +1119,10 @@ function updateSkillDisplay() {
       const finalValue = finalSkills[skillKey];
       const isTagged = formData.tagSkills[skillKey];
       
+      // Add skill increases from leveling
+      const skillIncrease = skillIncreases[skillKey] || 0;
+      const totalValue = Math.min(finalValue + skillIncrease, 100); // Cap at 100 for display on main sheet
+      
       // Calculate trait modifier for this skill
       let traitModifier = 0;
       formData.selectedTraits.forEach(traitId => {
@@ -1116,8 +1132,13 @@ function updateSkillDisplay() {
       });
       
       // Build display text with modifiers
-      let displayText = `${finalValue}%`;
+      let displayText = `${totalValue}%`;
       let indicators = [];
+      
+      // Add skill increase indicator if there are increases
+      if (skillIncrease > 0) {
+        indicators.push(`leveling +${skillIncrease}%`);
+      }
       
       // Add tag modifier (always +20 if tagged)
       if (isTagged) {
@@ -1137,7 +1158,9 @@ function updateSkillDisplay() {
       baseEl.textContent = displayText;
       
       // Color based on modifications - prioritize negative traits
-      if (traitModifier < 0) {
+      if (skillIncrease > 0) {
+        baseEl.style.color = '#FFD700'; // Gold for leveling increases
+      } else if (traitModifier < 0) {
         baseEl.style.color = '#ff6b6b'; // Red for negative traits
       } else if (isTagged || traitModifier > 0) {
         baseEl.style.color = '#34d399'; // Green for tags or positive traits
@@ -1145,7 +1168,7 @@ function updateSkillDisplay() {
         baseEl.style.color = 'inherit';
       }
       
-      baseEl.style.fontWeight = (isTagged || traitModifier !== 0) ? 'bold' : 'normal';
+      baseEl.style.fontWeight = (isTagged || traitModifier !== 0 || skillIncrease > 0) ? 'bold' : 'normal';
     }
   });
   
@@ -1619,6 +1642,19 @@ document.addEventListener('DOMContentLoaded', ()=>{
     console.error('Error during DOMContentLoaded setup:', err.message, err.stack);
   }
 })
+
+// Refresh skills when page becomes visible (returns from another page)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    // Page is now visible - refresh skill display in case data was modified
+    const skillDisplayEl = qs('base_guns');
+    if (skillDisplayEl) {
+      // Only on main character sheet (index.html), not on advancement page
+      updateSkillDisplay();
+      console.log('Page visibility: refreshed skill display');
+    }
+  }
+});
 
 // Update secondary statistics based on current attribute values
 function updateSecondaryStats() {
