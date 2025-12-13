@@ -378,14 +378,18 @@ function updateCharacterSummary() {
   const selectedTraits = characterData.selectedTraits || characterData.traits || [];
   const effectiveAttributes = getEffectiveAttributes(attributes, selectedTraits);
   
-  // Update individual attributes with trait modifiers applied
-  if (qs('char-str')) qs('char-str').textContent = effectiveAttributes.strength;
-  if (qs('char-per')) qs('char-per').textContent = effectiveAttributes.perception;
-  if (qs('char-end')) qs('char-end').textContent = effectiveAttributes.endurance;
-  if (qs('char-chr')) qs('char-chr').textContent = effectiveAttributes.charisma;
-  if (qs('char-int')) qs('char-int').textContent = effectiveAttributes.intelligence;
-  if (qs('char-agi')) qs('char-agi').textContent = effectiveAttributes.agility;
-  if (qs('char-lck')) qs('char-lck').textContent = effectiveAttributes.luck;
+  // Apply perk bonuses to attributes if available
+  const perkEffects = characterData.perkEffects || {};
+  const attributesWithPerks = getAttributesWithPerkBonuses(effectiveAttributes, perkEffects);
+  
+  // Update individual attributes with trait modifiers and perk bonuses applied
+  if (qs('char-str')) qs('char-str').textContent = attributesWithPerks.strength;
+  if (qs('char-per')) qs('char-per').textContent = attributesWithPerks.perception;
+  if (qs('char-end')) qs('char-end').textContent = attributesWithPerks.endurance;
+  if (qs('char-chr')) qs('char-chr').textContent = attributesWithPerks.charisma;
+  if (qs('char-int')) qs('char-int').textContent = attributesWithPerks.intelligence;
+  if (qs('char-agi')) qs('char-agi').textContent = attributesWithPerks.agility;
+  if (qs('char-lck')) qs('char-lck').textContent = attributesWithPerks.luck;
   
   // Update additional info
   if (qs('char-tags')) qs('char-tags').textContent = tagsDisplay;
@@ -421,9 +425,17 @@ function updateDisplay() {
   const effectiveAttributes = getEffectiveAttributes(attributes, selectedTraits);
   
   const currentLevel = xpProgress.level;
-  const hpGain = calculateHPGain(effectiveAttributes.endurance);
-  const spGain = calculateSkillPointsGain(effectiveAttributes.intelligence);
-  const totalHP = calculateTotalHP(currentLevel, effectiveAttributes);
+  const perkEffects = characterData.perkEffects || {};
+  
+  // Apply perk bonuses to attributes for HP/SP calculations
+  const attributesWithPerks = getAttributesWithPerkBonuses(effectiveAttributes, perkEffects);
+  
+  // Calculate HP and skill points with perk bonuses
+  const hpGain = calculateHPGain(attributesWithPerks.endurance);
+  const hpGainWithPerks = hpGain + (perkEffects.hpBonusPerLevel || 0);
+  const spGain = calculateSkillPointsGain(attributesWithPerks.intelligence);
+  const spGainWithPerks = spGain + (perkEffects.skillPointsPerLevel || 0);
+  const totalHP = calculateTotalHPWithPerks(currentLevel, attributesWithPerks, perkEffects);
   
   // Update level display
   if (qs('current_level')) qs('current_level').textContent = currentLevel;
@@ -431,9 +443,21 @@ function updateDisplay() {
   if (qs('current_level_xp')) qs('current_level_xp').textContent = xpProgress.current;
   if (qs('needed_xp')) qs('needed_xp').textContent = xpProgress.needed;
   
-  // Update per-level gains
-  if (qs('hp_per_level')) qs('hp_per_level').textContent = hpGain;
-  if (qs('sp_per_level')) qs('sp_per_level').textContent = spGain;
+  // Update per-level gains (show perk bonuses if applicable)
+  if (qs('hp_per_level')) {
+    if (hpGainWithPerks !== hpGain) {
+      qs('hp_per_level').textContent = `${hpGain} + ${perkEffects.hpBonusPerLevel} (perks) = ${hpGainWithPerks}`;
+    } else {
+      qs('hp_per_level').textContent = hpGain;
+    }
+  }
+  if (qs('sp_per_level')) {
+    if (spGainWithPerks !== spGain) {
+      qs('sp_per_level').textContent = `${spGain} + ${perkEffects.skillPointsPerLevel} (perks) = ${spGainWithPerks}`;
+    } else {
+      qs('sp_per_level').textContent = spGain;
+    }
+  }
   if (qs('total_hp_projected')) qs('total_hp_projected').textContent = totalHP;
   
   // Calculate perks earned based on race and level
@@ -453,7 +477,9 @@ function updateDisplay() {
   };
   
   // Get eligible perks and display them
+  console.log('[updateDisplay] Character object for perk eligibility check:', character);
   const eligiblePerkIds = getEligiblePerks(character);
+  console.log('[updateDisplay] Eligible perk IDs:', eligiblePerkIds);
   renderAvailablePerks(eligiblePerkIds);
   renderSelectedPerks(perksEarned);
   
@@ -509,7 +535,8 @@ function updateDisplay() {
     let hasSkillsToConfirm = false;
     if (currentLevel > 1) {
       const skillPointsSpent = Object.values(characterData.skillPointsSpent || {}).reduce((sum, val) => sum + val, 0);
-      const spPerLevel = calculateSkillPointsGain(effectiveAttributes.intelligence);
+      const perkEffects = characterData.perkEffects || {};
+      const spPerLevel = calculateSkillPointsGainWithPerks(effectiveAttributes.intelligence, perkEffects);
       const availableSkillPoints = spPerLevel - skillPointsSpent;
       hasSkillsToConfirm = availableSkillPoints > 0;
     }
@@ -561,8 +588,9 @@ function levelUp() {
   
   // Check if player is level 1 and needs to spend skill points
   if (currentLevel > 1 && !characterData.skillsConfirmed) {
-    // Calculate available skill points for current level
-    const spPerLevel = calculateSkillPointsGain(effectiveAttributes.intelligence);
+    // Calculate available skill points for current level (with perk effects)
+    const perkEffects = characterData.perkEffects || {};
+    const spPerLevel = calculateSkillPointsGainWithPerks(effectiveAttributes.intelligence, perkEffects);
     const totalUsed = Object.values(characterData.skillPointsSpent).reduce((sum, val) => sum + val, 0);
     const availablePoints = spPerLevel - totalUsed;
     
@@ -703,14 +731,32 @@ function renderAvailablePerks(eligiblePerkIds) {
   const noPerksMsg = qs('no-perks-msg');
   const selectedPerks = characterData.selectedPerks || [];
   
+  // DEBUG: Check if Gain X perks exist in PERKS object
+  console.log('[renderAvailablePerks] PERKS object keys sample:', Object.keys(PERKS).slice(0, 5), '... gain_strength exists?', 'gain_strength' in PERKS);
+  console.log('[renderAvailablePerks] Eligible perk IDs:', eligiblePerkIds);
+  
   // Filter out perks that have reached maximum rank
   const availablePerkIds = eligiblePerkIds.filter(perkId => {
     const perk = PERKS[perkId];
     const selectedPerk = selectedPerks.find(p => p.id === perkId);
     const currentRank = selectedPerk ? selectedPerk.rank : 0;
     // Only show perks that haven't reached max rank, or perks not yet selected
-    return currentRank < perk.ranks;
+    const isAvailable = perk && currentRank < perk.ranks;
+    
+    // Always log Gain X perks for debugging
+    if (['gain_strength', 'gain_perception', 'gain_endurance', 'gain_charisma', 'gain_intelligence', 'gain_agility', 'gain_luck'].includes(perkId)) {
+      console.log(`[renderAvailablePerks FILTER] ${perkId}:`);
+      console.log(`  - perk object: ${perk ? JSON.stringify(perk) : 'NULL'}`);
+      console.log(`  - selectedPerk: ${selectedPerk ? JSON.stringify(selectedPerk) : 'NOT SELECTED'}`);
+      console.log(`  - currentRank: ${currentRank}, perk.ranks: ${perk?.ranks}`);
+      console.log(`  - currentRank < perk.ranks? ${currentRank} < ${perk?.ranks} = ${currentRank < perk?.ranks}`);
+      console.log(`  - perk && (currentRank < perk.ranks)? ${isAvailable}`);
+      console.log(`  - RESULT: ${isAvailable ? 'INCLUDED' : 'FILTERED OUT'}`);
+    }
+    return isAvailable;
   });
+  
+  console.log('[renderAvailablePerks] Available perk IDs after rank filter:', availablePerkIds);
   
   if (!container) return;
   
@@ -980,7 +1026,24 @@ function downloadJSON(obj, filename){
 }
 
 function renderOutput(obj){
-  if (qs('output')) qs('output').textContent = JSON.stringify(obj,null,2)
+  if (qs('output')) {
+    // Create a display copy with calculated final skills that include leveling increases
+    const displayObj = JSON.parse(JSON.stringify(obj)); // Deep copy
+    
+    // If we have skill increases, apply them to the display skills
+    if (displayObj.skillIncreases && displayObj.skills) {
+      const updatedSkills = { ...displayObj.skills };
+      Object.keys(displayObj.skillIncreases).forEach(skillKey => {
+        const increase = displayObj.skillIncreases[skillKey];
+        if (updatedSkills[skillKey] !== undefined) {
+          updatedSkills[skillKey] = Math.min(updatedSkills[skillKey] + increase, 100);
+        }
+      });
+      displayObj.skills = updatedSkills;
+    }
+    
+    qs('output').textContent = JSON.stringify(displayObj, null, 2)
+  }
 }
 
 function handleFileLoad(file){
@@ -1086,9 +1149,10 @@ function updateSkillRanking() {
     return;
   }
   
-  // Calculate available skill points for THIS LEVEL ONLY
-  const spPerLevel = calculateSkillPointsGain(effectiveAttributes.intelligence);
-  console.log('spPerLevel:', spPerLevel, '(formula: 5 + (2 * ' + effectiveAttributes.intelligence + '))');
+  // Calculate available skill points for THIS LEVEL ONLY (with perk effects)
+  const perkEffects = characterData.perkEffects || {};
+  const spPerLevel = calculateSkillPointsGainWithPerks(effectiveAttributes.intelligence, perkEffects);
+  console.log('spPerLevel:', spPerLevel, '(formula: 5 + (2 * ' + effectiveAttributes.intelligence + ') + ' + (perkEffects.skillPointsPerLevel || 0) + ' from perks)');
   
   // Initialize skill tracking if needed
   if (!characterData.skillPointsSpent) {
@@ -1107,8 +1171,10 @@ function updateSkillRanking() {
   console.log(`[updateSkillRanking] tagSkills.unarmed:`, tagSkills.unarmed, 'type:', typeof tagSkills.unarmed);
   
   // Calculate actual SP spent THIS LEVEL (not just count of increases)
-  const baseSkills = calculateBaseSkills(baseAttributes);
-  const allSkills = calculateFinalSkills(baseAttributes, tagSkills, selectedTraits);
+  // Use perk-adjusted attributes for skill calculations
+  const attributesWithPerks = getAttributesWithPerkBonuses(effectiveAttributes, perkEffects);
+  const baseSkills = calculateBaseSkills(attributesWithPerks);
+  const allSkills = calculateFinalSkills(attributesWithPerks, tagSkills, selectedTraits);
   const skillIncreases = characterData.skillIncreases || {};
   
   // Each click/SP spent = 1 whole SP, no fractional costs
@@ -1146,10 +1212,14 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
   
   if (!container) return;
   
-  // Get base skills and calculate final skills using BASE attributes
-  // Then apply trait modifiers using selectedTraits
-  const baseSkills = calculateBaseSkills(baseAttributes);
-  const allSkills = calculateFinalSkills(baseAttributes, tagSkills, characterData.selectedTraits || characterData.traits || []);
+  // Apply perk bonuses to effective attributes for skill calculations
+  const perkEffects = characterData.perkEffects || {};
+  const attributesWithPerks = getAttributesWithPerkBonuses(effectiveAttributes, perkEffects);
+  
+  // Get base skills calculated with perk-adjusted attributes
+  // This ensures skills reflect all modifiers: base + traits + perks
+  const baseSkills = calculateBaseSkills(attributesWithPerks);
+  const allSkills = calculateFinalSkills(attributesWithPerks, tagSkills, characterData.selectedTraits || characterData.traits || []);
   
   if (Object.keys(allSkills).length === 0) {
     container.innerHTML = '';
@@ -1159,8 +1229,8 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
   
   if (noSkillsMsg) noSkillsMsg.style.display = 'none';
   
-  // Calculate available points for THIS LEVEL ONLY using EFFECTIVE intelligence
-  const spPerLevel = calculateSkillPointsGain(effectiveAttributes.intelligence);
+  // Calculate available points for THIS LEVEL ONLY using EFFECTIVE intelligence with perk bonuses
+  const spPerLevel = calculateSkillPointsGainWithPerks(attributesWithPerks.intelligence, perkEffects);
   
   // Get accumulated skill increases from previous levels
   const skillIncreases = characterData.skillIncreases || {};
@@ -1348,7 +1418,8 @@ function increaseSkillPoints(skillKey) {
   const tagSkills = characterData.tagSkills || {};
   const isTaggedSkill = tagSkills[skillKey] || false;
   
-  const spPerLevel = calculateSkillPointsGain(effectiveAttributes.intelligence);
+  const perkEffects = characterData.perkEffects || {};
+  const spPerLevel = calculateSkillPointsGainWithPerks(effectiveAttributes.intelligence, perkEffects);
   
   // Calculate total SP actually spent THIS LEVEL (sum of actual SP costs, not clicks)
   const allSkills = calculateFinalSkills(baseAttributes, tagSkills, characterData.selectedTraits || characterData.traits || []);
@@ -1521,6 +1592,9 @@ function confirmSkillAllocation() {
   // Call updateDisplay to refresh all sections (skills, perks, level up button)
   // This will use the same visibility logic and show perks only if applicable
   updateDisplay();
+  
+  // Update JSON output display
+  renderOutput(characterData);
 }
 
 /**
@@ -1546,6 +1620,9 @@ function unconfirmSkillAllocation() {
   
   // Trigger update to re-enable/disable confirm button based on available points
   updateSkillRanking();
+  
+  // Update JSON output display
+  renderOutput(characterData);
 }
 
 /**
@@ -1583,6 +1660,10 @@ function updateConfirmPerkButtonState(selectedRanks, maxPerks) {
  */
 function confirmPerkSelection() {
   characterData.perksConfirmed = true;
+  
+  // Apply mechanical effects of selected perks
+  applyPerkEffects(characterData);
+  
   saveCharacterData();
   
   // Hide the entire perks section
@@ -1597,6 +1678,15 @@ function confirmPerkSelection() {
   
   // Call updateDisplay to refresh level up button visibility
   updateDisplay();
+  
+  // Update character summary with new attribute bonuses
+  updateCharacterSummary();
+  
+  // Update skill ranking to reflect attribute bonuses
+  updateSkillRanking();
+  
+  // Update JSON output display
+  renderOutput(characterData);
 }
 
 /**
@@ -1604,6 +1694,18 @@ function confirmPerkSelection() {
  */
 function unconfirmPerkSelection() {
   characterData.perksConfirmed = false;
+  
+  // Reset perk effects
+  characterData.perkEffects = {
+    hpBonusPerLevel: 0,
+    skillPointsPerLevel: 0,
+    healingRate: 0,
+    attributeBonus: {},
+    damageResistance: 0,
+    radiationResistance: 0,
+    bookSkillBonus: 0
+  };
+  
   saveCharacterData();
   
   // Show the entire perks section
@@ -1618,6 +1720,15 @@ function unconfirmPerkSelection() {
   
   // Trigger update to re-enable/disable confirm button based on selected perks
   updateDisplay();
+  
+  // Update character summary to reset attribute display
+  updateCharacterSummary();
+  
+  // Update skill ranking to reflect attribute bonuses reset
+  updateSkillRanking();
+  
+  // Update JSON output display
+  renderOutput(characterData);
 }
 
 // #endregion SKILL RANKING SYSTEM

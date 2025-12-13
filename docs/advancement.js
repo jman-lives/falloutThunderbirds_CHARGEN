@@ -100,11 +100,24 @@ function calculateHPGain(endurance) {
 /**
  * Calculate skill points gained on level up
  * Formula: 5 + (2 × IN)
+ * This is the base function without perk effects
  * @param {number} intelligence - Intelligence attribute value
- * @returns {number} Skill points gained on level up
+ * @returns {number} Skill points gained on level up (base, no perks)
  */
 function calculateSkillPointsGain(intelligence) {
   return 5 + (2 * intelligence);
+}
+
+/**
+ * Calculate skill points with perk effects (wrapper for consistency)
+ * @param {number} intelligence - Intelligence attribute value
+ * @param {object} perkEffects - Perk effects object
+ * @returns {number} Skill points gained on level up (with perks)
+ */
+function calculateSkillPointsGainWithPerks(intelligence, perkEffects = {}) {
+  const baseSkillPoints = calculateSkillPointsGain(intelligence);
+  const bonusSkillPoints = perkEffects.skillPointsPerLevel || 0;
+  return baseSkillPoints + bonusSkillPoints;
 }
 
 /**
@@ -1825,19 +1838,7 @@ const PERKS = {
     restrictions: { excludeRace: [] }
   },
   
-  'swift_learner': {
-    name: 'Swift Learner',
-    description: 'You gain more experience.',
-    effects: '+5% XP gain per rank (rounded up)',
-    ranks: 3,
-    requirements: {
-      attributes: { intelligence: 4 },
-      level: 3,
-      race: [],
-      skills: {}
-    },
-    restrictions: { excludeRace: [] }
-  },
+
   
   'tag': {
     name: 'Tag!',
@@ -1976,10 +1977,19 @@ const PERKS = {
  * @param {boolean} ignoreRaceRestriction - If true, ignore race restrictions (for Break the Rules perk)
  * @returns {object} {eligible: boolean, reason: string}
  */
-function checkPerkEligibility(perkId, character, ignoreRaceRestriction = false) {
+function checkPerkEligibility(perkId, character, ignoreRaceRestriction = false, ignoreAllRestrictions = false) {
   const perk = PERKS[perkId];
   if (!perk) {
     return { eligible: false, reason: 'Perk not found' };
+  }
+  
+  // Log Gain Attribute perks for debugging
+  const gainAttributePerks = ['gain_strength', 'gain_perception', 'gain_endurance', 'gain_charisma', 'gain_intelligence', 'gain_agility', 'gain_luck'];
+  if (gainAttributePerks.includes(perkId)) {
+    console.log(`[checkPerkEligibility] Checking ${perkId}:`);
+    console.log(`  - Level: ${character.level} >= ${perk.requirements.level} ? ${character.level >= perk.requirements.level}`);
+    console.log(`  - Attributes:`, character.attributes);
+    console.log(`  - Attribute requirements:`, perk.requirements.attributes);
   }
   
   // Robots never gain perks
@@ -1987,63 +1997,82 @@ function checkPerkEligibility(perkId, character, ignoreRaceRestriction = false) 
     return { eligible: false, reason: 'Robots cannot gain perks' };
   }
   
+  // If Break the Rules is active, bypass all restrictions
+  if (ignoreAllRestrictions) {
+    return { eligible: true, reason: 'Break the Rules active' };
+  }
+  
   // Check level
   if (character.level < perk.requirements.level) {
     return { eligible: false, reason: `Requires level ${perk.requirements.level}, you are level ${character.level}` };
   }
   
-  // Check attribute requirements
-  for (const [attr, requirement] of Object.entries(perk.requirements.attributes)) {
-    const charAttr = character.attributes[attr];
-    
-    if (typeof requirement === 'number') {
-      // Simple minimum requirement
-      if (charAttr < requirement) {
-        return { 
-          eligible: false, 
-          reason: `Requires ${attr} ${requirement}, you have ${charAttr}` 
-        };
-      }
-    } else if (typeof requirement === 'object') {
-      // Range or special requirement
-      if (requirement.min !== undefined && charAttr < requirement.min) {
-        return { 
-          eligible: false, 
-          reason: `Requires ${attr} at least ${requirement.min}, you have ${charAttr}` 
-        };
-      }
-      if (requirement.max !== undefined && charAttr > requirement.max) {
-        return { 
-          eligible: false, 
-          reason: `Requires ${attr} at most ${requirement.max}, you have ${charAttr}` 
-        };
-      }
-      if (requirement.max === true) {
-        // Check if at racial maximum
-        const racialMax = RACIAL_LIMITS[character.race]?.max || 10;
-        if (charAttr >= racialMax) {
+  // Check attribute requirements (skip if Bend the Rules is active)
+  if (!ignoreRaceRestriction) {
+    for (const [attr, requirement] of Object.entries(perk.requirements.attributes)) {
+      const charAttr = character.attributes[attr];
+      
+      if (typeof requirement === 'number') {
+        // Simple minimum requirement
+        if (charAttr < requirement) {
           return { 
             eligible: false, 
-            reason: `${attr.charAt(0).toUpperCase() + attr.slice(1)} is already at racial maximum` 
+            reason: `Requires ${attr} ${requirement}, you have ${charAttr}` 
+          };
+        }
+      } else if (typeof requirement === 'object') {
+        // Range or special requirement
+        // Check if below racial maximum FIRST (before numeric comparison)
+        if (requirement.max === true) {
+          // Check if below racial maximum (can still gain the attribute)
+          const racialMax = RACIAL_LIMITS[character.race]?.[attr]?.max || 10;
+          if (gainAttributePerks.includes(perkId)) {
+            console.log(`  - Checking max for ${attr}: charAttr=${charAttr}, racialMax=${racialMax}`);
+          }
+          if (charAttr >= racialMax) {
+            if (gainAttributePerks.includes(perkId)) {
+              console.log(`  - INELIGIBLE: ${attr} at max (${charAttr} >= ${racialMax})`);
+            }
+            return { 
+              eligible: false, 
+              reason: `${attr.charAt(0).toUpperCase() + attr.slice(1)} is already at racial maximum` 
+            };
+          }
+        } else {
+          // Numeric comparison for other max values
+          if (requirement.max !== undefined && charAttr > requirement.max) {
+            return { 
+              eligible: false, 
+              reason: `Requires ${attr} at most ${requirement.max}, you have ${charAttr}` 
+            };
+          }
+        }
+        
+        if (requirement.min !== undefined && charAttr < requirement.min) {
+          return { 
+            eligible: false, 
+            reason: `Requires ${attr} at least ${requirement.min}, you have ${charAttr}` 
           };
         }
       }
     }
   }
   
-  // Check skill requirements
-  for (const [skill, requirement] of Object.entries(perk.requirements.skills)) {
-    const charSkill = character.skills[skill] || 0;
-    if (charSkill < requirement) {
-      return { 
-        eligible: false, 
-        reason: `Requires ${skill.replace('_', ' ')} ${requirement}%, you have ${charSkill}%` 
-      };
+  // Check skill requirements (skip if Bend the Rules is active)
+  if (!ignoreRaceRestriction) {
+    for (const [skill, requirement] of Object.entries(perk.requirements.skills)) {
+      const charSkill = character.skills[skill] || 0;
+      if (charSkill < requirement) {
+        return { 
+          eligible: false, 
+          reason: `Requires ${skill.replace('_', ' ')} ${requirement}%, you have ${charSkill}%` 
+        };
+      }
     }
   }
   
-  // Check karma requirement if applicable
-  if (perk.requirements.karma !== undefined) {
+  // Check karma requirement if applicable (always check unless Break the Rules)
+  if (perk.requirements.karma !== undefined && !ignoreAllRestrictions) {
     if (character.karma < perk.requirements.karma) {
       return { 
         eligible: false, 
@@ -2079,6 +2108,10 @@ function checkPerkEligibility(perkId, character, ignoreRaceRestriction = false) 
     }
   }
   
+  if (gainAttributePerks.includes(perkId)) {
+    console.log(`  - ELIGIBLE for ${perkId}`);
+  }
+  
   return { eligible: true, reason: '' };
 }
 
@@ -2089,13 +2122,449 @@ function checkPerkEligibility(perkId, character, ignoreRaceRestriction = false) 
  */
 function getEligiblePerks(character) {
   const eligible = [];
+  const gainAttributePerks = ['gain_strength', 'gain_perception', 'gain_endurance', 'gain_charisma', 'gain_intelligence', 'gain_agility', 'gain_luck'];
+  
   for (const perkId in PERKS) {
     const check = checkPerkEligibility(perkId, character);
+    
+    if (gainAttributePerks.includes(perkId)) {
+      console.log(`[getEligiblePerks] ${perkId}: eligible=${check.eligible}, reason="${check.reason}"`);
+    }
+    
     if (check.eligible) {
       eligible.push(perkId);
     }
   }
+  
+  console.log('[getEligiblePerks] Final eligible perks:', eligible);
   return eligible;
+}
+
+// #endregion
+
+// #region PERK MECHANICAL EFFECTS
+/**
+ * Apply mechanical effects of perks to character data
+ * Should be called when confirming perk selection
+ * 
+ * IMPLEMENTED MECHANICAL PERKS:
+ * - Lifegiver (1-2 ranks): +4 HP/level per rank
+ * - Educated (1-3 ranks): +2 SP/level per rank
+ * - Faster Healing (1-3 ranks): +2 healing rate per rank
+ * - Brutish Hulk (1 rank): Double HP/level (Deathclaw only)
+ * - Gain X Attribute (1 rank each): +1 to permanent attribute
+ * - Cancerous Growth (1 rank): +2 healing rate (Ghoul only)
+ * - Toughness (1 rank): +10% damage resistance
+ * - Rad Resistance (1-2 ranks): +15% radiation resistance per rank
+ * - Comprehension (1 rank): +50% book skill point bonus
+ * 
+ * IMMEDIATE SKILL BONUSES (10 perks):
+ * - Speaker, Salesman, Negotiator, Medic, Master Thief, Master Trader
+ * - Mr. Fixit, Thief, Gambler, Living Anatomy
+ * 
+ * CONDITIONAL SKILL BONUSES (HELD FOR LATER - 7 perks):
+ * - Smooth Talker, Survivalist, Ranger, Ghost, Pickpocket, Harmless, Drunken Master
+ * 
+ * UNCONDITIONAL STAT/SEQUENCE BOOSTERS (2 perks):
+ * - Earlier Sequence (1-3 ranks): +2 sequence per rank
+ * - Presence (1-3 ranks): +1 CHA for all reaction rolls per rank
+ * - Tag! (1 rank): +1 additional tag skill
+ * 
+ * CONDITIONAL STAT BOOSTERS (HELD FOR LATER - 1 perk):
+ * - Brown Noser (1-2 ranks): +1 CHA for reactions with authority figures only
+ * 
+ * DEFENSIVE/DAMAGE PERKS:
+ * - Die Hard: +10% damage resistance (when HP < 20%)
+ * - Healer (1-2 ranks): Increased healing effectiveness
+ * - Tough Hide (1-2 ranks): +15 AC, +10% resistances per rank
+ * - Hide of Scars (1-2 ranks): +15% resistances per rank
+ * - Rad Child: +5 healing rate (in radiation)
+ * - Pyromaniac: +5 fire damage
+ * - Better Criticals: 1.5x crit damage, +50% limb damage
+ * - More Criticals (1-3 ranks): +5% crit chance per rank
+ * 
+ * RULE-BREAKING PERKS:
+ * - Bend the Rules: Ignore attribute/skill/level restrictions (next perk)
+ * - Break the Rules: Ignore ALL restrictions (next perk)
+ * 
+ * @param {object} characterData - Character data object
+ */
+function applyPerkEffects(characterData) {
+  // Store original HP before applying perk effects
+  characterData.perkEffects = characterData.perkEffects || {};
+  
+  const selectedPerks = characterData.selectedPerks || [];
+  const attributes = characterData.attributes || {};
+  const currentLevel = getLevelFromXP(characterData.totalXP || 0);
+  
+  // Reset perk effects to baseline
+  characterData.perkEffects.hpBonusPerLevel = 0;
+  characterData.perkEffects.skillPointsPerLevel = 0;
+  characterData.perkEffects.healingRate = 0;
+  characterData.perkEffects.attributeBonus = {};
+  characterData.perkEffects.damageResistance = 0;
+  characterData.perkEffects.radiationResistance = 0;
+  characterData.perkEffects.bookSkillBonus = 0;
+  characterData.perkEffects.skillBonuses = {};  // One-time skill bonuses from perks like Speaker, Mechanic, etc.
+  characterData.perkEffects.additionalTagSkills = 0;  // Extra tag skills from Tag! perk
+  characterData.perkEffects.sequenceBonus = 0;  // Bonus to Sequence from Earlier Sequence perk
+  characterData.perkEffects.charismaBonus = 0;  // Temporary CHA bonus for reactions
+  characterData.perkEffects.ignoreRestrictions = false;  // Bend the Rules: ignore perk restrictions except race
+  characterData.perkEffects.ignoreAllRestrictions = false;  // Break the Rules: ignore ALL perk restrictions
+  
+  // Apply each selected perk's mechanical effects
+  for (const selectedPerk of selectedPerks) {
+    const perk = PERKS[selectedPerk.id];
+    if (!perk) continue;
+    
+    const rank = selectedPerk.rank || 1;
+    
+    // Lifegiver: +4 HP per level per rank
+    if (selectedPerk.id === 'lifegiver') {
+      characterData.perkEffects.hpBonusPerLevel = (characterData.perkEffects.hpBonusPerLevel || 0) + (4 * rank);
+    }
+    
+    // Educated: +2 skill points per level per rank
+    if (selectedPerk.id === 'educated') {
+      characterData.perkEffects.skillPointsPerLevel = (characterData.perkEffects.skillPointsPerLevel || 0) + (2 * rank);
+    }
+    
+    // Faster Healing: +2 healing rate per rank
+    if (selectedPerk.id === 'faster_healing') {
+      characterData.perkEffects.healingRate = (characterData.perkEffects.healingRate || 0) + (2 * rank);
+    }
+    
+    // Brutish Hulk: Double HP per level (rank 1 means double)
+    if (selectedPerk.id === 'brutish_hulk') {
+      characterData.perkEffects.hpBonusPerLevel = (characterData.perkEffects.hpBonusPerLevel || 0) + calculateHPGain(attributes.endurance || 5);
+    }
+    
+    // Gain Attribute Perks: +1 to permanent attribute
+    const attributePerks = ['gain_strength', 'gain_perception', 'gain_endurance', 'gain_charisma', 'gain_intelligence', 'gain_agility', 'gain_luck'];
+    const attributeMap = {
+      'gain_strength': 'strength',
+      'gain_perception': 'perception',
+      'gain_endurance': 'endurance',
+      'gain_charisma': 'charisma',
+      'gain_intelligence': 'intelligence',
+      'gain_agility': 'agility',
+      'gain_luck': 'luck'
+    };
+    
+    if (attributePerks.includes(selectedPerk.id)) {
+      const attrName = attributeMap[selectedPerk.id];
+      characterData.perkEffects.attributeBonus = characterData.perkEffects.attributeBonus || {};
+      characterData.perkEffects.attributeBonus[attrName] = (characterData.perkEffects.attributeBonus[attrName] || 0) + rank;
+    }
+    
+    // Faster Healing / Cancerous Growth: +2 healing rate per rank
+    if (selectedPerk.id === 'faster_healing') {
+      characterData.perkEffects.healingRate = (characterData.perkEffects.healingRate || 0) + (2 * rank);
+    }
+    
+    // Cancerous Growth: +2 Healing Rate (Ghoul only)
+    if (selectedPerk.id === 'cancerous_growth') {
+      characterData.perkEffects.healingRate = (characterData.perkEffects.healingRate || 0) + 2;
+    }
+    
+    // Toughness: +10% Damage Resistance
+    if (selectedPerk.id === 'toughness') {
+      characterData.perkEffects.damageResistance = (characterData.perkEffects.damageResistance || 0) + 10;
+    }
+    
+    // Rad Resistance: +15% Radiation Resistance per rank
+    if (selectedPerk.id === 'rad_resistance') {
+      characterData.perkEffects.radiationResistance = (characterData.perkEffects.radiationResistance || 0) + (15 * rank);
+    }
+    
+    // Comprehension: +50% book skill point bonus
+    if (selectedPerk.id === 'comprehension') {
+      characterData.perkEffects.bookSkillBonus = 50;
+    }
+    
+    // IMMEDIATE SKILL BONUS PERKS (always apply)
+    // Speaker: +20% Speech (one-time)
+    if (selectedPerk.id === 'speaker') {
+      characterData.perkEffects.skillBonuses.speech = (characterData.perkEffects.skillBonuses.speech || 0) + 20;
+    }
+    
+    // Salesman: +20% Barter (one-time)
+    if (selectedPerk.id === 'salesman') {
+      characterData.perkEffects.skillBonuses.barter = (characterData.perkEffects.skillBonuses.barter || 0) + 20;
+    }
+    
+    // Negotiator: +10% Speech and Barter (one-time)
+    if (selectedPerk.id === 'negotiator') {
+      characterData.perkEffects.skillBonuses.speech = (characterData.perkEffects.skillBonuses.speech || 0) + 10;
+      characterData.perkEffects.skillBonuses.barter = (characterData.perkEffects.skillBonuses.barter || 0) + 10;
+    }
+    
+    // Medic: +10% First Aid and Doctor (one-time)
+    if (selectedPerk.id === 'medic') {
+      characterData.perkEffects.skillBonuses.first_aid = (characterData.perkEffects.skillBonuses.first_aid || 0) + 10;
+      characterData.perkEffects.skillBonuses.doctor = (characterData.perkEffects.skillBonuses.doctor || 0) + 10;
+    }
+    
+    // Master Thief: +15% Lockpick and Steal (one-time)
+    if (selectedPerk.id === 'master_thief') {
+      characterData.perkEffects.skillBonuses.lockpick = (characterData.perkEffects.skillBonuses.lockpick || 0) + 15;
+      characterData.perkEffects.skillBonuses.steal = (characterData.perkEffects.skillBonuses.steal || 0) + 15;
+    }
+    
+    // Master Trader: +30% Barter (one-time)
+    if (selectedPerk.id === 'master_trader') {
+      characterData.perkEffects.skillBonuses.barter = (characterData.perkEffects.skillBonuses.barter || 0) + 30;
+    }
+    
+    // Mr. Fixit: +10% Repair and Science (one-time)
+    if (selectedPerk.id === 'mr_fixit') {
+      characterData.perkEffects.skillBonuses.repair = (characterData.perkEffects.skillBonuses.repair || 0) + 10;
+      characterData.perkEffects.skillBonuses.science = (characterData.perkEffects.skillBonuses.science || 0) + 10;
+    }
+    
+    // Thief: +10% Sneak, Lockpick, Steal, and Traps (one-time)
+    if (selectedPerk.id === 'thief') {
+      characterData.perkEffects.skillBonuses.sneak = (characterData.perkEffects.skillBonuses.sneak || 0) + 10;
+      characterData.perkEffects.skillBonuses.lockpick = (characterData.perkEffects.skillBonuses.lockpick || 0) + 10;
+      characterData.perkEffects.skillBonuses.steal = (characterData.perkEffects.skillBonuses.steal || 0) + 10;
+      characterData.perkEffects.skillBonuses.traps = (characterData.perkEffects.skillBonuses.traps || 0) + 10;
+    }
+    
+    // Pickpocket: +25% Steal (one-time)
+    if (selectedPerk.id === 'pickpocket') {
+      characterData.perkEffects.skillBonuses.steal = (characterData.perkEffects.skillBonuses.steal || 0) + 25;
+    }
+    
+    // Harmless: +20% Steal (one-time)
+    if (selectedPerk.id === 'harmless') {
+      characterData.perkEffects.skillBonuses.steal = (characterData.perkEffects.skillBonuses.steal || 0) + 20;
+    }
+    
+    // Gambler: +20% Gambling (one-time)
+    if (selectedPerk.id === 'gambler') {
+      characterData.perkEffects.skillBonuses.gambling = (characterData.perkEffects.skillBonuses.gambling || 0) + 20;
+    }
+    
+    // Living Anatomy: +10% Doctor (one-time); stores combat bonus separately
+    if (selectedPerk.id === 'living_anatomy') {
+      characterData.perkEffects.skillBonuses.doctor = (characterData.perkEffects.skillBonuses.doctor || 0) + 10;
+      characterData.perkEffects.livingCreatureDamageBonus = 5; // Combat integration needed
+    }
+    
+    // Tag! perk: +1 additional tag skill
+    if (selectedPerk.id === 'tag') {
+      characterData.perkEffects.additionalTagSkills = (characterData.perkEffects.additionalTagSkills || 0) + 1;
+    }
+    
+    // Earlier Sequence: +2 Sequence per rank (unconditional bonus in combat)
+    if (selectedPerk.id === 'earlier_sequence') {
+      characterData.perkEffects.sequenceBonus = (characterData.perkEffects.sequenceBonus || 0) + (2 * rank);
+    }
+    
+    // NOTE: Presence is conditional (+1 CHA only during reaction/dialogue rolls)
+    // NOTE: Brown Noser is conditional (+1 CHA only with authority figures)
+    // Both will be implemented later when dialogue system can apply conditional bonuses
+    
+    // Die Hard: +10% Damage Resistance (always apply, condition-based application in combat)
+    // NOTE: Die Hard is conditional (+10% DR only when HP < 20%)
+    // Will be added when combat system can check HP threshold
+    
+    // NOTE: Healer is conditional (healing bonus only when performing healing actions)
+    // Requires integration with healing/medical item system
+    
+    // Tough Hide: +15 AC and +10% to all resistances per rank (UNCONDITIONAL)
+    if (selectedPerk.id === 'tough_hide') {
+      characterData.perkEffects.armorBonus = (characterData.perkEffects.armorBonus || 0) + (15 * rank);
+      characterData.perkEffects.damageResistance = (characterData.perkEffects.damageResistance || 0) + (10 * rank);
+    }
+    
+    // Dodger: +5 Armor Class per rank (UNCONDITIONAL)
+    if (selectedPerk.id === 'dodger') {
+      characterData.perkEffects.armorBonus = (characterData.perkEffects.armorBonus || 0) + (5 * rank);
+    }
+    
+    // Hide of Scars: +15% to all resistances except fire per rank (UNCONDITIONAL)
+    if (selectedPerk.id === 'hide_of_scars') {
+      characterData.perkEffects.damageResistance = (characterData.perkEffects.damageResistance || 0) + (15 * rank);
+    }
+    
+    // NOTE: Rad Child is conditional (+5 Healing Rate only when in 10+ rads/hour source)
+    // Requires integration with radiation exposure system
+    
+    // NOTE: Pyromaniac is conditional (+5 damage only with fire-based weapons)
+    // Requires combat system to track weapon types and apply conditional damage bonus
+    
+    // Better Criticals: Critical hits deal 150% damage; +50% limb damage (UNCONDITIONAL)
+    if (selectedPerk.id === 'better_criticals') {
+      characterData.perkEffects.criticalDamageMultiplier = 1.5;
+      characterData.perkEffects.limbDamageBonus = 0.5; // +50%
+    }
+    
+    // More Criticals: +5% Critical Chance per rank (UNCONDITIONAL)
+    if (selectedPerk.id === 'more_criticals') {
+      characterData.perkEffects.criticalChanceBonus = (characterData.perkEffects.criticalChanceBonus || 0) + (5 * rank);
+    }
+    
+    // Action Boy / Action Girl: +1 Action Point per rank (UNCONDITIONAL, combat stat)
+    if (selectedPerk.id === 'action_boy_girl') {
+      characterData.perkEffects.actionPointBonus = (characterData.perkEffects.actionPointBonus || 0) + rank;
+    }
+    
+    // Rule-Breaking Perks
+    // Bend the Rules: Next perk choice ignores restrictions except race
+    if (selectedPerk.id === 'bend_the_rules') {
+      characterData.perkEffects.ignoreRestrictions = true;
+    }
+    
+    // Break the Rules: Next perk choice ignores ALL restrictions including race
+    if (selectedPerk.id === 'break_the_rules') {
+      characterData.perkEffects.ignoreAllRestrictions = true;
+    }
+    
+    // Lifegiver and Brutish Hulk both add to HP bonus
+    // No additional action needed as they stack
+  }
+  
+  // Retroactively recalculate skills if any attribute bonuses were added
+  // This ensures skills reflect the new attribute-based base values
+  const attributeBonus = characterData.perkEffects.attributeBonus || {};
+  if (Object.keys(attributeBonus).length > 0) {
+    recalculateSkillsWithNewAttributes(characterData);
+  }
+}
+
+/**
+ * Recalculate all skill increases retroactively when attributes change
+ * This is called when Gain X perks are applied to recalculate base skills
+ * @param {object} characterData - Character data object
+ */
+function recalculateSkillsWithNewAttributes(characterData) {
+  // Get the new attributes with perk bonuses applied
+  const baseAttributes = characterData.attributes || {};
+  const perkEffects = characterData.perkEffects || {};
+  const attributesWithPerks = getAttributesWithPerkBonuses(baseAttributes, perkEffects);
+  
+  const selectedTraits = characterData.selectedTraits || characterData.traits || [];
+  const tagSkills = characterData.tagSkills || {};
+  
+  // Get the original base skills (without perks)
+  const originalBaseSkills = calculateBaseSkills(baseAttributes);
+  
+  // Get the new base skills (with perk attribute bonuses)
+  const newBaseSkills = calculateBaseSkills(attributesWithPerks);
+  
+  // Calculate how much each base skill changed
+  const baseDifferences = {};
+  for (const skillKey in originalBaseSkills) {
+    baseDifferences[skillKey] = newBaseSkills[skillKey] - originalBaseSkills[skillKey];
+  }
+  
+  // For each skill, recalculate what the total should be
+  const skillPointsSpent = characterData.skillPointsSpent || {};
+  const skillIncreases = characterData.skillIncreases || {};
+  
+  // Reset skill increases and rebuild them based on new base skills
+  characterData.skillIncreases = {};
+  
+  for (const skillKey in tagSkills) {
+    const isTag = tagSkills[skillKey];
+    const pointsSpent = skillPointsSpent[skillKey] || 0;
+    
+    if (pointsSpent > 0) {
+      // Simulate spending the same number of points with the new base skill value
+      let simValue = newBaseSkills[skillKey];
+      let tempSPSpent = 0;
+      
+      while (tempSPSpent < pointsSpent) {
+        const costThisSP = getSkillProgressionCost(simValue, isTag);
+        const gainThisSP = getSkillGainPerSP(simValue, isTag);
+        
+        if (tempSPSpent + costThisSP <= pointsSpent) {
+          simValue += gainThisSP;
+          tempSPSpent += costThisSP;
+        } else {
+          break;
+        }
+      }
+      
+      // Store the increase from the new base value
+      characterData.skillIncreases[skillKey] = simValue - newBaseSkills[skillKey];
+    }
+  }
+  
+  console.log('[recalculateSkillsWithNewAttributes] Skills recalculated');
+  console.log('Base skill differences:', baseDifferences);
+  console.log('New skill increases:', characterData.skillIncreases);
+}
+
+/**
+ * Calculate total HP with perk bonuses applied
+ * @param {number} currentLevel - Character's current level
+ * @param {object} attributes - Character attributes
+ * @param {object} perkEffects - Perk effects object (from characterData.perkEffects)
+ * @returns {number} Total maximum HP
+ */
+function calculateTotalHPWithPerks(currentLevel, attributes, perkEffects = {}) {
+  const baseHP = 15; // Starting HP at level 1
+  const endurance = attributes.endurance || 5;
+  const hpBonusPerLevel = perkEffects.hpBonusPerLevel || 0;
+  
+  let totalHP = baseHP;
+  for (let i = 2; i <= currentLevel; i++) {
+    const gainPerLevel = calculateHPGain(endurance) + hpBonusPerLevel;
+    totalHP += gainPerLevel;
+  }
+  
+  return totalHP;
+}
+
+/**
+ * Get attributes with perk bonuses applied
+ * @param {object} baseAttributes - Base character attributes
+ * @param {object} perkEffects - Perk effects object
+ * @returns {object} Attributes with perk bonuses applied
+ */
+function getAttributesWithPerkBonuses(baseAttributes, perkEffects = {}) {
+  const attributeBonus = perkEffects.attributeBonus || {};
+  return {
+    strength: (baseAttributes.strength || 5) + (attributeBonus.strength || 0),
+    perception: (baseAttributes.perception || 5) + (attributeBonus.perception || 0),
+    endurance: (baseAttributes.endurance || 5) + (attributeBonus.endurance || 0),
+    charisma: (baseAttributes.charisma || 5) + (attributeBonus.charisma || 0),
+    intelligence: (baseAttributes.intelligence || 5) + (attributeBonus.intelligence || 0),
+    agility: (baseAttributes.agility || 5) + (attributeBonus.agility || 0),
+    luck: (baseAttributes.luck || 5) + (attributeBonus.luck || 0)
+  };
+}
+
+/**
+ * Get skill value with perk bonuses applied
+ * @param {string} skillName - Name of the skill
+ * @param {number} baseValue - Base skill value before perks
+ * @param {object} perkEffects - Perk effects object containing skillBonuses
+ * @returns {number} Skill value with perk bonuses applied
+ */
+function getSkillWithPerkBonus(skillName, baseValue, perkEffects = {}) {
+  const skillBonuses = perkEffects.skillBonuses || {};
+  const bonus = skillBonuses[skillName] || 0;
+  return baseValue + bonus;
+}
+
+/**
+ * Get all skills with perk bonuses applied
+ * @param {object} baseSkills - Object mapping skill names to values
+ * @param {object} perkEffects - Perk effects object containing skillBonuses
+ * @returns {object} Skills object with perk bonuses applied
+ */
+function getSkillsWithPerkBonuses(baseSkills, perkEffects = {}) {
+  const skillBonuses = perkEffects.skillBonuses || {};
+  const result = {};
+  
+  for (const [skillName, baseValue] of Object.entries(baseSkills)) {
+    result[skillName] = baseValue + (skillBonuses[skillName] || 0);
+  }
+  
+  return result;
 }
 
 // #endregion
