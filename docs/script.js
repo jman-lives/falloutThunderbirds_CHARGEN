@@ -5,6 +5,299 @@ const BASE_ATTRIBUTE_VALUE = 5;
 const CHARACTER_POINTS_POOL = 5;
 const ATTRIBUTE_NAMES = ['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'];
 
+// #region TRAITS DEFINITION
+const TRAITS = {
+  fast_metabolism: {
+    name: 'Fast Metabolism',
+    description: 'Your metabolic rate is twice normal.',
+    effects: '+2 Healing Rate, Rad/Poison Resist reset to 0%',
+    restrictions: ['Robots'],
+    briefDescription: 'Faster healing, lower poison/rad resistance'
+  },
+  small_frame: {
+    name: 'Small Frame',
+    description: 'You are smaller than average, but more agile.',
+    effects: '+1 Agility, Carry Weight = 15 × STR',
+    restrictions: [],
+    briefDescription: 'More agile, reduced carrying capacity'
+  },
+  one_hander: {
+    name: 'One Hander',
+    description: 'You favor single-handed weapons.',
+    effects: '+20% to hit with one-handed weapons, −40% with two-handed',
+    restrictions: ['Animals'],
+    briefDescription: 'Better with one-handed weapons'
+  },
+  finesse: {
+    name: 'Finesse',
+    description: 'Your attacks favor precision over raw power.',
+    effects: '30% less damage, +10% Critical Chance',
+    restrictions: [],
+    briefDescription: 'Precise attacks, lower damage'
+  },
+  kamikaze: {
+    name: 'Kamikaze',
+    description: 'You sacrifice defense for speed.',
+    effects: 'No natural Armor Class, +5 Sequence',
+    restrictions: [],
+    briefDescription: 'Faster but vulnerable'
+  },
+  heavy_handed: {
+    name: 'Heavy Handed',
+    description: 'You hit harder, but lack finesse.',
+    effects: '+4 Melee Damage, Critical hits 30% weaker and less likely',
+    restrictions: [],
+    briefDescription: 'More damage, weaker criticals'
+  },
+  fast_shot: {
+    name: 'Fast Shot',
+    description: 'You attack faster but less precisely.',
+    effects: 'Ranged attacks cost 1 less AP, no targeted shots allowed',
+    restrictions: ['Animals'],
+    briefDescription: 'Faster ranged attacks, no targeting'
+  },
+  bloody_mess: {
+    name: 'Bloody Mess',
+    description: 'Violence follows you everywhere.',
+    effects: 'No mechanical effect (flavor trait)',
+    restrictions: [],
+    briefDescription: 'More dramatic deaths (flavor)'
+  },
+  jinxed: {
+    name: 'Jinxed',
+    description: 'Bad luck spreads around you.',
+    effects: 'Combat failures 50% more likely to crit fail',
+    restrictions: [],
+    briefDescription: 'Bad luck affects you and allies'
+  },
+  good_natured: {
+    name: 'Good Natured',
+    description: 'You focused on people, not violence.',
+    effects: '+20% to First Aid/Doctor/Speech/Barter, −10% to combat skills',
+    restrictions: ['Animals', 'Robots'],
+    briefDescription: 'Better at social skills, worse at combat'
+  },
+  chem_reliant: {
+    name: 'Chem Reliant',
+    description: 'You become addicted more easily, but recover faster.',
+    effects: 'Double addiction chance, halved recovery time',
+    restrictions: ['Robots'],
+    briefDescription: 'Easier addiction, faster recovery'
+  },
+  chem_resistant: {
+    name: 'Chem Resistant',
+    description: 'Chems affect you less.',
+    effects: 'Chem effects half as long, 50% less addiction chance',
+    restrictions: ['Robots'],
+    briefDescription: 'Drugs less effective, less addictive'
+  },
+  night_person: {
+    name: 'Night Person',
+    description: 'You function better at night.',
+    effects: 'Day: −1 INT/PE; Night: +1 INT/PE',
+    restrictions: ['Robots'],
+    briefDescription: 'Better at night, worse during day'
+  },
+  skilled: {
+    name: 'Skilled',
+    description: 'You focus on skills rather than perks.',
+    effects: '+5 Skill Points/level, +10% all skills, Perks one level later',
+    restrictions: ['Animals', 'Robots'],
+    briefDescription: 'More skills, fewer perks'
+  },
+  gifted: {
+    name: 'Gifted',
+    description: 'You are naturally talented but undertrained.',
+    effects: '+1 to all attributes, −10% to all skills, −5 Skill Points/level',
+    restrictions: ['Robots'],
+    briefDescription: 'Higher attributes, lower skills'
+  },
+  sex_appeal: {
+    name: 'Sex Appeal',
+    description: 'You are desirable to the opposite sex.',
+    effects: '+1 CHA opposite sex, +40% Speech/Barter opposite sex, −1 CHA same sex',
+    restrictions: ['Humans only'],
+    briefDescription: 'Attractive to opposite sex'
+  },
+  glowing_one: {
+    name: 'Glowing One',
+    description: 'Radiation has permanently altered you.',
+    effects: '+50% Radiation Resistance, nearby characters take 10 rads/hour',
+    restrictions: ['Ghouls only'],
+    briefDescription: 'Radiation resistance, radiation aura'
+  },
+  tech_wizard: {
+    name: 'Tech Wizard',
+    description: 'You are technologically gifted but visually impaired.',
+    effects: '+15% to Science/Repair/Lockpick, −1 Perception',
+    restrictions: ['Deathclaws', 'Dogs'],
+    briefDescription: 'Better at tech, worse vision'
+  },
+  fear_the_reaper: {
+    name: 'Fear the Reaper',
+    description: 'You have escaped death… temporarily.',
+    effects: 'Perks as if Human, 1/month death roll vs Luck',
+    restrictions: ['Ghouls only'],
+    briefDescription: 'Monthly death risk'
+  }
+};
+
+const MAX_TRAITS = 2;
+
+/**
+ * Get selected traits from checkboxes
+ * @returns {array} Array of selected trait IDs
+ */
+function getSelectedTraits() {
+  const checkboxes = document.querySelectorAll('.trait-checkbox');
+  return Array.from(checkboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.dataset.trait);
+}
+
+/**
+ * Update trait selection counter and validation
+ */
+function updateTraitSelectionDisplay() {
+  const selectedTraits = getSelectedTraits();
+  const countEl = qs('traits-count');
+  const warningEl = qs('traits-warning');
+  
+  if (countEl) {
+    countEl.textContent = selectedTraits.length;
+  }
+  
+  if (warningEl) {
+    if (selectedTraits.length > MAX_TRAITS) {
+      warningEl.textContent = `⚠️ Too many traits selected. Maximum is ${MAX_TRAITS}. Current: ${selectedTraits.length}`;
+      warningEl.style.display = 'block';
+    } else {
+      warningEl.style.display = 'none';
+    }
+  }
+  
+  updateAttributeDisplay();
+  updateSkillDisplay();
+  updateSecondaryStats();
+  renderOutput(getFormData());
+}
+
+/**
+ * Update attribute display with trait modifier indicators
+ */
+function updateAttributeDisplay() {
+  const formData = getFormData();
+  const traitMods = calculateTraitAttributeModifiers(formData.selectedTraits);
+  
+  const attributeNames = ['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'];
+  
+  attributeNames.forEach(attr => {
+    const input = qs(attr);
+    if (input) {
+      const baseValue = Number(input.value) || 0;
+      const traitMod = traitMods[attr] || 0;
+      const effectiveValue = baseValue + traitMod;
+      
+      // Update the input visual to show trait modifiers
+      if (traitMod > 0) {
+        input.style.borderColor = '#34d399';
+        input.style.borderWidth = '2px';
+        input.title = `Base: ${baseValue}, Trait Bonus: +${traitMod}, Effective: ${effectiveValue}`;
+      } else if (traitMod < 0) {
+        input.style.borderColor = '#ff6b6b';
+        input.style.borderWidth = '2px';
+        input.title = `Base: ${baseValue}, Trait Penalty: ${traitMod}, Effective: ${effectiveValue}`;
+      } else {
+        input.style.borderColor = '';
+        input.style.borderWidth = '';
+        input.title = '';
+      }
+      
+      // Update the effective value display
+      const effectiveEl = qs(`${attr}-effective`);
+      if (effectiveEl) {
+        if (traitMod !== 0) {
+          const sign = traitMod > 0 ? '+' : '';
+          effectiveEl.textContent = `→ ${effectiveValue} (${sign}${traitMod})`;
+          effectiveEl.style.color = traitMod > 0 ? '#34d399' : '#ff6b6b';
+          effectiveEl.style.fontWeight = 'bold';
+        } else {
+          effectiveEl.textContent = '';
+          effectiveEl.style.color = '#999';
+          effectiveEl.style.fontWeight = 'normal';
+        }
+      }
+    }
+  });
+}
+
+/**
+ * Handle trait checkbox change
+ */
+function handleTraitChange(traitId) {
+  const selectedTraits = getSelectedTraits();
+  
+  // If trying to select more than MAX_TRAITS, prevent it
+  if (selectedTraits.length > MAX_TRAITS) {
+    const checkbox = document.querySelector(`input[data-trait="${traitId}"]`);
+    if (checkbox) {
+      checkbox.checked = false;
+    }
+  }
+  
+  renderTraits();
+  updateTraitSelectionDisplay();
+}
+
+/**
+ * Render traits selection UI
+ */
+function renderTraits() {
+  const container = qs('traits-container');
+  if (!container) return;
+  
+  const race = qs('race')?.value || 'Human';
+  const selectedTraits = getSelectedTraits();
+  
+  let html = '';
+  for (const [traitId, trait] of Object.entries(TRAITS)) {
+    const isRestricted = trait.restrictions.length > 0 && 
+      (trait.restrictions.includes(race) || 
+       trait.restrictions.some(r => r.includes('only') && !r.toLowerCase().includes(race.toLowerCase())));
+    
+    const isSelected = selectedTraits.includes(traitId);
+    
+    html += `<div class="trait-card ${isSelected ? 'selected' : ''} ${isRestricted ? 'restricted' : ''}" 
+         ${isRestricted ? 'style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+      <label class="trait-card-label" ${isRestricted ? 'style="cursor: not-allowed;"' : ''}>
+        <input 
+          type="checkbox" 
+          class="trait-checkbox trait-card-checkbox"
+          data-trait="${traitId}"
+          ${isRestricted ? 'disabled' : ''}
+          ${isSelected ? 'checked' : ''}
+        >
+        <span class="trait-card-name">${trait.name}</span>
+      </label>
+      <div class="trait-card-description">${trait.briefDescription}</div>
+      <div class="trait-card-description" style="font-size: 0.75rem; color: #aaa;">${trait.effects}</div>
+      ${isRestricted ? `<div class="trait-card-restrictions">Not available for ${race}</div>` : ''}
+    </div>`;
+  }
+  
+  console.log('Generated HTML length:', html.length, 'Num traits:', Object.keys(TRAITS).length);
+  container.innerHTML = html;
+  
+  const checkboxes = document.querySelectorAll('.trait-checkbox');
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', (e) => {
+      handleTraitChange(e.target.dataset.trait);
+    });
+  });
+}
+
+// #endregion TRAITS DEFINITION
+
 // #region CHARACTER POINT VALIDATION
 /**
  * Calculate the total character points allocated (sum of adjustments from base value)
@@ -105,12 +398,8 @@ function handleAttributeChange(attrId, previousValue) {
     return;
   }
   
-  // Check racial maximum
-  if (attributeLimits && currentValue > attributeLimits.max) {
-    qs(attrId).value = previousValue;
-    updatePointsPoolDisplay();
-    return;
-  }
+  // Allow going above racial maximum (traits can push attributes higher)
+  // But warn if exceeding point pool
   
   const pointsAllocated = calculatePointsAllocated();
   const pointsRemaining = CHARACTER_POINTS_POOL - pointsAllocated;
@@ -163,6 +452,9 @@ function getFormData(){
     luck: Number(qs('luck').value)||0,
   };
 
+  const selectedTraits = getSelectedTraits();
+  const effectiveAttributes = getEffectiveAttributes(attributes, selectedTraits);
+
   return {
     player: qs('player').value||null,
     name: qs('name').value||null,
@@ -171,7 +463,7 @@ function getFormData(){
     gender: qs('gender').value||null,
     attributes: attributes,
     tagSkills: tagSkills,
-    skills: calculateFinalSkills(attributes, tagSkills),
+    skills: calculateFinalSkills(effectiveAttributes, tagSkills, selectedTraits),
     level: Number((qs('current_level')?.textContent)) || 1,
     totalXP: Number((qs('total_xp')?.textContent)) || 0,
     selectedPerks: getSelectedPerks(),
@@ -204,6 +496,7 @@ function getFormData(){
       }
     },
     notes: (qs('notes')?.value)||null,
+    selectedTraits: getSelectedTraits(),
     createdAt: new Date().toISOString()
   }
 }
@@ -233,6 +526,15 @@ function setFormData(data){
   if (checkboxes.length > 0) {
     checkboxes.forEach(checkbox => {
       checkbox.checked = tagSkills[checkbox.dataset.skill] || false;
+    });
+  }
+  
+  // Restore selected traits
+  const loadedTraits = data.selectedTraits || [];
+  const traitCheckboxes = document.querySelectorAll('.trait-checkbox');
+  if (traitCheckboxes.length > 0) {
+    traitCheckboxes.forEach(checkbox => {
+      checkbox.checked = loadedTraits.includes(checkbox.dataset.trait) || false;
     });
   }
   
@@ -268,7 +570,10 @@ function setFormData(data){
   const notesEl = qs('notes');
   if (notesEl) notesEl.value = data.notes||''
   updatePointsPoolDisplay()
+  updateAttributeDisplay()
+  updateTraitSelectionDisplay()
   updateSkillDisplay()
+  updateSecondaryStats()
   updateAdvancementDisplay()
   renderOutput(getFormData())
 }
@@ -314,6 +619,71 @@ function calculateMaxHp(str, end, level = 1) {
 // AGI: Agility (number), ArmorAC: armor bonus (default 0)
 function calculateArmorClass(agi, armorAC = 0) {
   return agi + armorAC;
+}
+// #endregion
+
+// #region TRAIT ATTRIBUTE MODIFIERS
+/**
+ * Calculate attribute modifiers from selected traits
+ * @param {array} selectedTraits - Array of selected trait IDs
+ * @returns {object} Trait modifiers for each attribute
+ */
+function calculateTraitAttributeModifiers(selectedTraits = []) {
+  const modifiers = {
+    strength: 0,
+    perception: 0,
+    endurance: 0,
+    charisma: 0,
+    intelligence: 0,
+    agility: 0,
+    luck: 0
+  };
+
+  // Define trait attribute modifiers
+  const traitAttributeEffects = {
+    'small_frame': {
+      agility: 1
+    },
+    'gifted': {
+      strength: 1,
+      perception: 1,
+      endurance: 1,
+      charisma: 1,
+      intelligence: 1,
+      agility: 1,
+      luck: 1
+    },
+    'tech_wizard': {
+      perception: -1
+    }
+  };
+
+  selectedTraits.forEach(traitId => {
+    if (traitAttributeEffects[traitId]) {
+      Object.keys(traitAttributeEffects[traitId]).forEach(attr => {
+        modifiers[attr] += traitAttributeEffects[traitId][attr];
+      });
+    }
+  });
+
+  return modifiers;
+}
+
+/**
+ * Get effective attributes including trait modifiers
+ * @param {object} baseAttributes - Base character attributes from input
+ * @param {array} selectedTraits - Array of selected trait IDs
+ * @returns {object} Effective attributes with trait bonuses applied
+ */
+function getEffectiveAttributes(baseAttributes, selectedTraits = []) {
+  const traitMods = calculateTraitAttributeModifiers(selectedTraits);
+  const effective = {};
+
+  Object.keys(baseAttributes).forEach(attr => {
+    effective[attr] = (baseAttributes[attr] || 0) + (traitMods[attr] || 0);
+  });
+
+  return effective;
 }
 // #endregion
 
@@ -433,7 +803,7 @@ function calculatePerksEarned(currentLevel, race) {
 // #endregion
 
 // #region MAIN CALCULATION FUNCTION
-function calculateSecondaryStats(attributes, race = 'Human') {
+function calculateSecondaryStats(attributes, race = 'Human', selectedTraits = []) {
   const str = attributes.strength || 0;
   const per = attributes.perception || 0;
   const end = attributes.endurance || 0;
@@ -447,20 +817,77 @@ function calculateSecondaryStats(attributes, race = 'Human') {
   const basePoisonResist = calculatePoisonResistance(end);
   const baseRadiationResist = calculateRadiationResistance(end);
 
-  return {
+  // Calculate carry weight (can be modified by Small Frame trait)
+  let carryWeight = calculateCarryWeight(str);
+  if (selectedTraits.includes('small_frame')) {
+    // Small Frame changes formula to 15 × STR instead of 25 × STR
+    carryWeight = 15 * str;
+  }
+
+  // Calculate armor class (can be affected by Kamikaze trait)
+  let armorClass = calculateArmorClass(agi, 0);
+  if (selectedTraits.includes('kamikaze')) {
+    // Kamikaze: No natural AC, Agility does not contribute
+    armorClass = 0;
+  }
+
+  // Calculate base stats
+  let stats = {
     Hit_Points: calculateMaxHp(str, end, 1),
-    Armor_Class: calculateArmorClass(agi, 0),
+    Armor_Class: armorClass,
     Action_Points: calculateActionPoints(agi),
-    Carry_Weight: calculateCarryWeight(str),
+    Carry_Weight: carryWeight,
     Melee_Damage: calculateMeleeDamage(str),
     Poison_Resist: basePoisonResist + (racialResistances.Poison_Resist || 0),
     Radiation_Resist: baseRadiationResist + (racialResistances.Radiation_Resist || 0),
     Sequence: calculateSequence(per),
     Healing_Rate: calculateHealingRate(end),
     Critical_Chance: calculateCriticalChance(luck),
-    Gas_Resist: 0, // Derived from armor, race, and equipment only
-    Electricity_Resist: racialResistances.Electricity_Resist || 0, // Derived from armor, race, and equipment only
+    Gas_Resist: 0,
+    Electricity_Resist: racialResistances.Electricity_Resist || 0,
   };
+
+  // Apply trait modifiers to secondary stats
+  if (selectedTraits.includes('fast_metabolism')) {
+    stats.Healing_Rate += 2; // +2 Healing Rate
+    stats.Radiation_Resist = 0; // Reset to 0%
+    stats.Poison_Resist = 0; // Reset to 0%
+    // Racial modifiers applied AFTER reset
+    if (race === 'Ghoul') {
+      stats.Radiation_Resist += 80;
+      stats.Poison_Resist += 30;
+    }
+  }
+
+  if (selectedTraits.includes('finesse')) {
+    stats.Critical_Chance += 10; // +10% Critical Chance
+  }
+
+  if (selectedTraits.includes('kamikaze')) {
+    stats.Sequence += 5; // +5 Sequence
+  }
+
+  if (selectedTraits.includes('heavy_handed')) {
+    stats.Melee_Damage += 4; // +4 Melee Damage
+  }
+
+  if (selectedTraits.includes('fast_shot')) {
+    // Note: This affects Action Points for ranged attacks, but we'll note it in AP for now
+    // In actual gameplay, this would be handled during combat
+    // For display purposes, we could mark it somehow, but it's a combat rule not a stat change
+  }
+
+  if (selectedTraits.includes('glowing_one')) {
+    stats.Radiation_Resist += 50; // +50% Radiation Resistance
+  }
+
+  // Clamp all resistance values to reasonable ranges (0-100%)
+  stats.Poison_Resist = Math.max(0, Math.min(100, stats.Poison_Resist));
+  stats.Radiation_Resist = Math.max(0, Math.min(100, stats.Radiation_Resist));
+  stats.Gas_Resist = Math.max(0, Math.min(100, stats.Gas_Resist));
+  stats.Electricity_Resist = Math.max(0, Math.min(100, stats.Electricity_Resist));
+
+  return stats;
 }
 // #endregion
 // #endregion
@@ -482,8 +909,7 @@ function calculateBaseSkills(attributes) {
   const lk = attributes.luck || 0;
 
   return {
-    small_guns: 5 + (4 * ag),
-    big_guns: 0 + (2 * ag),
+    guns: 5 + (4 * ag),
     energy_weapons: 0 + (2 * ag),
     unarmed: 30 + (2 * (ag + str)),
     melee_weapons: 20 + (2 * (ag + str)),
@@ -505,21 +931,91 @@ function calculateBaseSkills(attributes) {
 }
 
 /**
- * Calculate final skill values with tag bonuses applied
+ * Calculate final skill values with tag bonuses and trait effects applied
  * @param {object} attributes - Character attributes
  * @param {object} tagSkills - Object with skill names as keys and boolean values
- * @returns {object} Final skill percentages with tag bonuses applied
+ * @param {array} selectedTraits - Array of selected trait IDs
+ * @returns {object} Final skill percentages with tag bonuses and trait effects applied
  */
-function calculateFinalSkills(attributes, tagSkills = {}) {
+function calculateFinalSkills(attributes, tagSkills = {}, selectedTraits = []) {
   const baseSkills = calculateBaseSkills(attributes);
   const finalSkills = {};
 
+  // Define trait skill modifiers
+  const traitModifiers = {
+    'good_natured': {
+      first_aid: 20,
+      doctor: 20,
+      speech: 20,
+      barter: 20,
+      guns: -10,
+      energy_weapons: -10,
+      unarmed: -10,
+      melee_weapons: -10
+    },
+    'skilled': {
+      // +10% to all skills
+      guns: 10,
+      energy_weapons: 10,
+      unarmed: 10,
+      melee_weapons: 10,
+      throwing: 10,
+      first_aid: 10,
+      doctor: 10,
+      sneak: 10,
+      lockpick: 10,
+      steal: 10,
+      traps: 10,
+      science: 10,
+      repair: 10,
+      pilot: 10,
+      speech: 10,
+      barter: 10,
+      gambling: 10,
+      outdoorsman: 10
+    },
+    'gifted': {
+      // -10% to all skills
+      guns: -10,
+      energy_weapons: -10,
+      unarmed: -10,
+      melee_weapons: -10,
+      throwing: -10,
+      first_aid: -10,
+      doctor: -10,
+      sneak: -10,
+      lockpick: -10,
+      steal: -10,
+      traps: -10,
+      science: -10,
+      repair: -10,
+      pilot: -10,
+      speech: -10,
+      barter: -10,
+      gambling: -10,
+      outdoorsman: -10
+    },
+    'tech_wizard': {
+      science: 15,
+      repair: 15
+    }
+  };
+
   Object.keys(baseSkills).forEach(skillKey => {
     let value = baseSkills[skillKey];
+    
     // Apply tag bonus: +20% to base value
     if (tagSkills[skillKey]) {
       value += 20;
     }
+    
+    // Apply trait modifiers
+    selectedTraits.forEach(traitId => {
+      if (traitModifiers[traitId] && traitModifiers[traitId][skillKey] !== undefined) {
+        value += traitModifiers[traitId][skillKey];
+      }
+    });
+    
     finalSkills[skillKey] = Math.max(0, Math.min(100, Math.round(value))); // Clamp to 0-100
   });
 
@@ -567,8 +1063,41 @@ function updateTagSkillDisplay() {
  */
 function updateSkillDisplay() {
   const formData = getFormData();
-  const baseSkills = calculateBaseSkills(formData.attributes);
-  const finalSkills = calculateFinalSkills(formData.attributes, formData.tagSkills);
+  const effectiveAttributes = getEffectiveAttributes(formData.attributes, formData.selectedTraits);
+  const baseSkills = calculateBaseSkills(effectiveAttributes);
+  const finalSkills = calculateFinalSkills(effectiveAttributes, formData.tagSkills, formData.selectedTraits);
+  
+  // Define trait skill modifiers for display purposes
+  const traitModifiers = {
+    'good_natured': {
+      first_aid: 20,
+      doctor: 20,
+      speech: 20,
+      barter: 20,
+      guns: -10,
+      energy_weapons: -10,
+      unarmed: -10,
+      melee_weapons: -10
+    },
+    'skilled': {
+      guns: 10, energy_weapons: 10, unarmed: 10, melee_weapons: 10,
+      throwing: 10, first_aid: 10, doctor: 10, sneak: 10,
+      lockpick: 10, steal: 10, traps: 10, science: 10,
+      repair: 10, pilot: 10, speech: 10, barter: 10,
+      gambling: 10, outdoorsman: 10
+    },
+    'gifted': {
+      guns: -10, energy_weapons: -10, unarmed: -10, melee_weapons: -10,
+      throwing: -10, first_aid: -10, doctor: -10, sneak: -10,
+      lockpick: -10, steal: -10, traps: -10, science: -10,
+      repair: -10, pilot: -10, speech: -10, barter: -10,
+      gambling: -10, outdoorsman: -10
+    },
+    'tech_wizard': {
+      science: 15,
+      repair: 15
+    }
+  };
   
   // Update base skill display and final values
   Object.keys(baseSkills).forEach(skillKey => {
@@ -578,16 +1107,45 @@ function updateSkillDisplay() {
       const finalValue = finalSkills[skillKey];
       const isTagged = formData.tagSkills[skillKey];
       
-      // Display final value with tag indicator
+      // Calculate trait modifier for this skill
+      let traitModifier = 0;
+      formData.selectedTraits.forEach(traitId => {
+        if (traitModifiers[traitId] && traitModifiers[traitId][skillKey] !== undefined) {
+          traitModifier += traitModifiers[traitId][skillKey];
+        }
+      });
+      
+      // Build display text with modifiers
+      let displayText = `${finalValue}%`;
+      let indicators = [];
+      
+      // Add tag modifier (always +20 if tagged)
       if (isTagged) {
-        baseEl.textContent = `${finalValue}% (tag)`;
-        baseEl.style.color = '#34d399';
-        baseEl.style.fontWeight = 'bold';
-      } else {
-        baseEl.textContent = `${finalValue}%`;
-        baseEl.style.color = 'inherit';
-        baseEl.style.fontWeight = 'normal';
+        indicators.push('tag +20%');
       }
+      
+      // Add trait modifier with sign
+      if (traitModifier !== 0) {
+        const sign = traitModifier > 0 ? '+' : '';
+        indicators.push(`trait ${sign}${traitModifier}%`);
+      }
+      
+      if (indicators.length > 0) {
+        displayText += ` (${indicators.join(', ')})`;
+      }
+      
+      baseEl.textContent = displayText;
+      
+      // Color based on modifications - prioritize negative traits
+      if (traitModifier < 0) {
+        baseEl.style.color = '#ff6b6b'; // Red for negative traits
+      } else if (isTagged || traitModifier > 0) {
+        baseEl.style.color = '#34d399'; // Green for tags or positive traits
+      } else {
+        baseEl.style.color = 'inherit';
+      }
+      
+      baseEl.style.fontWeight = (isTagged || traitModifier !== 0) ? 'bold' : 'normal';
     }
   });
   
@@ -602,7 +1160,7 @@ function randomizeCharacter(){
   const genders = ['Male','Female']
   const races = ['Human','Ghoul']
   const occupation = ['Scavenger','Engineer','Trader','Medic','Soldier','Mechanic','Scientist']
-  const allSkills = ['small_guns', 'big_guns', 'energy_weapons', 'unarmed', 'melee_weapons', 'throwing', 'first_aid', 'doctor', 'sneak', 'lockpick', 'steal', 'traps', 'science', 'repair', 'pilot', 'speech', 'barter', 'gambling', 'outdoorsman']
+  const allSkills = ['guns', 'energy_weapons', 'unarmed', 'melee_weapons', 'throwing', 'first_aid', 'doctor', 'sneak', 'lockpick', 'steal', 'traps', 'science', 'repair', 'pilot', 'speech', 'barter', 'gambling', 'outdoorsman']
   
   // Select random race first
   const selectedRace = races[randInt(0,races.length-1)];
@@ -680,6 +1238,35 @@ function randomizeCharacter(){
     tagSkills[shuffledSkills[i]] = true;
   }
   
+  // Select up to 2 random traits (respecting race restrictions)
+  const traitRaceLimits = RACIAL_LIMITS[selectedRace];
+  const availableTraits = Object.entries(TRAITS)
+    .filter(([traitId, trait]) => {
+      // Check if trait is restricted for this race
+      if (trait.restrictions.length === 0) return true; // No restrictions
+      
+      // Check for "only" restrictions (e.g., "Humans only", "Ghouls only")
+      const onlyRestrictions = trait.restrictions.filter(r => r.includes('only'));
+      if (onlyRestrictions.length > 0) {
+        // Must match at least one "only" restriction
+        return onlyRestrictions.some(r => r.toLowerCase().includes(selectedRace.toLowerCase()));
+      }
+      
+      // Check for race exclusions (e.g., "Robots", "Animals")
+      return !trait.restrictions.includes(selectedRace);
+    })
+    .map(([traitId]) => traitId);
+  
+  // Randomly select 0, 1, or 2 traits from available traits
+  const numTraits = randInt(0, Math.min(2, availableTraits.length));
+  const selectedTraits = [];
+  if (numTraits > 0) {
+    const shuffledTraits = availableTraits.sort(() => Math.random() - 0.5);
+    for (let i = 0; i < numTraits; i++) {
+      selectedTraits.push(shuffledTraits[i]);
+    }
+  }
+  
   const char = {
     name: sampleNames[randInt(0,sampleNames.length-1)],
     race: selectedRace,
@@ -687,6 +1274,7 @@ function randomizeCharacter(){
     gender: genders[randInt(0,genders.length-1)],
     attributes: attributes,
     tagSkills: tagSkills,
+    selectedTraits: selectedTraits,
     skills: {
       guns: randInt(0,100),
       energy_weapons: randInt(0,100),
@@ -742,6 +1330,7 @@ function randomizeCharacter(){
   setFormData(char)
   console.log('setFormData completed');
   // Save the randomized character to localStorage
+  renderTraits();
   renderOutput(getFormData());
 }
 
@@ -780,12 +1369,45 @@ document.addEventListener('DOMContentLoaded', ()=>{
   try {
     console.log('DOMContentLoaded fired, setting up event listeners');
     
+    // Try to load dev config for local development
+    fetch('dev-config.json')
+      .then(response => {
+        if (response.ok) return response.json();
+        throw new Error('dev-config.json not found');
+      })
+      .then(config => {
+        if (config.playerName) {
+          const playerField = qs('player');
+          if (playerField && !playerField.value) {
+            playerField.value = config.playerName;
+            console.log('Loaded player name from dev-config:', config.playerName);
+          }
+        }
+      })
+      .catch(err => {
+        // Silently fail if dev-config doesn't exist (production environment)
+        console.log('dev-config.json not available (this is normal in production)');
+      });
+    
     const randomBtn = qs('randomize');
     if (randomBtn) {
       randomBtn.addEventListener('click', randomizeCharacter);
       console.log('Attached randomize handler');
     } else {
       console.warn('randomize button not found');
+    }
+    
+    const randomAgeBtn = qs('random-age-btn');
+    if (randomAgeBtn) {
+      randomAgeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const randomAge = Math.floor(Math.random() * (39 - 21 + 1)) + 21; // Random between 21-39
+        qs('age').value = randomAge;
+        console.log('Random age set to:', randomAge);
+      });
+      console.log('Attached random-age handler');
+    } else {
+      console.warn('random-age-btn button not found');
     }
     
     const downloadBtn = qs('download');
@@ -835,6 +1457,23 @@ document.addEventListener('DOMContentLoaded', ()=>{
     if (advBtn) {
       advBtn.addEventListener('click', ()=>{
         console.log('Go to advancement button clicked');
+        const playerName = qs('player').value.trim();
+        const characterName = qs('name').value.trim();
+        
+        // Check if Player field is filled
+        if (!playerName) {
+          alert('Please enter a Player name before accessing Advancement & Perks');
+          console.warn('Player field is empty, navigation blocked');
+          return;
+        }
+        
+        // Check if Character Name field is filled
+        if (!characterName) {
+          alert('Please enter a Character Name before accessing Advancement & Perks');
+          console.warn('Character Name field is empty, navigation blocked');
+          return;
+        }
+        
         const formData = getFormData();
         console.log('Current form data:', formData);
         saveCharacterData();
@@ -877,6 +1516,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
       }
       
+      // Re-render traits when race changes
+      renderTraits();
+      
       // Update attribute input min/max constraints based on race
       const raceLimits = RACIAL_LIMITS[selectedRace];
       ATTRIBUTE_NAMES.forEach(attrName => {
@@ -896,6 +1538,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       });
       
       updatePointsPoolDisplay();
+      renderTraits();
       renderOutput(getFormData())
     })
 
@@ -904,6 +1547,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     
     attributeInputs.forEach(attrId => {
       qs(attrId).addEventListener('change', () => {
+        updateAttributeDisplay();
         updateSecondaryStats();
         updateSkillDisplay();
         updatePointsPoolDisplay();
@@ -936,10 +1580,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
 
     // Initialize stats on page load (only on index.html)
+    updateAttributeDisplay();
     updateSecondaryStats();
     updateSkillDisplay();
     updatePointsPoolDisplay();
     updateAdvancementDisplay();
+    renderTraits();
     
     // initial render
     renderOutput(getFormData())
@@ -950,11 +1596,21 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if (levelUpBtn) {
     levelUpBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      const currentLevel = Number(qs('current_level').textContent) || 1;
+      const currentLevelEl = qs('current_level');
+      const currentLevel = currentLevelEl ? Number(currentLevelEl.textContent) || 1 : 1;
       const nextLevelXP = getXPForLevel(currentLevel + 1);
-      qs('total_xp').textContent = nextLevelXP;
-      updateAdvancementDisplay();
-      renderOutput(getFormData());
+      const totalXpEl = qs('total_xp');
+      if (totalXpEl) totalXpEl.textContent = nextLevelXP;
+      
+      // If we're on the advancement page, use updateDisplay() from advancement-page.js
+      // Otherwise use updateAdvancementDisplay()
+      if (typeof updateDisplay === 'function' && qs('char-form')) {
+        updateDisplay();
+        renderOutput(characterData || {});
+      } else {
+        updateAdvancementDisplay();
+        renderOutput(getFormData());
+      }
     });
     console.log('Attached level-up button handler');
   }
@@ -968,7 +1624,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
 function updateSecondaryStats() {
   const formData = getFormData();
   const race = qs('race').value || 'Human';
-  const stats = calculateSecondaryStats(formData.attributes, race);
+  
+  // Get effective attributes with trait modifiers applied
+  const effectiveAttributes = getEffectiveAttributes(formData.attributes, formData.selectedTraits);
+  
+  // Calculate stats using effective attributes and trait modifiers
+  const stats = calculateSecondaryStats(effectiveAttributes, race, formData.selectedTraits);
   
   // Update stat fields with calculated values (only if elements exist)
   if (qs('hit_points')) qs('hit_points').textContent = stats.Hit_Points;
@@ -992,17 +1653,34 @@ function updateAdvancementDisplay() {
   // Skip if we're on the main character creation page (no total_xp element)
   if (!qs('total_xp')) return;
   
+  // On advancement page, attributes come from localStorage character data
+  // On main character page, they come from form fields
+  let attributes = {
+    strength: 5,
+    perception: 5,
+    endurance: 5,
+    charisma: 5,
+    intelligence: 5,
+    agility: 5,
+    luck: 5,
+  };
+  
+  // Try to get attributes from form fields (main character page)
+  const strengthInput = qs('strength');
+  if (strengthInput) {
+    attributes = {
+      strength: Number(strengthInput.value) || 5,
+      perception: Number(qs('perception').value) || 5,
+      endurance: Number(qs('endurance').value) || 5,
+      charisma: Number(qs('charisma').value) || 5,
+      intelligence: Number(qs('intelligence').value) || 5,
+      agility: Number(qs('agility').value) || 5,
+      luck: Number(qs('luck').value) || 5,
+    };
+  }
+  
   const totalXP = Number(qs('total_xp').textContent) || 0;
   const xpProgress = getXPProgress(totalXP);
-  const attributes = {
-    strength: Number(qs('strength').value) || 5,
-    perception: Number(qs('perception').value) || 5,
-    endurance: Number(qs('endurance').value) || 5,
-    charisma: Number(qs('charisma').value) || 5,
-    intelligence: Number(qs('intelligence').value) || 5,
-    agility: Number(qs('agility').value) || 5,
-    luck: Number(qs('luck').value) || 5,
-  };
   
   const currentLevel = xpProgress.level;
   const hpGain = calculateHPGain(attributes.endurance);
@@ -1021,7 +1699,10 @@ function updateAdvancementDisplay() {
   if (qs('total_hp_projected')) qs('total_hp_projected').textContent = totalHP;
   
   // Calculate perks earned based on race and level
-  const race = qs('race').value || 'Human';
+  // On advancement pages, race comes from localStorage via advancement-page.js
+  // On main character page, race comes from form field
+  const raceElement = qs('race');
+  const race = raceElement ? (raceElement.value || 'Human') : 'Human';
   const perksEarned = calculatePerksEarned(currentLevel, race);
   if (qs('perks_earned')) qs('perks_earned').textContent = perksEarned;
   
@@ -1100,8 +1781,11 @@ function getSelectedPerks() {
 
 // Toggle perk selection
 function togglePerkSelection(perkId) {
-  const currentLevel = Number(qs('current_level').textContent) || 1;
-  const perksEarned = calculatePerksEarned(currentLevel, qs('race').value || 'Human');
+  const currentLevelEl = qs('current_level');
+  const currentLevel = currentLevelEl ? Number(currentLevelEl.textContent) || 1 : 1;
+  const raceEl = qs('race');
+  const race = raceEl ? (raceEl.value || 'Human') : 'Human';
+  const perksEarned = calculatePerksEarned(currentLevel, race);
   const selectedPerks = getSelectedPerks();
   
   const isAlreadySelected = selectedPerks.some(p => p.id === perkId);

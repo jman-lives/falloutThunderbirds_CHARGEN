@@ -17,7 +17,7 @@
 
     <!-- Character Summary -->
     <div style="padding: 12px; background-color: #333; border-radius: 4px; margin-bottom: 16px; border-left: 4px solid #FF9800;">
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px;">
         <div>
           <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">Character</p>
           <p style="margin: 0; font-weight: bold;" id="char-name">Unknown</p>
@@ -27,37 +27,93 @@
           <p style="margin: 0; font-weight: bold;" id="char-race">Human</p>
         </div>
         <div>
-          <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">Attributes</p>
-          <p style="margin: 0; font-size: 0.9rem;" id="char-attrs">S:5 P:5 E:5 C:5 I:5 A:5 L:5</p>
+          <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">Level</p>
+          <p style="margin: 0; font-weight: bold; color: #4CAF50; font-size: 1.1rem;" id="char-level">1</p>
         </div>
         <div>
-          <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">Level / XP</p>
-          <p style="margin: 0; font-size: 0.9rem;" id="char-level-xp">1 / 0 XP</p>
+          <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">XP</p>
+          <p style="margin: 0; font-size: 0.9rem;" id="char-xp">0 XP</p>
+        </div>
+        <div>
+          <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">HP</p>
+          <p style="margin: 0; font-size: 0.9rem;" id="char-hp">15</p>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+        <div>
+          <p style="margin: 0; font-size: 0.75rem; color: #aaa;">STR</p>
+          <p style="margin: 0; font-weight: bold; color: #4CAF50;" id="char-str">5</p>
+        </div>
+        <div>
+          <p style="margin: 0; font-size: 0.75rem; color: #aaa;">PER</p>
+          <p style="margin: 0; font-weight: bold; color: #4CAF50;" id="char-per">5</p>
+        </div>
+        <div>
+          <p style="margin: 0; font-size: 0.75rem; color: #aaa;">END</p>
+          <p style="margin: 0; font-weight: bold; color: #4CAF50;" id="char-end">5</p>
+        </div>
+        <div>
+          <p style="margin: 0; font-size: 0.75rem; color: #aaa;">CHR</p>
+          <p style="margin: 0; font-weight: bold; color: #4CAF50;" id="char-chr">5</p>
+        </div>
+        <div>
+          <p style="margin: 0; font-size: 0.75rem; color: #aaa;">INT</p>
+          <p style="margin: 0; font-weight: bold; color: #4CAF50;" id="char-int">5</p>
+        </div>
+        <div>
+          <p style="margin: 0; font-size: 0.75rem; color: #aaa;">AGI</p>
+          <p style="margin: 0; font-weight: bold; color: #4CAF50;" id="char-agi">5</p>
+        </div>
+        <div>
+          <p style="margin: 0; font-size: 0.75rem; color: #aaa;">LCK</p>
+          <p style="margin: 0; font-weight: bold; color: #4CAF50;" id="char-lck">5</p>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+        <div>
+          <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">Tag Skills</p>
+          <p style="margin: 0; font-size: 0.9rem;" id="char-tags">None</p>
+        </div>
+        <div>
+          <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">Traits</p>
+          <p style="margin: 0; font-size: 0.9rem;" id="char-traits">None</p>
+        </div>
+        <div>
+          <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">Top Skill</p>
+          <p style="margin: 0; font-size: 0.9rem;" id="char-top-skill">-</p>
         </div>
       </div>
     </div>
 
     <form id="char-form">
-      <section>
-        <h2>Advancement</h2>
-        <div class="attrs">
-          <label>Current Level <span id="current_level">1</span></label>
-          <button type="button" id="level-up-btn" style="margin-top: 8px; padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Level Up</button>
-          <label style="margin-top: 12px;">Total XP <span id="total_xp" style="font-weight: bold; color: #4CAF50;">0</span></label>
-          <label>XP to Next Level <span id="xp_to_next">1000</span></label>
-          <label>Current Level XP <span id="current_level_xp">0</span> / <span id="needed_xp">1000</span></label>
-        </div>
-        <div style="margin-top: 12px;">
-          <h3 style="margin: 0 0 8px 0; font-size: 1rem;">On Level Up</h3>
-          <div class="attrs">
-            <label>HP Gained per Level: <span id="hp_per_level">3</span></label>
-            <label>Skill Points per Level: <span id="sp_per_level">5</span></label>
-            <label>Total HP (Projected): <span id="total_hp_projected">15</span></label>
+      <section id="skills-section">
+        <h2>Rank Up Skills</h2>
+        <div style="margin-bottom: 12px;">
+          <p style="font-size: 0.9rem; color: #aaa; margin: 0 0 8px 0;">Allocate available skill points to improve skills. Tag skills gain 2% per point, other skills gain 1% per point.</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; align-items: end;">
+            <div style="padding: 8px; background-color: #333; border-radius: 4px; border-left: 3px solid #2196F3;">
+              <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">Skill Points Available</p>
+              <p style="margin: 0; font-weight: bold; color: #2196F3; font-size: 1.1rem;" id="skill_points_available">0</p>
+            </div>
+            <div style="padding: 8px; background-color: #333; border-radius: 4px; border-left: 3px solid #FF9800;">
+              <p style="margin: 0 0 4px 0; font-size: 0.85rem; color: #aaa;">Skill Points Used</p>
+              <p style="margin: 0; font-weight: bold; color: #FF9800; font-size: 1.1rem;" id="skill_points_used">0</p>
+            </div>
+            <button type="button" id="reset-skill-points-btn" style="padding: 16px; background-color: #9C27B0; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; height: 100%;">Reset Skill Points</button>
           </div>
+        </div>
+
+        <div id="skills-list" style="padding: 8px; background-color: #444; border-radius: 4px; border: 1px solid #555;">
+          <p id="no-skills-msg" style="margin: 0; color: #999;">No skills available.</p>
+          <div id="skills-container"></div>
         </div>
       </section>
 
-      <section>
+      <div style="margin-top: 12px; display: flex; gap: 12px;">
+        <button type="button" id="confirm-skill-allocation-btn" style="flex: 1; padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; disabled;" disabled>Confirm Skill Allocation</button>
+      </div>
+
+      <section id="perks-section">
         <h2>Perks</h2>
         <div style="margin-bottom: 12px;">
           <label>Perks Gained: <span id="perks_earned">0</span></label>
@@ -85,18 +141,21 @@
         </div>
       </section>
 
-      <section class="row">
-        <label>Notes
-          <input type="text" id="notes" name="notes" />
-        </label>
+      <div style="margin-top: 12px; display: flex; gap: 12px;">
+        <button type="button" id="confirm-perk-selection-btn" style="flex: 1; padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; disabled;" disabled>Confirm Perk Selection</button>
+      </div>
+
+      <section>
+        <h2>Advancement</h2>
+        <button type="button" id="level-up-btn" style="width: 100%; padding: 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1.2rem;">Level Up</button>
       </section>
     </form>
 
     <pre id="output" aria-live="polite"></pre>
   </main>
 
-  <script src="script.js"></script>
-  <script src="advancement.js"></script>
-  <script src="advancement-page.js"></script>
+  <script src="script.js?v=1"></script>
+  <script src="advancement.js?v=1"></script>
+  <script src="advancement-page.js?v=1"></script>
 </body>
 </html>
