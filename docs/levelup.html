@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Fallout Character Generator</title>
+  <title>Level Up a Character</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
-    .landing-container {
+    .levelup-container {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -15,35 +15,35 @@
       text-align: center;
     }
 
-    .landing-content {
+    .levelup-content {
       max-width: 500px;
     }
 
-    .landing-title {
+    .levelup-title {
       font-size: 2.5rem;
       font-weight: 700;
       margin-bottom: 12px;
-      background: linear-gradient(135deg, #FF9800, #fbbf24);
+      background: linear-gradient(135deg, #34d399, #10b981);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
-    .landing-subtitle {
+    .levelup-subtitle {
       font-size: 1.1rem;
       color: var(--muted);
       margin-bottom: 48px;
       line-height: 1.6;
     }
 
-    .landing-buttons {
+    .levelup-buttons {
       display: flex;
       flex-direction: column;
       gap: 16px;
       margin-bottom: 32px;
     }
 
-    .landing-btn {
+    .levelup-btn {
       padding: 16px 32px;
       font-size: 1.1rem;
       font-weight: 600;
@@ -57,37 +57,27 @@
       color: white;
     }
 
-    .landing-btn-primary {
-      background: linear-gradient(135deg, #FF9800, #fbbf24);
-      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
-    }
-
-    .landing-btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 152, 0, 0.6);
-    }
-
-    .landing-btn-secondary {
+    .levelup-btn-primary {
       background: linear-gradient(135deg, #34d399, #10b981);
       box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4);
     }
 
-    .landing-btn-secondary:hover {
+    .levelup-btn-primary:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(52, 211, 153, 0.6);
     }
 
-    .landing-btn-tertiary {
-      background: linear-gradient(135deg, #a78bfa, #8b5cf6);
-      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    .levelup-btn-secondary {
+      background: linear-gradient(135deg, #FF9800, #fbbf24);
+      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
     }
 
-    .landing-btn-tertiary:hover {
+    .levelup-btn-secondary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+      box-shadow: 0 6px 20px rgba(255, 152, 0, 0.6);
     }
 
-    .landing-footer {
+    .levelup-footer {
       font-size: 0.9rem;
       color: var(--muted);
       margin-top: 48px;
@@ -95,16 +85,25 @@
       border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
+    .levelup-footer a {
+      color: #60a5fa;
+      text-decoration: none;
+    }
+
+    .levelup-footer a:hover {
+      text-decoration: underline;
+    }
+
     @media (max-width: 640px) {
-      .landing-title {
+      .levelup-title {
         font-size: 2rem;
       }
 
-      .landing-subtitle {
+      .levelup-subtitle {
         font-size: 1rem;
       }
 
-      .landing-btn {
+      .levelup-btn {
         padding: 12px 24px;
         font-size: 1rem;
       }
@@ -112,33 +111,30 @@
   </style>
 </head>
 <body>
-  <main class="container landing-container">
-    <div class="landing-content">
-      <h1 class="landing-title">Fallout Character Generator</h1>
-      <p class="landing-subtitle">
-        Create and manage your characters with the ultimate Fallout character creation tool. Choose an option below to get started.
+  <main class="container levelup-container">
+    <div class="levelup-content">
+      <h1 class="levelup-title">Level Up a Character</h1>
+      <p class="levelup-subtitle">
+        To advance your character, you'll need to load a saved character file or create a new character first.
       </p>
 
-      <div class="landing-buttons">
-        <button type="button" id="play-game-btn" class="landing-btn landing-btn-tertiary">
-          🎮 Play Game
+      <div class="levelup-buttons">
+        <button type="button" id="upload-btn" class="levelup-btn levelup-btn-primary">
+          📂 Upload Character File
         </button>
-        <a href="chargen.html" class="landing-btn landing-btn-primary">
-          ✨ Create a New Character
-        </a>
-        <a href="levelup.html" class="landing-btn landing-btn-secondary">
-          ⬆️ Level Up a Character
+        <a href="chargen.html" class="levelup-btn levelup-btn-secondary">
+          ✨ Create a Character
         </a>
       </div>
 
-      <div class="landing-footer">
-        <p>Fallout Character Generator • Manage your post-apocalyptic adventure</p>
+      <div class="levelup-footer">
+        <p><a href="index.html">← Back to Home</a></p>
       </div>
     </div>
   </main>
 
   <script>
-    document.getElementById('play-game-btn').addEventListener('click', () => {
+    document.getElementById('upload-btn').addEventListener('click', () => {
       // Create a hidden file input and trigger it
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
@@ -157,10 +153,12 @@
               }
               // Store in localStorage
               localStorage.setItem('characterData', JSON.stringify(data));
-              // Clear any level-up session flags
-              localStorage.removeItem('isLevelUpSession');
-              // Navigate to game page
-              window.location.href = 'game.html';
+              // Set flag to indicate this is a leveling session, not chargen
+              localStorage.setItem('isLevelUpSession', 'true');
+              // Clear the fromChargen flag since we're coming from levelup, not chargen
+              localStorage.removeItem('fromChargen');
+              // Navigate to advancement page
+              window.location.href = 'advancement.html';
             } catch (err) {
               alert('Failed to parse character file. Please ensure it\'s a valid JSON file.');
               console.error(err);

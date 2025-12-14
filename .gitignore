@@ -59,6 +59,11 @@ test.js
 test.html
 test_storage.html
 test_*.js
+test_character_creation_with_perks.html
+test_gain_perks_comprehensive.html
+test_gain_perks.html
+test_retroactive_skills.html
+verify_retroactive.js
 
 # Documentation & Implementation notes (local reference)
 ADVANCEMENT_GUIDE.md
@@ -75,6 +80,18 @@ PERK_SELECTION_FEATURE.md
 PERK_SELECTION_README.md
 PERK_TEST_CASES.md
 TRAITS_SKILL_EFFECTS.md
+CHARACTER_CREATION_PERK_TESTS.md
+IMPLEMENTATION_COMPLETE.md
+PERK_MECHANICAL_IMPLEMENTATION.md
+PERK_TEST_RESULTS_REFERENCE.md
+PERK_TESTS_COMPLETE.md
+PERK_TESTS_INDEX.md
+PERK_TESTS_SUMMARY.md
+QUICK_PERK_TEST_GUIDE.md
+RETROACTIVE_SKILL_RECALC_IMPLEMENTATION.md
+TAG_SKILL_TEST.md
+TEST_SUITE_VISUAL_GUIDE.md
+UNCONDITIONAL_PERKS_AUDIT.md
 
 # SSH Keys (NEVER commit private keys)
 *.pem
