@@ -15,7 +15,7 @@ This is a fully client-side character generator:
 ## Files
 
 All files are in the `docs/` folder:
-- `index.html` — form UI
+- `index.html` — landing page
 - `styles.css` — styling
 - `script.js` — client-side logic
 - `.nojekyll` — tells GitHub Pages to skip Jekyll processing
