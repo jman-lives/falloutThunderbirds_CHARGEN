@@ -50,11 +50,40 @@ const SKILL_DESCRIPTIONS = {
 // Store character data
 let characterData = {};
 
+// Store production config
+let prodConfig = {};
+
 // Load character data from localStorage when page loads
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('advancement-page DOMContentLoaded fired');
+  await loadProdConfig();
   await loadCharacterData();
   console.log('characterData after load:', characterData);
+  
+  // Check if this is a level up session (character uploaded from levelup.html)
+  const isLevelUpSession = localStorage.getItem('isLevelUpSession') === 'true';
+  console.log('[DOMContentLoaded] isLevelUpSession:', isLevelUpSession);
+  
+  if (isLevelUpSession) {
+    // For level up sessions, get current level and set max to current + 1 (unless Here and Now applies)
+    const currentLevel = getLevelFromXP(characterData.totalXP || 0);
+    console.log('[DOMContentLoaded] Current level:', currentLevel);
+    
+    // Check if character has Here and Now perk that can be used
+    const selectedPerks = characterData.selectedPerks || [];
+    const hereAndNowPerk = selectedPerks.find(p => p.id === 'here_and_now');
+    const canUseHereAndNow = hereAndNowPerk && !hereAndNowPerk.hasIncreasedMaxLevel;
+    
+    if (canUseHereAndNow) {
+      // Here and Now perk allows leveling up twice
+      prodConfig.levelsForchargen = currentLevel + 2;
+      console.log('[DOMContentLoaded] Here and Now available - max level set to:', prodConfig.levelsForchargen);
+    } else {
+      // Normal level up - can only go up one level
+      prodConfig.levelsForchargen = currentLevel + 1;
+      console.log('[DOMContentLoaded] Normal level up - max level set to:', prodConfig.levelsForchargen);
+    }
+  }
   
   // Set up event listeners (only if elements exist)
   const levelUpBtn = qs('level-up-btn');
@@ -109,19 +138,44 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('Page initialization complete. Character data:', characterData);
 });
 
+// Load production configuration
+async function loadProdConfig() {
+  try {
+    const response = await fetch('prod-config.json');
+    prodConfig = await response.json();
+    console.log('[loadProdConfig] Loaded prod-config:', prodConfig);
+  } catch (e) {
+    console.warn('[loadProdConfig] Could not load prod-config:', e);
+    prodConfig = { levelsForchargen: 99 }; // Default fallback
+  }
+}
+
 // Load character data from localStorage
 async function loadCharacterData() {
   console.log('[loadCharacterData] Starting...');
   
-  // First, check if we have stored character data
-  const stored = localStorage.getItem('falloutCharacter');
-  console.log('[loadCharacterData] Stored character exists:', !!stored);
+  // First, check if we have stored character data from levelup session
+  let stored = localStorage.getItem('characterData');
+  console.log('[loadCharacterData] Level up session character exists:', !!stored);
+  
+  // If not from levelup, check for normal chargen stored data
+  if (!stored) {
+    stored = localStorage.getItem('falloutCharacter');
+    console.log('[loadCharacterData] Chargen stored character exists:', !!stored);
+  }
   
   if (stored) {
     // We have stored data, use it
     try {
       characterData = JSON.parse(stored);
       console.log('[loadCharacterData] Successfully parsed stored data:', characterData);
+      
+      // Recalculate level from totalXP if it exists
+      if (characterData.totalXP !== undefined && typeof getLevelFromXP === 'function') {
+        const calculatedLevel = getLevelFromXP(characterData.totalXP || 0);
+        console.log(`[loadCharacterData] Recalculating level from totalXP: ${characterData.totalXP} -> Level ${calculatedLevel} (was ${characterData.level})`);
+        characterData.level = calculatedLevel;
+      }
     } catch (err) {
       console.error('[loadCharacterData] Failed to parse stored data:', err);
       characterData = {};
@@ -313,6 +367,13 @@ function generateTestCharacter() {
 // Save character data to localStorage
 function saveCharacterData() {
   localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
+  
+  // If this was a level up session, clear the temporary characterData key
+  if (localStorage.getItem('isLevelUpSession') === 'true') {
+    localStorage.removeItem('characterData');
+    localStorage.removeItem('isLevelUpSession');
+    console.log('[saveCharacterData] Cleared level up session flags');
+  }
 }
 
 // Update character summary display
@@ -460,9 +521,9 @@ function updateDisplay() {
   }
   if (qs('total_hp_projected')) qs('total_hp_projected').textContent = totalHP;
   
-  // Calculate perks earned based on race and level
+  // Calculate perks earned based on race, level, and traits
   const race = characterData.race || 'Human';
-  const perksEarned = calculatePerksEarned(currentLevel, race);
+  const perksEarned = calculatePerksEarned(currentLevel, race, selectedTraits);
   console.log(`DEBUG: Race="${race}", Level=${currentLevel}, PerksEarned=${perksEarned}`);
   if (qs('perks_earned')) qs('perks_earned').textContent = perksEarned;
   
@@ -530,7 +591,12 @@ function updateDisplay() {
   // Show only if all available allocations have been confirmed
   // At each level, only require confirmation for sections that have items to allocate
   const levelUpBtn = qs('level-up-btn');
+  const downloadBtn = qs('download');
   if (levelUpBtn) {
+    // Check if character has reached maximum level
+    const maxLevel = prodConfig.levelsForchargen || 7;
+    const isMaxLevel = currentLevel >= maxLevel;
+    
     // Calculate if there are actually skill points available to spend at this level
     let hasSkillsToConfirm = false;
     if (currentLevel > 1) {
@@ -550,16 +616,48 @@ function updateDisplay() {
     
     console.log('=== LEVEL UP BUTTON DEBUG ===');
     console.log('currentLevel:', currentLevel);
+    console.log('maxLevel:', maxLevel);
+    console.log('isMaxLevel:', isMaxLevel);
     console.log('hasSkillsToConfirm:', hasSkillsToConfirm);
     console.log('skillsConfirmed:', skillsConfirmed);
     console.log('hasPerksToConfirm:', hasPerksToConfirm);
     console.log('perksConfirmed:', perksConfirmed);
     console.log('skillsNeedConfirmation:', skillsNeedConfirmation);
     console.log('perksNeedConfirmation:', perksNeedConfirmation);
-    console.log('button should be visible?', !(skillsNeedConfirmation || perksNeedConfirmation));
+    console.log('button should be visible?', !(skillsNeedConfirmation || perksNeedConfirmation) && !isMaxLevel);
     
-    // Button is visible if nothing needs to be confirmed
-    levelUpBtn.style.display = (skillsNeedConfirmation || perksNeedConfirmation) ? 'none' : '';
+    // Calculate if all confirmations are done (no pending confirmations)
+    const allConfirmed = !skillsNeedConfirmation && !perksNeedConfirmation;
+    
+    // Level Up button: visible only if not max level and all confirmations are done
+    levelUpBtn.style.display = (isMaxLevel || skillsNeedConfirmation || perksNeedConfirmation) ? 'none' : '';
+    
+    const downloadBtn = qs('download');
+    const equipmentBtn = qs('equipment-choice-btn');
+    
+    // Determine which button to show based on character source
+    const showEquipmentBtn = window.showEquipmentButton === true;
+    const showDownloadBtn = window.showEquipmentButton === false;
+    
+    console.log('[updateUI] window.showEquipmentButton:', window.showEquipmentButton, 'showEquipmentBtn:', showEquipmentBtn, 'showDownloadBtn:', showDownloadBtn);
+    console.log('[updateUI] equipmentBtn element:', equipmentBtn, 'downloadBtn element:', downloadBtn);
+    console.log('[updateUI] isMaxLevel:', isMaxLevel, 'allConfirmed:', allConfirmed);
+    console.log('[updateUI] Equipment visibility calc:', isMaxLevel && allConfirmed && showEquipmentBtn);
+    console.log('[updateUI] Download visibility calc:', isMaxLevel && allConfirmed && showDownloadBtn);
+    
+    // Download button: visible ONLY if character was loaded from file (not from chargen) AND max level reached AND confirmed
+    if (downloadBtn) {
+      const shouldShowDownload = isMaxLevel && allConfirmed && showDownloadBtn;
+      console.log('[updateUI] Setting downloadBtn display to:', shouldShowDownload ? '' : 'none');
+      downloadBtn.style.display = shouldShowDownload ? '' : 'none';
+    }
+    
+    // Equipment button: visible ONLY if coming from chargen AND max level reached AND confirmed
+    if (equipmentBtn) {
+      const shouldShowEquipment = isMaxLevel && allConfirmed && showEquipmentBtn;
+      console.log('[updateUI] Setting equipmentBtn display to:', shouldShowEquipment ? '' : 'none');
+      equipmentBtn.style.display = shouldShowEquipment ? '' : 'none';
+    }
   }
 }
 
@@ -567,6 +665,13 @@ function updateDisplay() {
 function levelUp() {
   const currentLevel = getLevelFromXP(characterData.totalXP || 0);
   console.log('levelUp called, currentLevel:', currentLevel);
+  
+  // Check if character has reached the maximum allowed level
+  const maxLevel = prodConfig.levelsForchargen || 7;
+  if (currentLevel >= maxLevel) {
+    alert(`Character has reached the maximum level of ${maxLevel}!`);
+    return;
+  }
   
   // Ensure attributes exist and are valid
   let attributes = characterData.attributes || {};
@@ -602,7 +707,7 @@ function levelUp() {
   }
   
   // Check if perks are available and if player has selected enough
-  const perksEarned = calculatePerksEarned(currentLevel, characterData.race || 'Human');
+  const perksEarned = calculatePerksEarned(currentLevel, characterData.race || 'Human', characterData.selectedTraits || []);
   console.log('perksEarned:', perksEarned);
   
   // Calculate how many perk ranks are actually available to spend at this level
@@ -719,6 +824,17 @@ function levelUp() {
   // Reset perk confirmation so the perk section shows for the new level
   characterData.perksConfirmed = false;
   
+  // Auto-confirm perks if there are no perks to confirm at this level
+  // Note: perksEarned, selectedPerks, lockedRanks, and newAvailableRanks already calculated above
+  // If no perk ranks are available to spend, auto-confirm
+  console.log('[levelUp] newAvailableRanks:', newAvailableRanks, 'perksEarned:', perksEarned, 'lockedRanks:', lockedRanks);
+  if (newAvailableRanks === 0) {
+    characterData.perksConfirmed = true;
+    console.log('[levelUp] Auto-confirmed perks because no ranks available (newAvailableRanks === 0)');
+  } else {
+    console.log('[levelUp] NOT auto-confirming perks because newAvailableRanks =', newAvailableRanks);
+  }
+  
   saveCharacterData();
   updateCharacterSummary();
   updateDisplay();
@@ -816,7 +932,7 @@ function renderAvailablePerks(eligiblePerkIds) {
 // Toggle perk selection
 function togglePerkSelection(perkId) {
   const currentLevel = getLevelFromXP(characterData.totalXP || 0);
-  const perksEarned = calculatePerksEarned(currentLevel, characterData.race || 'Human');
+  const perksEarned = calculatePerksEarned(currentLevel, characterData.race || 'Human', characterData.selectedTraits || []);
   let selectedPerks = characterData.selectedPerks || [];
   const perk = PERKS[perkId];
   
@@ -1023,6 +1139,11 @@ function downloadJSON(obj, filename){
   a.click()
   a.remove()
   URL.revokeObjectURL(url)
+  
+  // After downloading, redirect to home page
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 500);
 }
 
 function renderOutput(obj){
@@ -1661,6 +1782,17 @@ function updateConfirmPerkButtonState(selectedRanks, maxPerks) {
 function confirmPerkSelection() {
   characterData.perksConfirmed = true;
   
+  // Check if Here and Now perk is being confirmed for the first time
+  const selectedPerks = characterData.selectedPerks || [];
+  const hereAndNowPerk = selectedPerks.find(p => p.id === 'here_and_now');
+  
+  if (hereAndNowPerk && !hereAndNowPerk.hasIncreasedMaxLevel) {
+    // Increase max level by 1
+    prodConfig.levelsForchargen = (prodConfig.levelsForchargen || 99) + 1;
+    hereAndNowPerk.hasIncreasedMaxLevel = true;
+    console.log('[confirmPerkSelection] Here and Now activated! New max level:', prodConfig.levelsForchargen);
+  }
+  
   // Apply mechanical effects of selected perks
   applyPerkEffects(characterData);
   
@@ -1694,6 +1826,15 @@ function confirmPerkSelection() {
  */
 function unconfirmPerkSelection() {
   characterData.perksConfirmed = false;
+  
+  // Reset Here and Now flag if it was used
+  const selectedPerks = characterData.selectedPerks || [];
+  const hereAndNowPerk = selectedPerks.find(p => p.id === 'here_and_now');
+  if (hereAndNowPerk && hereAndNowPerk.hasIncreasedMaxLevel) {
+    hereAndNowPerk.hasIncreasedMaxLevel = false;
+    prodConfig.levelsForchargen = (prodConfig.levelsForchargen || 99) - 1;
+    console.log('[unconfirmPerkSelection] Here and Now bonus reset. Max level:', prodConfig.levelsForchargen);
+  }
   
   // Reset perk effects
   characterData.perkEffects = {

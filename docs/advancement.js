@@ -393,7 +393,7 @@ function calculateFinalSkills(attributes, tagSkills = {}, selectedTraits = []) {
  * @param {string} race - Character's race (Human, Ghoul, etc.)
  * @returns {number} Total number of perks earned so far
  */
-function calculatePerksEarned(level, race) {
+function calculatePerksEarned(level, race, selectedTraits = []) {
   if (level < 1) return 0;
   
   // Normalize race name (trim whitespace, case-sensitive comparison)
@@ -406,6 +406,16 @@ function calculatePerksEarned(level, race) {
     perkFrequency = 4;
   }
   // Other races can be added here with their own frequencies
+  
+  // Check if character has Skilled trait - if so, delay perk gain by 1 level
+  const hasSkilled = selectedTraits && selectedTraits.some(trait => 
+    (typeof trait === 'string' ? trait.toLowerCase() === 'skilled' : trait.name && trait.name.toLowerCase() === 'skilled')
+  );
+  
+  if (hasSkilled) {
+    perkFrequency += 1; // Increase frequency (delay perk gain) by 1 level
+    console.log(`[calculatePerksEarned] Skilled trait detected - perk frequency increased to ${perkFrequency}`);
+  }
   
   // Calculate how many perks have been earned
   // A character gets their first perk at level equal to perkFrequency
@@ -2083,29 +2093,48 @@ function checkPerkEligibility(perkId, character, ignoreRaceRestriction = false, 
   
   // Check race restrictions
   if (!ignoreRaceRestriction) {
-    // Ghouls with "Fear the Reaper" trait can bypass all racial restrictions
+    // Ghouls with "Fear the Reaper" trait are treated as Human for perk purposes
+    // However, they cannot access Ghoul-exclusive perks
     const hasFearTheReaper = character.traits && character.traits.includes('Fear the Reaper');
     const isGhoulWithFTR = character.race === 'Ghoul' && hasFearTheReaper;
     
-    if (!isGhoulWithFTR) {
-      // If perk has required races, check if character is one of them
-      if (perk.requirements.race.length > 0) {
-        if (!perk.requirements.race.includes(character.race)) {
-          return { 
-            eligible: false, 
-            reason: `Only ${perk.requirements.race.join(', ')} can choose this perk` 
-          };
-        }
-      }
-      
-      // Check excluded races
-      if (perk.restrictions.excludeRace.includes(character.race)) {
+    // Determine the effective race for perk eligibility
+    let effectiveRace = character.race;
+    if (isGhoulWithFTR && perk.requirements.race.length > 0 && !perk.requirements.race.includes('Ghoul')) {
+      // Treat as Human for perks that don't require Ghoul
+      effectiveRace = 'Human';
+    }
+    
+    // Cannot use Fear the Reaper to access Ghoul-exclusive perks
+    if (isGhoulWithFTR && perk.requirements.race.includes('Ghoul') && perk.requirements.race.length === 1) {
+      // This is a Ghoul-exclusive perk; Ghouls with Fear the Reaper cannot choose it
+      return { 
+        eligible: false, 
+        reason: `Ghoul-exclusive perks cannot be chosen with "Fear the Reaper"` 
+      };
+    }
+    
+    // If perk has required races, check if character (with effective race) is one of them
+    if (perk.requirements.race.length > 0) {
+      if (!perk.requirements.race.includes(effectiveRace)) {
         return { 
           eligible: false, 
-          reason: `${character.race} cannot choose this perk` 
+          reason: `Only ${perk.requirements.race.join(', ')} can choose this perk` 
         };
       }
     }
+    
+    // Check excluded races (using actual race, not effective)
+    if (perk.restrictions.excludeRace.includes(character.race)) {
+      return { 
+        eligible: false, 
+        reason: `${character.race} cannot choose this perk` 
+      };
+    }
+  }
+  
+  if (gainAttributePerks.includes(perkId)) {
+    console.log(`  - ELIGIBLE for ${perkId}`);
   }
   
   if (gainAttributePerks.includes(perkId)) {

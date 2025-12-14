@@ -1,0 +1,1815 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Play Game - Fallout Character Generator</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="script.js" defer></script>
+  <script src="advancement.js" defer></script>
+  <style>
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .character-sheet {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .character-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-block {
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 4px;
+      border-left: 3px solid #60a5fa;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #4CAF50;
+    }
+
+    .attributes-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .attribute {
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 4px;
+      text-align: center;
+      border-left: 2px solid #FF9800;
+    }
+
+    .attribute-name {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .attribute-value {
+      font-weight: bold;
+      color: #fbbf24;
+      font-size: 1rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      background-color: #60a5fa;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: #3b82f6;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: #10b981;
+    }
+
+    .btn-secondary:hover {
+      background-color: #059669;
+    }
+
+    .btn-danger {
+      background-color: #ef4444;
+    }
+
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+
+    .placeholder {
+      text-align: center;
+      color: var(--muted);
+      padding: 32px;
+      font-style: italic;
+    }
+
+    @media (max-width: 640px) {
+      .character-header {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .attributes-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Play Game</h1>
+
+    <div class="controls" style="margin-bottom: 16px;">
+      <a href="index.html" style="display: inline-block; padding: 6px 12px; background-color: #2196F3; color: white; border: none; border-radius: 4px; text-decoration: none; cursor: pointer; font-weight: bold;">← Back to Home</a>
+    </div>
+
+    <div class="game-container">
+      <div id="character-info" class="character-sheet">
+        <h2 style="margin-top: 0;" id="char-name"></h2>
+        
+        <div class="character-header">
+          <div class="stat-block">
+            <div class="stat-label">Player</div>
+            <div class="stat-value" id="play-name">—</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">Race</div>
+            <div class="stat-value" id="char-race">—</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">Level</div>
+            <div class="stat-value" id="char-level">—</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">Max Health</div>
+            <div class="stat-value" id="char-max-hp">—</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">Current Health</div>
+            <div id="char-current-hp">—</div>
+          </div>
+        </div>
+
+        <h3 style="margin-bottom: 8px;">Attributes</h3>
+        <div class="attributes-grid">
+          <div class="attribute">
+            <div class="attribute-name">STR</div>
+            <div class="attribute-value" id="attr-str">—</div>
+          </div>
+          <div class="attribute">
+            <div class="attribute-name">PER</div>
+            <div class="attribute-value" id="attr-per">—</div>
+          </div>
+          <div class="attribute">
+            <div class="attribute-name">END</div>
+            <div class="attribute-value" id="attr-end">—</div>
+          </div>
+          <div class="attribute">
+            <div class="attribute-name">CHR</div>
+            <div class="attribute-value" id="attr-chr">—</div>
+          </div>
+          <div class="attribute">
+            <div class="attribute-name">INT</div>
+            <div class="attribute-value" id="attr-int">—</div>
+          </div>
+          <div class="attribute">
+            <div class="attribute-name">AGI</div>
+            <div class="attribute-value" id="attr-agi">—</div>
+          </div>
+          <div class="attribute">
+            <div class="attribute-name">LCK</div>
+            <div class="attribute-value" id="attr-lck">—</div>
+          </div>
+        </div>
+
+        <!-- <h3 style="margin-bottom: 8px;">Skills</h3> -->
+        <button id="skills-toggle" onclick="toggleSkillsAccordion()" style="width: 100%; padding: 10px; background-color: #9333ea; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s;">
+          ▼ Show Skills
+        </button>
+        <div id="skills-container" style="display: none; margin-top: 8px;">
+          <div id="skills-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;"></div>
+        </div>
+      </div>
+
+      <div id="traits-section" class="character-sheet">
+        <button id="traits-toggle" onclick="toggleTraitsAccordion()" style="width: 100%; padding: 10px; background-color: #f97316; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s;">
+          ▼ Show Traits
+        </button>
+        <div id="traits-container" style="display: none; margin-top: 8px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;"></div>
+      </div>
+
+      <div id="perks-section" class="character-sheet">
+        <button id="perks-toggle" onclick="togglePerksAccordion()" style="width: 100%; padding: 10px; background-color: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s;">
+          ▼ Show Selected Perks
+        </button>
+        <p style="color: var(--muted); margin: 8px 0 12px 0; font-size: 0.9rem; display: none;" id="perks-desc">Your selected perks and their effects.</p>
+        <div id="perks-container" style="display: none; margin-top: 8px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;"></div>
+      </div>
+
+    <div id="tools-section" class="character-sheet" style="grid-column: 1/-1;">
+        <button id="tools-toggle" onclick="toggleToolsAccordion()" style="width: 100%; padding: 12px; background-color: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s; font-size: 1.1rem;">
+          ▼ Show Selected Tools
+        </button>
+        <p style="color: var(--muted); margin: 12px 0 16px 0; font-size: 0.95rem; display: none;" id="tools-desc">Your selected tools and their effects.</p>
+        <div id="tools-container" style="display: none; margin-top: 12px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;"></div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn btn-secondary" onclick="downloadCharacter()">💾 Download Character</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function qs(id) {
+      return document.getElementById(id);
+    }
+
+    let maxHP = 15;
+
+    const SKILL_NAMES = {
+      'guns': 'Guns',
+      'energy_weapons': 'Energy Weapons',
+      'unarmed': 'Unarmed',
+      'melee_weapons': 'Melee Weapons',
+      'throwing': 'Throwing',
+      'first_aid': 'First Aid',
+      'doctor': 'Doctor',
+      'sneak': 'Sneak',
+      'lockpick': 'Lockpick',
+      'steal': 'Steal',
+      'traps': 'Traps',
+      'science': 'Science',
+      'repair': 'Repair',
+      'pilot': 'Pilot',
+      'speech': 'Speech',
+      'barter': 'Barter',
+      'gambling': 'Gambling',
+      'outdoorsman': 'Outdoorsman'
+    };
+
+    function getHealthBarColor(percentage) {
+      if (percentage > 50) {
+        return 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+      } else if (percentage > 25) {
+        return 'linear-gradient(90deg, #FF9800, #FFC107)';
+      } else {
+        return 'linear-gradient(90deg, #ef4444, #f87171)';
+      }
+    }
+
+    function getHealthColor(percentage) {
+      if (percentage > 50) {
+        return '#4CAF50';
+      } else if (percentage > 25) {
+        return '#FFC107';
+      } else {
+        return '#ef4444';
+      }
+    }
+
+    function renderHealthTracker(currentHP) {
+      const container = qs('char-current-hp');
+      // Ensure HP is never below 0 or above max
+      currentHP = Math.max(0, Math.min(currentHP, maxHP));
+      const percentage = (currentHP / maxHP) * 100;
+      const healthColor = getHealthColor(percentage);
+      const healthBarColor = getHealthBarColor(percentage);
+      
+      container.innerHTML = `
+        <div style="font-size: 1.2rem; font-weight: bold; color: ${healthColor}; display: flex; flex-direction: column; gap: 8px;">
+          <div>${currentHP}/${maxHP} <span style="font-size: 0.9rem; color: #FF9800;">(${Math.round(percentage)}%)</span></div>
+          <div style="height: 8px; background: rgba(0,0,0,0.3); border-radius: 2px; overflow: hidden;">
+            <div style="height: 100%; background: ${healthBarColor}; width: ${percentage}%; transition: width 0.3s ease;"></div>
+          </div>
+          <div style="display: flex; gap: 4px;">
+            <button 
+              type="button"
+              onclick="decreaseHP()"
+              style="flex: 1; padding: 4px; background-color: #d32f2f; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: all 0.2s;"
+              title="Decrease HP"
+              onmouseover="this.style.opacity='0.8'"
+              onmouseout="this.style.opacity='1'"
+            >
+              ▼
+            </button>
+            <button 
+              type="button"
+              onclick="increaseHP()"
+              style="flex: 1; padding: 4px; background-color: #4CAF50; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: all 0.2s;"
+              title="Increase HP"
+              onmouseover="this.style.opacity='0.8'"
+              onmouseout="this.style.opacity='1'"
+            >
+              ▲
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSkills(skills, characterData) {
+      const container = qs('skills-grid');
+      
+      if (!skills || Object.keys(skills).length === 0) {
+        container.innerHTML = '<p style="color: #999;">No skills available.</p>';
+        return;
+      }
+
+      const skillsHTML = Object.entries(skills).map(([skillId, value]) => {
+        const skillName = SKILL_NAMES[skillId] || skillId.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        let skillValue = parseInt(value) || 0;
+        
+        // Apply conditional skill bonuses if perk/trait is active - STACKING
+        let bonusValue = 0;
+        const bonusBreakdown = [];
+        
+        if (skillId === 'speech') {
+          if (localStorage.getItem('perk_active_smooth_talker') === 'true') {
+            bonusValue += 5;
+            bonusBreakdown.push('Smooth Talker +5%');
+          }
+          const selectedTraits = characterData.selectedTraits || [];
+          if (selectedTraits.includes('sex_appeal') && localStorage.getItem('trait_active_sex_appeal') === 'true') {
+            bonusValue += 40;
+            bonusBreakdown.push('Sex Appeal +40%');
+          }
+        }
+        if (skillId === 'barter') {
+          const selectedTraits = characterData.selectedTraits || [];
+          if (selectedTraits.includes('sex_appeal') && localStorage.getItem('trait_active_sex_appeal') === 'true') {
+            bonusValue += 40;
+            bonusBreakdown.push('Sex Appeal +40%');
+          }
+        }
+        if (skillId === 'outdoorsman') {
+          if (localStorage.getItem('perk_active_survivalist') === 'true') {
+            bonusValue += 25;
+            bonusBreakdown.push('Survivalist +25%');
+          }
+          if (localStorage.getItem('perk_active_ranger') === 'true') {
+            bonusValue += 15;
+            bonusBreakdown.push('Ranger +15%');
+          }
+        }
+        if (skillId === 'sneak') {
+          if (localStorage.getItem('perk_active_ghost') === 'true') {
+            bonusValue += 20;
+            bonusBreakdown.push('Ghost +20%');
+          }
+        }
+        if (skillId === 'unarmed') {
+          if (localStorage.getItem('perk_active_drunken_master') === 'true') {
+            bonusValue += 20;
+            bonusBreakdown.push('Drunken Master +20%');
+          }
+        }
+        
+        const displayValue = skillValue + bonusValue;
+        const skillDisplay = bonusValue > 0 
+          ? `<div style="font-weight: bold; color: #a78bfa; font-size: 1.1rem;">${skillValue} <span style="color: #4CAF50;">+${bonusValue}</span> = <span style="color: #FFD700;">${displayValue}%</span></div>`
+          : `<div style="font-weight: bold; color: #a78bfa; font-size: 1.1rem;">${displayValue}%</div>`;
+        
+        const bonusInfo = bonusBreakdown.length > 0 
+          ? `<div style="font-size: 0.75rem; color: #4CAF50; margin-top: 3px; line-height: 1.2;">${bonusBreakdown.join(', ')}</div>`
+          : '';
+        
+        return `
+          <div style="padding: 8px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 2px solid #9333ea;">
+            <div style="font-size: 0.9rem; color: var(--muted); margin-bottom: 4px;">${skillName}</div>
+            ${skillDisplay}
+            ${bonusInfo}
+          </div>
+        `;
+      }).join('');
+      
+      container.innerHTML = skillsHTML;
+    }
+
+    function toggleSkillsAccordion() {
+      const container = qs('skills-container');
+      const toggle = qs('skills-toggle');
+      const isVisible = container.style.display !== 'none';
+      
+      if (isVisible) {
+        container.style.display = 'none';
+        toggle.textContent = '▶ Show Skills';
+      } else {
+        container.style.display = 'grid';
+        toggle.textContent = '▼ Hide Skills';
+      }
+    }
+
+    function toggleTraitsAccordion() {
+      const container = qs('traits-container');
+      const toggle = qs('traits-toggle');
+      const isVisible = container.style.display !== 'none';
+      
+      if (isVisible) {
+        container.style.display = 'none';
+        toggle.textContent = '▶ Show Traits';
+      } else {
+        container.style.display = 'grid';
+        toggle.textContent = '▼ Hide Traits';
+      }
+    }
+
+    function togglePerksAccordion() {
+      const container = qs('perks-container');
+      const toggle = qs('perks-toggle');
+      const isVisible = container.style.display !== 'none';
+      
+      if (isVisible) {
+        container.style.display = 'none';
+        toggle.textContent = '▶ Show Perks';
+      } else {
+        container.style.display = 'grid';
+        toggle.textContent = '▼ Hide Perks';
+      }
+    }
+
+    function toggleToolsAccordion() {
+      const container = qs('tools-container');
+      const toggle = qs('tools-toggle');
+      const isVisible = container.style.display !== 'none';
+      
+      if (isVisible) {
+        container.style.display = 'none';
+        toggle.textContent = '▶ Show Tools';
+      } else {
+        container.style.display = 'grid';
+        toggle.textContent = '▼ Hide Tools';
+      }
+    }
+
+    function toggleConditionalPerksAccordion() {
+      const container = qs('conditional-perks-container');
+      const toggle = qs('conditional-perks-toggle');
+      const desc = qs('conditional-perks-desc');
+      const isVisible = container.style.display !== 'none';
+      
+      if (isVisible) {
+        container.style.display = 'none';
+        desc.style.display = 'none';
+        toggle.textContent = '▶ Show Conditional Perks';
+      } else {
+        container.style.display = 'grid';
+        desc.style.display = 'block';
+        toggle.textContent = '▼ Hide Conditional Perks';
+      }
+    }
+
+    function displayCharacterTraits(selectedTraits) {
+      const container = qs('traits-container');
+      
+      if (!Array.isArray(selectedTraits) || selectedTraits.length === 0) {
+        container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No traits selected.</p>';
+        return;
+      }
+
+      // Separate traits into conditional (toggleable) and non-conditional
+      const CONDITIONAL_TRAITS = new Set(['night_person', 'sex_appeal']);
+      const conditionalTraits = selectedTraits.filter(t => CONDITIONAL_TRAITS.has(t));
+      const staticTraits = selectedTraits.filter(t => !CONDITIONAL_TRAITS.has(t));
+      
+      // Trait color coding
+      const traitColors = {
+        'night_person': '#06b6d4',
+        'sex_appeal': '#ec4899'
+      };
+      
+      let html = '';
+      
+      // Display static traits
+      html += staticTraits.map(trait => {
+        const traitDef = (typeof TRAITS !== 'undefined' && TRAITS[trait]) 
+          ? TRAITS[trait]
+          : null;
+        const borderColor = '#f97316'; // orange for passive traits
+        
+        if (!traitDef) {
+          return `
+            <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid ${borderColor};">
+              <div style="font-weight: bold; color: #fff; padding: 8px; background-color: rgba(255,255,255,0.05); border-radius: 4px; text-align: center; border: 1px solid ${borderColor};">
+                ${trait.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+              </div>
+            </div>
+          `;
+        }
+        
+        return `
+          <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid ${borderColor};">
+            <div style="font-weight: bold; color: #fff; padding: 8px; background-color: rgba(255,255,255,0.05); border-radius: 4px; text-align: center; border: 1px solid ${borderColor};">
+              ${traitDef.name}
+            </div>
+            <div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px; line-height: 1.4;">${traitDef.description}</div>
+            ${traitDef.effects ? `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1);"><div style="font-size: 0.7rem; color: #4CAF50; font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">Effects:</div><div style="font-size: 0.75rem; color: #a78bfa;">${traitDef.effects}</div></div>` : ''}
+            <div style="margin-top: 6px; font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Passive</div>
+          </div>
+        `;
+      }).join('');
+      
+      // Display conditional traits with toggles
+      html += conditionalTraits.map(trait => {
+        const traitDef = (typeof TRAITS !== 'undefined' && TRAITS[trait]) 
+          ? TRAITS[trait]
+          : null;
+        const isActive = localStorage.getItem(`trait_active_${trait}`) === 'true';
+        const borderColor = traitColors[trait] || '#f97316';
+        const traitName = traitDef 
+          ? traitDef.name 
+          : trait.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        
+        const toggleButton = `
+          <button 
+            type="button"
+            onclick="toggleTrait('${trait}')"
+            style="width: 100%; padding: 8px; color: white; border: 2px solid ${isActive ? borderColor : '#666'}; background-color: ${isActive ? borderColor : '#666'}; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s;"
+            title="Toggle ${traitName}"
+          >
+            ${isActive ? '● ' : '○ '}${traitName}
+          </button>
+        `;
+        
+        if (!traitDef) {
+          return `
+            <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid ${borderColor};">
+              ${toggleButton}
+              <div style="margin-top: 6px; font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Conditional</div>
+            </div>
+          `;
+        }
+        
+        return `
+          <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid ${borderColor};">
+            ${toggleButton}
+            <div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px; line-height: 1.4;">${traitDef.description}</div>
+            ${traitDef.effects ? `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1);"><div style="font-size: 0.7rem; color: #4CAF50; font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">Effects:</div><div style="font-size: 0.75rem; color: #a78bfa;">${traitDef.effects}</div></div>` : ''}
+            <div style="margin-top: 6px; font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Conditional</div>
+          </div>
+        `;
+      }).join('');
+      
+      container.innerHTML = html;
+    }
+
+    function displayPerks(perkEffects) {
+      const container = qs('perks-container');
+      
+      console.log('displayPerks called with:', perkEffects);
+      console.log('perkEffects type:', typeof perkEffects);
+      console.log('Is perkEffects an object?', perkEffects && typeof perkEffects === 'object');
+      console.log('perkEffects keys:', perkEffects ? Object.keys(perkEffects) : 'N/A');
+      
+      if (!perkEffects || Object.keys(perkEffects).length === 0) {
+        console.log('No perk effects to display');
+        container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No perks selected.</p>';
+        return;
+      }
+
+      const perkList = [];
+      
+      // HP Bonuses
+      if (perkEffects.hpBonusPerLevel) {
+        perkList.push({
+          name: 'HP Bonus',
+          effect: `+${perkEffects.hpBonusPerLevel} HP per level`
+        });
+      }
+      
+      // Skill Points Bonus
+      if (perkEffects.skillPointsPerLevel) {
+        perkList.push({
+          name: 'Skill Points',
+          effect: `+${perkEffects.skillPointsPerLevel} skill points per level`
+        });
+      }
+      
+      // Healing Rate
+      if (perkEffects.healingRate) {
+        perkList.push({
+          name: 'Healing Rate',
+          effect: `+${perkEffects.healingRate} healing rate`
+        });
+      }
+      
+      // Attribute Bonuses
+      if (perkEffects.attributeBonus) {
+        Object.entries(perkEffects.attributeBonus).forEach(([attr, bonus]) => {
+          if (bonus > 0) {
+            const attrName = attr.charAt(0).toUpperCase() + attr.slice(1);
+            perkList.push({
+              name: `Gain ${attrName}`,
+              effect: `+${bonus} to ${attrName}`
+            });
+          }
+        });
+      }
+      
+      // Skill Bonuses
+      if (perkEffects.skillBonuses) {
+        Object.entries(perkEffects.skillBonuses).forEach(([skill, bonus]) => {
+          if (bonus > 0) {
+            const skillName = skill.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            perkList.push({
+              name: skillName,
+              effect: `+${bonus}% ${skillName}`
+            });
+          }
+        });
+      }
+      
+      // Damage Resistance
+      if (perkEffects.damageResistance) {
+        perkList.push({
+          name: 'Damage Resistance',
+          effect: `+${perkEffects.damageResistance}% DR`
+        });
+      }
+      
+      // Radiation Resistance
+      if (perkEffects.radiationResistance) {
+        perkList.push({
+          name: 'Radiation Resistance',
+          effect: `+${perkEffects.radiationResistance}% RR`
+        });
+      }
+      
+      // Armor Bonus
+      if (perkEffects.armorBonus) {
+        perkList.push({
+          name: 'Armor Class',
+          effect: `+${perkEffects.armorBonus} AC`
+        });
+      }
+      
+      // Sequence Bonus
+      if (perkEffects.sequenceBonus) {
+        perkList.push({
+          name: 'Sequence',
+          effect: `+${perkEffects.sequenceBonus} to Sequence`
+        });
+      }
+      
+      // Tag Skills
+      if (perkEffects.additionalTagSkills) {
+        perkList.push({
+          name: 'Additional Tag Skills',
+          effect: `+${perkEffects.additionalTagSkills} tag skill`
+        });
+      }
+      
+      // Combat Bonuses
+      if (perkEffects.criticalChanceBonus) {
+        perkList.push({
+          name: 'Critical Chance',
+          effect: `+${perkEffects.criticalChanceBonus}% crit chance`
+        });
+      }
+      
+      if (perkEffects.criticalDamageMultiplier) {
+        perkList.push({
+          name: 'Critical Damage',
+          effect: `${(perkEffects.criticalDamageMultiplier * 100).toFixed(0)}% crit damage`
+        });
+      }
+      
+      if (perkEffects.actionPointBonus) {
+        perkList.push({
+          name: 'Action Points',
+          effect: `+${perkEffects.actionPointBonus} AP in combat`
+        });
+      }
+
+      if (perkList.length === 0) {
+        container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No perk effects active.</p>';
+        return;
+      }
+
+      container.innerHTML = perkList.map(perk => `
+        <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid #60a5fa;">
+          <div style="font-weight: bold; color: #60a5fa; margin-bottom: 4px;">${perk.name}</div>
+          <div style="font-size: 0.85rem; color: var(--muted);">${perk.effect}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderTools(characterData) {
+      const container = qs('tools-container');
+      
+      if (!characterData) {
+        container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No tools available.</p>';
+        return;
+      }
+
+      const tools = [
+        {
+          name: 'Take Drug',
+          category: 'Consumable',
+          effect: '',
+          color: '#10b981'
+        },
+        {
+          name: 'Poisoin',
+          category: 'Effect',
+          effect: '',
+          color: '#10b981'
+        },
+        {
+          name: 'Radiation',
+          category: 'Effect',
+          effect: '',
+          color: '#10b981'
+        }
+      ];
+
+      const toolsHTML = tools.map(tool => `
+        <div style="padding: 16px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 4px solid ${tool.color};">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+            <div style="font-weight: bold; color: #fff; font-size: 1.05rem;">${tool.name}</div>
+            <div style="font-size: 0.75rem; color: #fff; background-color: ${tool.color}; padding: 4px 8px; border-radius: 12px; opacity: 0.8;">${tool.category}</div>
+          </div>
+          <div style="font-size: 0.9rem; color: var(--muted); line-height: 1.4;">${tool.effect}</div>
+        </div>
+      `).join('');
+
+      container.innerHTML = toolsHTML;
+    }
+
+    function displayPerks(perkEffects) {
+      const container = qs('perks-container');
+      
+      console.log('displayPerks called with:', perkEffects);
+      console.log('perkEffects type:', typeof perkEffects);
+      console.log('Is perkEffects an object?', perkEffects && typeof perkEffects === 'object');
+      console.log('perkEffects keys:', perkEffects ? Object.keys(perkEffects) : 'N/A');
+      
+      if (!perkEffects || Object.keys(perkEffects).length === 0) {
+        console.log('No perk effects to display');
+        container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No perks selected.</p>';
+        return;
+      }
+
+      const perkList = [];
+      
+      // HP Bonuses
+      if (perkEffects.hpBonusPerLevel) {
+        perkList.push({
+          name: 'HP Bonus',
+          effect: `+${perkEffects.hpBonusPerLevel} HP per level`
+        });
+      }
+      
+      // Skill Points Bonus
+      if (perkEffects.skillPointsPerLevel) {
+        perkList.push({
+          name: 'Skill Points',
+          effect: `+${perkEffects.skillPointsPerLevel} skill points per level`
+        });
+      }
+      
+      // Healing Rate
+      if (perkEffects.healingRate) {
+        perkList.push({
+          name: 'Healing Rate',
+          effect: `+${perkEffects.healingRate} healing rate`
+        });
+      }
+      
+      // Attribute Bonuses
+      if (perkEffects.attributeBonus) {
+        Object.entries(perkEffects.attributeBonus).forEach(([attr, bonus]) => {
+          if (bonus > 0) {
+            const attrName = attr.charAt(0).toUpperCase() + attr.slice(1);
+            perkList.push({
+              name: `Gain ${attrName}`,
+              effect: `+${bonus} to ${attrName}`
+            });
+          }
+        });
+      }
+      
+      // Skill Bonuses
+      if (perkEffects.skillBonuses) {
+        Object.entries(perkEffects.skillBonuses).forEach(([skill, bonus]) => {
+          if (bonus > 0) {
+            const skillName = skill.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            perkList.push({
+              name: skillName,
+              effect: `+${bonus}% ${skillName}`
+            });
+          }
+        });
+      }
+      
+      // Damage Resistance
+      if (perkEffects.damageResistance) {
+        perkList.push({
+          name: 'Damage Resistance',
+          effect: `+${perkEffects.damageResistance}% DR`
+        });
+      }
+      
+      // Radiation Resistance
+      if (perkEffects.radiationResistance) {
+        perkList.push({
+          name: 'Radiation Resistance',
+          effect: `+${perkEffects.radiationResistance}% RR`
+        });
+      }
+      
+      // Armor Bonus
+      if (perkEffects.armorBonus) {
+        perkList.push({
+          name: 'Armor Class',
+          effect: `+${perkEffects.armorBonus} AC`
+        });
+      }
+      
+      // Sequence Bonus
+      if (perkEffects.sequenceBonus) {
+        perkList.push({
+          name: 'Sequence',
+          effect: `+${perkEffects.sequenceBonus} to Sequence`
+        });
+      }
+      
+      // Tag Skills
+      if (perkEffects.additionalTagSkills) {
+        perkList.push({
+          name: 'Additional Tag Skills',
+          effect: `+${perkEffects.additionalTagSkills} tag skill`
+        });
+      }
+      
+      // Combat Bonuses
+      if (perkEffects.criticalChanceBonus) {
+        perkList.push({
+          name: 'Critical Chance',
+          effect: `+${perkEffects.criticalChanceBonus}% crit chance`
+        });
+      }
+      
+      if (perkEffects.criticalDamageMultiplier) {
+        perkList.push({
+          name: 'Critical Damage',
+          effect: `${(perkEffects.criticalDamageMultiplier * 100).toFixed(0)}% crit damage`
+        });
+      }
+      
+      if (perkEffects.actionPointBonus) {
+        perkList.push({
+          name: 'Action Points',
+          effect: `+${perkEffects.actionPointBonus} AP in combat`
+        });
+      }
+
+      if (perkList.length === 0) {
+        container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No perk effects active.</p>';
+        return;
+      }
+
+      container.innerHTML = perkList.map(perk => `
+        <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid #60a5fa;">
+          <div style="font-weight: bold; color: #60a5fa; margin-bottom: 4px;">${perk.name}</div>
+          <div style="font-size: 0.85rem; color: var(--muted);">${perk.effect}</div>
+        </div>
+      `).join('');
+    }
+    
+    const CONDITIONAL_PERK_IDS = new Set([
+      // Conditional Stat/Reaction Boosters
+      'presence',           // +1 CHR for reaction rolls (dialogue only)
+      'brown_noser',        // +1 CHR for reaction rolls with authority figures
+      
+      // Conditional Skill Bonuses
+      'smooth_talker',      // +5% Speech per rank (condition: smooth-talking rolls)
+      'survivalist',        // +25% Outdoorsman per rank (condition: specific situations)
+      'ranger',             // +15% Outdoorsman (condition: special encounters)
+      'ghost',              // +20% Sneak (condition: darkness or at night)
+      'drunken_master',     // +20% Unarmed (condition: when drunk)
+      
+      // Conditional Defensive/Healing Perks
+      'die_hard',           // +10% DR when HP < 20%
+      'bonus_hth_attacks',  // -1 AP cost for melee (combat specific)
+      
+      // Conditional Damage/Combat Perks
+      'pyromaniac',         // +5 damage with fire weapons (weapon type condition)
+      'silent_death',       // Double damage sneaking/behind with melee
+      'slayer',             // HtH/melee + luck check = crit
+      'sniper'              // Ranged + luck check = crit
+    ]);
+
+    // Adrenaline Rush is auto-managed based on HP, not user-toggleable
+    const AUTO_MANAGED_PERKS = new Set(['adrenaline_rush']);
+
+    function renderConditionalPerks(selectedPerks) {
+      const container = qs('conditional-perks-container');
+      
+      console.log('renderConditionalPerks called with:', selectedPerks);
+      
+      // Descriptions for conditional perks
+      const conditionalPerkDescriptions = {
+        'presence': '+1 CHR for reaction rolls (dialogue only)',
+        'brown_noser': '+1 CHR with authority figures',
+        'smooth_talker': '+5% Speech per rank',
+        'survivalist': '+25% Outdoorsman per rank',
+        'ranger': '+15% Outdoorsman',
+        'ghost': '+20% Sneak (darkness/night)',
+        'drunken_master': '+20% Unarmed (when drunk)',
+        'die_hard': '+10% DR when HP < 20%',
+        'bonus_hth_attacks': '-1 AP cost for melee',
+        'pyromaniac': '+5 damage with fire weapons',
+        'silent_death': 'Double damage sneaking/behind',
+        'slayer': 'HtH/melee + luck check = crit',
+        'sniper': 'Ranged + luck check = crit'
+      };
+      
+      // Filter to only conditional perks that have been selected (exclude auto-managed perks)
+      const conditionalPerks = Array.isArray(selectedPerks) 
+        ? selectedPerks.filter(perk => {
+            const isConditional = perk && perk.id && CONDITIONAL_PERK_IDS.has(perk.id) && !AUTO_MANAGED_PERKS.has(perk.id);
+            console.log(`Perk ${perk?.id}: isConditional=${isConditional}, isInSet=${CONDITIONAL_PERK_IDS.has(perk?.id)}, isAutoManaged=${AUTO_MANAGED_PERKS.has(perk?.id)}`);
+            return isConditional;
+          })
+        : [];
+      
+      console.log('Filtered conditional perks:', conditionalPerks);
+      
+      if (conditionalPerks.length === 0) {
+        console.log('No conditional perks to display');
+        container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No conditional perks selected.</p>';
+        return;
+      }
+
+      container.innerHTML = conditionalPerks.map(perk => {
+        // Get perk name from PERKS definition if available, otherwise use id
+        const perkName = (typeof PERKS !== 'undefined' && PERKS[perk.id]) 
+          ? PERKS[perk.id].name 
+          : perk.id.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        
+        const perkDesc = conditionalPerkDescriptions[perk.id] || 'Conditional perk';
+        
+        const isActive = localStorage.getItem(`perk_active_${perk.id}`) === 'true';
+        const buttonStyle = isActive 
+          ? 'background-color: #4CAF50; border-color: #4CAF50;'
+          : 'background-color: #666; border-color: #666;';
+        
+        return `
+          <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid #8b5cf6;">
+            <button 
+              type="button"
+              onclick="toggleConditionalPerk('${perk.id}', this)"
+              style="width: 100%; padding: 8px; color: white; border: 2px solid; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s; ${buttonStyle}"
+              title="Toggle ${perkName} perk"
+            >
+              ${perkName}
+            </button>
+            <div style="font-size: 0.8rem; color: var(--muted); margin-top: 6px; line-height: 1.3;">${perkDesc}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderGameSelectedPerks(selectedPerks) {
+      console.log('[RENDER_PERKS_START]');
+      console.log('[RENDER_PERKS] Starting renderGameSelectedPerks with:', selectedPerks);
+      
+      try {
+        const container = qs('perks-container');
+        console.log('[RENDER_PERKS] Container:', container?.id || 'NOT FOUND');
+        
+        if (!container) {
+          console.error('[RENDER_PERKS] ERROR: Container not found!');
+          return;
+        }
+        
+        if (!Array.isArray(selectedPerks) || selectedPerks.length === 0) {
+          console.log('[RENDER_PERKS] No perks in array');
+          container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No perks selected.</p>';
+          return;
+        }
+
+        console.log('[RENDER_PERKS] Processing', selectedPerks.length, 'perks');
+        
+        // Detailed perk information
+        const perkDetails = {
+          'action_boy_girl': {
+            description: 'Make the most of every moment in combat.',
+            effects: ['+1 Action Point per rank']
+          },
+          'adrenaline_rush': {
+            description: 'Fear of death makes you stronger when wounded.',
+            effects: ['When HP < 50% of max: +1 Strength']
+          },
+          'animal_friend': {
+            description: 'Animals see you as one of their own.',
+            effects: ['Animals will not attack unless threatened or attacked first']
+          },
+          'awareness': {
+            description: 'You always know what\'s going on in a fight.',
+            effects: ['See exact HP of enemies when examined', 'Identify equipped weapons on enemies']
+          },
+          'better_criticals': {
+            description: 'Your critical hits are especially brutal.',
+            effects: ['Critical hits deal 150% damage', 'Chance to damage a limb increased by 50%']
+          },
+          'bluff_master': {
+            description: 'You can talk your way out of trouble.',
+            effects: ['Auto-talk your way out when caught stealing']
+          },
+          'bone_head': {
+            description: 'Your skull is remarkably hard.',
+            effects: ['Rank 1: 50% chance to avoid KO', 'Rank 2: 75% chance to avoid KO']
+          },
+          'bonsai': {
+            description: 'You have a fruit tree growing from your head.',
+            effects: ['Steady supply of healing fruit', 'You get one healing fruit every session']
+          },
+          'bonus_hth_attacks': {
+            description: 'You can make more melee attacks per turn.',
+            effects: ['HtH and melee attacks cost 1 less AP']
+          },
+          'bonus_hth_damage': {
+            description: 'You hit harder in close combat.',
+            effects: ['+2 Melee Damage per rank']
+          },
+          'bonus_move': {
+            description: 'You move farther for free.',
+            effects: ['For every rank, the first 2 hexes of movement each turn cost 0 AP']
+          },
+          'bonus_ranged_damage': {
+            description: 'You do extra damage with ranged weapons.',
+            effects: ['+2 damage per bullet per rank']
+          },
+          'bonus_rate_of_fire': {
+            description: 'Your trigger finger is fast.',
+            effects: ['All ranged weapon attacks cost 1 less AP']
+          },
+          'bracing': {
+            description: 'You know how to brace big weapons.',
+            effects: ['Gain +10% to-hit bonus when standing and bracing large weapons']
+          },
+          'brown_noser': {
+            description: 'You\'re good at sucking up to authority.',
+            effects: ['+1 Charisma for authority figures per rank', 'Max 2 ranks']
+          },
+          'brutish_hulk': {
+            description: 'You gain extra HP per level. (Deathclaw only)',
+            effects: ['Double the normal HP gained per level']
+          },
+          'cancerous_growth': {
+            description: 'Radiation has made you hardy. (Ghoul only)',
+            effects: ['+2 Healing Rate', 'Regenerate crippled limb in 48 hours']
+          },
+          'cautious_nature': {
+            description: 'You\'re careful in strange situations.',
+            effects: ['+3 Perception when determining starting position']
+          },
+          'comprehension': {
+            description: 'You get more out of reading.',
+            effects: ['Books grant +50% more skill points']
+          },
+          'crazy_bomber': {
+            description: 'You\'re unnaturally safe with explosives.',
+            effects: ['If you fail to set explosive, know instantly', 'Can reset and retry']
+          },
+          'cult_of_personality': {
+            description: 'Everyone likes you, regardless of karma.',
+            effects: ['Karma modifiers for reactions always positive', 'Charisma must be 10']
+          },
+          'death_sense': {
+            description: 'You see well in darkness and sense danger. (Deathclaw only)',
+            effects: ['+2 Perception in dark', 'Light penalties reduced 50%']
+          },
+          'demolition_expert': {
+            description: 'You\'re a professional with explosives.',
+            effects: ['Explosives deal +50% damage', 'Always detonate on time']
+          },
+          'die_hard': {
+            description: 'You stay up when others drop.',
+            effects: ['When HP < 20%: +10% Damage Resistance (all types)']
+          },
+          'divine_favor': {
+            description: 'A higher power watches over you.',
+            effects: ['Once per 24 hours, re-roll any failed roll', 'Must accept second result']
+          },
+          'dodger': {
+            description: 'You\'re harder to hit.',
+            effects: ['+5 Armor Class per rank']
+          },
+          'drunken_master': {
+            description: 'You fight better when drunk.',
+            effects: ['+20% Unarmed when intoxicated']
+          },
+          'earlier_sequence': {
+            description: 'You move earlier in combat rounds.',
+            effects: ['+2 Sequence per rank', 'Max 3 ranks']
+          },
+          'educated': {
+            description: 'You learn more per level.',
+            effects: ['+2 skill points per level per rank']
+          },
+          'empathy': {
+            description: 'You get a read on people.',
+            effects: ['GM warns when dialogue will be negative', 'Better dialogue choices']
+          },
+          'explorer': {
+            description: 'You find strange and interesting things.',
+            effects: ['Increased chance for special encounters', 'Find more unique items']
+          },
+          'faster_healing': {
+            description: 'You heal more quickly.',
+            effects: ['+2 Healing Rate per rank']
+          },
+          'flexible': {
+            description: 'You change stances quickly.',
+            effects: ['Changing combat stance costs 1 AP']
+          },
+          'flower_child': {
+            description: 'You\'re less affected by chems.',
+            effects: ['50% less likely to become addicted', 'Withdrawal time is half normal']
+          },
+          'fortune_finder': {
+            description: 'You find more money.',
+            effects: ['Looting yields more currency']
+          },
+          'gambler': {
+            description: 'You\'re notably good at games of chance.',
+            effects: ['One-time +20% to Gambling']
+          },
+          'ghost': {
+            description: 'You\'re nearly invisible in the dark.',
+            effects: ['+20% Sneak in darkness or at night']
+          },
+          'gunner': {
+            description: 'You\'re good at firing from moving vehicles.',
+            effects: ['No 10% penalty for shooting from moving vehicles']
+          },
+          'harmless': {
+            description: 'You look too innocent to be a thief.',
+            effects: ['+20% Steal', 'Good karma required']
+          },
+          'healer': {
+            description: 'You heal more HP with medical skills.',
+            effects: ['Rank 1: +1d6+4 HP healed', 'Rank 2: +2×(1d6+4) HP healed']
+          },
+          'heave_ho': {
+            description: 'You throw weapons farther.',
+            effects: ['Strength treated as +2 per rank for thrown weapon range']
+          },
+          'hide_of_scars': {
+            description: 'Your scarred hide is its own armor. (Deathclaw only)',
+            effects: ['+15% all resistances(except fire) per rank']
+          },
+          'hit_the_deck': {
+            description: 'You react quickly to explosives.',
+            effects: ['Take half damage from ranged explosive weapons']
+          },
+          'hth_evade': {
+            description: 'Your unarmed stance improves your defense.',
+            effects: ['Gain 3 AC per unused AP if not holding weapons at end of turn']
+          },
+          'kama_sutra_master': {
+            description: 'You are exceptionally skilled in intimate matters.',
+            effects: ['Great stamina and skill', 'Roleplay effect']
+          },
+          'karma_beacon': {
+            description: 'Your karma radiates outward.',
+            effects: ['Karma is doubled for reaction purposes']
+          },
+          'leader': {
+            description: 'You inspire your party.',
+            effects: ['Party within 10 hexes: +1 Agility, +5 AC (not leader)']
+          },
+          'lifegiver': {
+            description: 'You gain extra HP on level up.',
+            effects: ['+4 HP per level per rank']
+          },
+          'light_step': {
+            description: 'You avoid triggers and traps.',
+            effects: ['+4 effective Agility', 'For trap triggering checks']
+          },
+          'living_anatomy': {
+            description: 'You understand where to hurt people.',
+            effects: ['+10% Doctor', '+5 damage vs. living creatures']
+          },
+          'loner': {
+            description: 'You operate better alone.',
+            effects: ['+10% all skill rolls when 10+ hexes from party']
+          },
+          'master_thief': {
+            description: 'You are a consummate thief.',
+            effects: ['One-time +15% to Lockpick', 'One-time +15% to Steal']
+          },
+          'master_trader': {
+            description: 'You are exceptionally good at trading.',
+            effects: ['One-time +30% to Barter']
+          },
+          'medic': {
+            description: 'You are well-trained in medicine.',
+            effects: ['One-time +10% to First Aid', 'One-time +10% to Doctor']
+          },
+          'mental_block': {
+            description: 'You can tune out unwanted mental interference.',
+            effects: ['Perception treated as +1 for combat range and trap detection']
+          },
+          'more_criticals': {
+            description: 'You cause critical hits more often.',
+            effects: ['+5% Critical Chance per rank']
+          },
+          'mr_fixit': {
+            description: 'You excel at technical work.',
+            effects: ['One-time +10% to Repair', 'One-time +10% to Science']
+          },
+          'mysterious_stranger': {
+            description: 'A strange ally sometimes appears.',
+            effects: ['30% + (2 × Luck)% chance to gain a Temporary ally in random encounters']
+          },
+          'negotiator': {
+            description: 'You\'re better at getting deals and persuading.',
+            effects: ['One-time +10% to Speech', 'One-time +10% to Barter']
+          },
+          'night_vision': {
+            description: 'You see better in the dark.',
+            effects: ['Light penalties reduced by 50% in darkness']
+          },
+          'pack_rat': {
+            description: 'You can carry more gear.',
+            effects: ['+10 lbs Carry Weight per rank']
+          },
+          'pathfinder': {
+            description: 'You travel more efficiently.',
+            effects: ['Overland travel time reduced by 25%']
+          },
+          'pickpocket': {
+            description: 'You\'re very skilled at lifting items.',
+            effects: ['+25% Steal when stealing from Characters/NPCs']
+          },
+          'presence': {
+            description: 'Your presence influences reactions.',
+            effects: ['+1 Charisma for reaction rolls per rank']
+          },
+          'psychotic': {
+            description: 'You\'ve adapted to Psycho. (Mutant only)',
+            effects: ['Positive Psycho effects doubled', 'Addiction rate halved']
+          },
+          'pyromaniac': {
+            description: 'You do terrible things with fire.',
+            effects: ['+5 damage with fire-based weapons']
+          },
+          'quick_pockets': {
+            description: 'You swap gear faster.',
+            effects: ['Swapping equipment costs 2 AP instead of 4 in combat']
+          },
+          'quick_recovery': {
+            description: 'You get up faster.',
+            effects: ['Standing up from knockdown costs 1 AP']
+          },
+          'rad_child': {
+            description: 'Radiation heals you instead of harming you. (Ghoul only)',
+            effects: ['When in 10+ rads/hour source: +5 Healing Rate']
+          },
+          'rad_resistance': {
+            description: 'You resist radiation better.',
+            effects: ['+15% Radiation Resistance per rank']
+          },
+          'ranger': {
+            description: 'You\'re a seasoned wanderer.',
+            effects: ['One-time +15% Outdoorsman', 'Special encounters easier to find']
+          },
+          'road_warrior': {
+            description: 'You can drive and fight at the same time.',
+            effects: ['No penalties when driving and attacking simultaneously']
+          },
+          'salesman': {
+            description: 'You\'re good at selling things.',
+            effects: ['One-time +20% to Barter']
+          },
+          'scout': {
+            description: 'You see farther and find more.',
+            effects: ['Increased world map vision', 'Special items easier to find']
+          },
+          'scrounger': {
+            description: 'You find more ammunition.',
+            effects: ['Always find double the normal amount of ammo']
+          },
+          'sharpshooter': {
+            description: 'You\'re better at long-range shooting.',
+            effects: ['Perception treated as +2 for range modifiers']
+          },
+          'silent_death': {
+            description: 'You excel at killing from the shadows.',
+            effects: ['Deal double damage while sneaking and attacking from behind with HtH/melee']
+          },
+          'silent_running': {
+            description: 'You can run while sneaking.',
+            effects: ['Run and sneak at the same time']
+          },
+          'slayer': {
+            description: 'You are a walking melee death machine.',
+            effects: ['Successful attack + successful Luck check = critical hit with HtH/melee']
+          },
+          'smooth_talker': {
+            description: 'You sound smarter than you are.',
+            effects: ['+1 Intelligence for "smooth-talking" dialogue checks per rank']
+          },
+          'snakeater': {
+            description: 'You shrug off poison.',
+            effects: ['+25% Poison Resistance']
+          },
+          'sniper': {
+            description: 'Your shots tend to be critical.',
+            effects: ['Successful ranged attack + successful Luck check = critical hit']
+          },
+          'speaker': {
+            description: 'You\'re especially persuasive.',
+            effects: ['One-time +20% to Speech']
+          },
+          'stat': {
+            description: 'You\'re faster at battlefield medicine.',
+            effects: ['Using First Aid/Doctor in combat costs 5 AP']
+          },
+          'steady_arm': {
+            description: 'You handle burst fire better. (Mutant only)',
+            effects: ['Burst attacks cost 1 less AP']
+          },
+          'stonewall': {
+            description: 'You are hard to knock down.',
+            effects: ['50% chance to avoid knockdown']
+          },
+          'strong_back': {
+            description: 'You can carry significantly more.',
+            effects: ['+50 lbs Carry Weight per rank']
+          },
+          'stunt_devil': {
+            description: 'You handle impacts better.',
+            effects: ['25% less damage from falls', 'Vehicle wreck damage reduced', 'One-time +10% Pilot']
+          },
+          'survivalist': {
+            description: 'You\'re excellent at survival.',
+            effects: ['+25% Outdoorsman per rank']
+          },
+          'talon_of_fear': {
+            description: 'Your claws are venomous. (Deathclaw only)',
+            effects: ['All unarmed attacks inflict Type B poison']
+          },
+          'team_player': {
+            description: 'You work best with the group.',
+            effects: ['When all party within 10 hexes: +10% for all skills']
+          },
+          'thief': {
+            description: 'You are broadly skilled in thievery.',
+            effects: ['One-time +10% to Sneak, Lockpick, Steal, and Traps']
+          },
+          'tough_hide': {
+            description: 'Your hide is hardened by the wastes. (Mutant only)',
+            effects: ['+15 Armor Class; +10% all resistances per rank']
+          },
+          'toughness': {
+            description: 'You are naturally more resilient.',
+            effects: ['+10% Damage Resistance to all damage types']
+          },
+          'tunnel_rat': {
+            description: 'You move quickly while low.',
+            effects: ['Normal movement rate while crouching or prone (1 AP per hex)']
+          },
+          'way_of_the_fruit': {
+            description: 'Fruit has mystical effects on you.',
+            effects: ['For 24 hours after eating fruit: +1 Perception and +1 Agility']
+          },
+          'weapon_handling': {
+            description: 'You handle heavy weapons more easily.',
+            effects: ['+3 effective Strength for meeting weapon requirements']
+          }
+        };
+
+        const perkHTML = selectedPerks.map((perk, idx) => {
+          const perkId = perk.id || perk;
+          console.log(`[RENDER_PERKS] Processing perk ${idx}: ${perkId}`);
+          
+          const isConditional = CONDITIONAL_PERK_IDS.has(perkId);
+          const isAutoManaged = AUTO_MANAGED_PERKS.has(perkId);
+          
+          // Format perk name
+          let perkName = perkId.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+          
+          // Get detailed description and effects
+          const details = perkDetails[perkId] || {
+            description: 'Perk effect',
+            effects: []
+          };
+          
+          // Determine styling based on perk type
+          let borderColor = '#60a5fa'; // Default: blue for unconditional/passive
+          let typeLabel = 'Passive';
+          let showToggle = false;
+          
+          if (isAutoManaged) {
+            borderColor = '#ef4444'; // red
+            typeLabel = 'Auto-Active';
+          } else if (isConditional) {
+            borderColor = '#8b5cf6'; // purple
+            typeLabel = 'Conditional';
+            showToggle = true;
+          }
+          
+          console.log(`[RENDER_PERKS] Perk ${perkId}: type=${typeLabel}, conditional=${isConditional}, autoManaged=${isAutoManaged}`);
+          
+          // Build toggle button or static display
+          let toggleButton;
+          if (showToggle) {
+            // Conditional perks with manual toggle
+            const isActive = localStorage.getItem(`perk_active_${perkId}`) === 'true';
+            toggleButton = `
+              <button 
+                type="button"
+                onclick="toggleConditionalPerk('${perkId}', this)"
+                style="width: 100%; padding: 8px; color: white; border: 2px solid ${isActive ? borderColor : '#666'}; background-color: ${isActive ? borderColor : '#666'}; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s;"
+                title="Toggle ${perkName}"
+              >
+                ${isActive ? '● ' : '○ '}${perkName}
+              </button>
+            `;
+          } else if (isAutoManaged) {
+            // Auto-managed perks showing their current state
+            const isActive = localStorage.getItem(`perk_active_${perkId}`) === 'true';
+            const displayColor = isActive ? borderColor : '#666';
+            toggleButton = `
+              <div style="font-weight: bold; color: #fff; padding: 8px; background-color: ${displayColor}; border-radius: 4px; text-align: center; border: 1px solid ${displayColor}; transition: all 0.2s;">
+                ${isActive ? '● ' : '○ '}${perkName}
+              </div>
+            `;
+          } else {
+            // Passive perks with static display
+            toggleButton = `
+              <div style="font-weight: bold; color: #fff; padding: 8px; background-color: rgba(255,255,255,0.05); border-radius: 4px; text-align: center; border: 1px solid ${borderColor};">
+                ${perkName}
+              </div>
+            `;
+          }
+          
+          // Build effects list
+          const effectsList = details.effects.length > 0
+            ? `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1);">
+                 <div style="font-size: 0.7rem; color: #4CAF50; font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">Effects:</div>
+                 <ul style="margin: 0; padding-left: 16px; font-size: 0.75rem; color: #a78bfa; line-height: 1.5;">
+                   ${details.effects.map(effect => `<li>${effect}</li>`).join('')}
+                 </ul>
+               </div>`
+            : '';
+          
+          return `
+            <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid ${borderColor};">
+              ${toggleButton}
+              <div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px; line-height: 1.4;">${details.description}</div>
+              ${effectsList}
+              <div style="margin-top: 6px; font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">${typeLabel}</div>
+            </div>
+          `;
+        }).join('');
+
+        console.log('[RENDER_PERKS] HTML created, length:', perkHTML.length);
+        container.innerHTML = perkHTML;
+        console.log('[RENDER_PERKS] Successfully rendered', selectedPerks.length, 'perks');
+      } catch (err) {
+        console.error('[RENDER_PERKS] CAUGHT ERROR:', err.message);
+        console.error('[RENDER_PERKS] Stack:', err.stack);
+      }
+    }
+
+    function toggleConditionalPerk(perkId, buttonElement) {
+      const isActive = localStorage.getItem(`perk_active_${perkId}`) === 'true';
+      const newActive = !isActive;
+      
+      console.log(`[TOGGLE_PERK] Toggling perk ${perkId}:`);
+      console.log(`  - Current state: ${isActive} (localStorage value: ${localStorage.getItem(`perk_active_${perkId}`)})`);
+      console.log(`  - New state will be: ${newActive}`);
+      
+      localStorage.setItem(`perk_active_${perkId}`, newActive);
+      
+      console.log(`  - After set, localStorage.perk_active_${perkId} = ${localStorage.getItem(`perk_active_${perkId}`)}`);
+      
+      // Update button styling
+      if (newActive) {
+        buttonElement.style.backgroundColor = '#4CAF50';
+        buttonElement.style.borderColor = '#4CAF50';
+        buttonElement.textContent = '● ' + buttonElement.textContent.slice(2);
+      } else {
+        buttonElement.style.backgroundColor = '#666';
+        buttonElement.style.borderColor = '#666';
+        buttonElement.textContent = '○ ' + buttonElement.textContent.slice(2);
+      }
+      
+      console.log('[TOGGLE_PERK] About to call updateGameAttributeDisplay...');
+      // Re-calculate attributes and skills with new perk active/inactive state
+      updateGameAttributeDisplay();
+    }
+
+    function toggleTrait(traitId) {
+      const isActive = localStorage.getItem(`trait_active_${traitId}`) === 'true';
+      const newActive = !isActive;
+      
+      console.log(`[TOGGLE_TRAIT] Toggling ${traitId}:`);
+      console.log(`  - Current state: ${isActive} (localStorage value: ${localStorage.getItem(`trait_active_${traitId}`)})`);
+      console.log(`  - New state will be: ${newActive}`);
+      
+      localStorage.setItem(`trait_active_${traitId}`, newActive);
+      
+      console.log(`  - After set, localStorage.trait_active_${traitId} = ${localStorage.getItem(`trait_active_${traitId}`)}`);
+      
+      // Re-render traits to update button state
+      const stored = localStorage.getItem('characterData');
+      if (stored) {
+        try {
+          const characterData = JSON.parse(stored);
+          displayCharacterTraits(characterData.selectedTraits || []);
+          
+          console.log('[TOGGLE_TRAIT] About to call updateGameAttributeDisplay...');
+          // Re-calculate attributes and skills with new trait active/inactive state
+          updateGameAttributeDisplay();
+        } catch (err) {
+          console.error('Error toggling trait:', err);
+        }
+      }
+    }
+
+    function decreaseHP() {
+      let currentHP = parseInt(localStorage.getItem('currentHP'));
+      if (currentHP === null) currentHP = maxHP;
+      const newHP = Math.max(0, currentHP - 1);
+      localStorage.setItem('currentHP', newHP);
+      renderHealthTracker(newHP);
+      updateAdrenalineRush(newHP);
+      updateGameAttributeDisplay();
+      renderGameSelectedPerks(JSON.parse(localStorage.getItem('characterData')).selectedPerks || []);
+    }
+
+    function increaseHP() {
+      let currentHP = parseInt(localStorage.getItem('currentHP'));
+      if (currentHP === null || isNaN(currentHP)) currentHP = maxHP;
+      const newHP = Math.min(maxHP, currentHP + 1);
+      localStorage.setItem('currentHP', newHP);
+      renderHealthTracker(newHP);
+      updateAdrenalineRush(newHP);
+      updateGameAttributeDisplay();
+      renderGameSelectedPerks(JSON.parse(localStorage.getItem('characterData')).selectedPerks || []);
+    }
+
+    function updateAdrenalineRush(currentHP) {
+      // Adrenaline Rush auto-activates when HP < 50% of max
+      const threshold = maxHP / 2;
+      const shouldBeActive = currentHP < threshold;
+      const isActive = localStorage.getItem('perk_active_adrenaline_rush') === 'true';
+      
+      if (shouldBeActive && !isActive) {
+        localStorage.setItem('perk_active_adrenaline_rush', 'true');
+      } else if (!shouldBeActive && isActive) {
+        localStorage.setItem('perk_active_adrenaline_rush', 'false');
+      }
+    }
+
+    function updateGameAttributeDisplay() {
+      const stored = localStorage.getItem('characterData');
+      if (!stored) return;
+      
+      try {
+        const characterData = JSON.parse(stored);
+        const attrs = characterData.attributes || {};
+        const selectedTraits = characterData.selectedTraits || [];
+        const currentHP = parseInt(localStorage.getItem('currentHP')) || maxHP;
+        
+        let strength = parseInt(attrs.strength) || 0;
+        let perception = parseInt(attrs.perception) || 0;
+        let endurance = parseInt(attrs.endurance) || 0;
+        let charisma = parseInt(attrs.charisma) || 0;
+        let intelligence = parseInt(attrs.intelligence) || 0;
+        let agility = parseInt(attrs.agility) || 0;
+        let luck = parseInt(attrs.luck) || 0;
+        
+        console.log('[ATTRIBUTES] Base values:', { strength, perception, endurance, charisma, intelligence, agility, luck });
+        console.log('[ATTRIBUTES] Selected traits:', selectedTraits);
+        console.log('[ATTRIBUTES] Trait active states:');
+        console.log('  - night_person:', localStorage.getItem('trait_active_night_person'));
+        console.log('  - sex_appeal:', localStorage.getItem('trait_active_sex_appeal'));
+        console.log('[ATTRIBUTES] Perk active states:');
+        console.log('  - adrenaline_rush:', localStorage.getItem('perk_active_adrenaline_rush'));
+        console.log('  - presence:', localStorage.getItem('perk_active_presence'));
+        console.log('  - brown_noser:', localStorage.getItem('perk_active_brown_noser'));
+        
+        // Apply conditional attribute bonuses from perks
+        if (localStorage.getItem('perk_active_adrenaline_rush') === 'true' && currentHP < maxHP / 2) {
+          strength += 1;
+          console.log('[ATTRIBUTES] Applied Adrenaline Rush +1 STR, new strength:', strength);
+        }
+        if (localStorage.getItem('perk_active_presence') === 'true') {
+          charisma += 1;
+          console.log('[ATTRIBUTES] Applied Presence +1 CHR, charisma now:', charisma);
+        }
+        if (localStorage.getItem('perk_active_brown_noser') === 'true') {
+          charisma += 1;
+          console.log('[ATTRIBUTES] Applied Brown Noser +1 CHR, charisma now:', charisma);
+        }
+        
+        // Apply trait bonuses - Night Person (check if explicitly true)
+        if (selectedTraits.includes('night_person') && localStorage.getItem('trait_active_night_person') === 'true') {
+          intelligence += 1; // +1 INT at night
+          perception += 1;   // +1 PER at night
+          console.log('[ATTRIBUTES] Applied Night Person +1 INT/PER, INT now:', intelligence, 'PER now:', perception);
+        } else if (selectedTraits.includes('night_person')) {
+          console.log('[ATTRIBUTES] Night Person trait present but NOT active (trait_active_night_person =', localStorage.getItem('trait_active_night_person'), ')');
+        }
+        
+        // Apply trait bonuses - Sex Appeal (check if explicitly true)
+        if (selectedTraits.includes('sex_appeal') && localStorage.getItem('trait_active_sex_appeal') === 'true') {
+          charisma += 1; // +1 CHA with opposite sex
+          console.log('[ATTRIBUTES] Applied Sex Appeal +1 CHR, charisma now:', charisma);
+        } else if (selectedTraits.includes('sex_appeal')) {
+          console.log('[ATTRIBUTES] Sex Appeal trait present but NOT active (trait_active_sex_appeal =', localStorage.getItem('trait_active_sex_appeal'), ')');
+        }
+        
+        console.log('[ATTRIBUTES] Final values:', { strength, perception, endurance, charisma, intelligence, agility, luck });
+        
+        qs('attr-str').textContent = strength || '—';
+        qs('attr-per').textContent = perception || '—';
+        qs('attr-end').textContent = endurance || '—';
+        qs('attr-chr').textContent = charisma || '—';
+        qs('attr-int').textContent = intelligence || '—';
+        qs('attr-agi').textContent = agility || '—';
+        qs('attr-lck').textContent = luck || '—';
+        
+        renderSkills(characterData.skills || {}, characterData);
+      } catch (err) {
+        console.error('Error updating attributes:', err);
+      }
+    }
+
+    function loadCharacter() {
+      console.log('=== loadCharacter() started ===');
+      
+      const stored = localStorage.getItem('characterData');
+      console.log('localStorage.characterData exists:', !!stored);
+      
+      if (!stored) {
+        alert('No character data found. Please upload a character file.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      try {
+        const characterData = JSON.parse(stored);
+        console.log('Parsed characterData:', JSON.stringify(characterData, null, 2));
+        console.log('Character level from data:', characterData.level);
+        console.log('Character selectedPerks from data:', characterData.selectedPerks);
+        console.log('Character perkEffects from data:', characterData.perkEffects);
+        
+        // Initialize trait and perk active states to false if not already set
+        const selectedTraits = characterData.selectedTraits || [];
+        const CONDITIONAL_TRAITS = new Set(['night_person', 'sex_appeal']);
+        selectedTraits.forEach(trait => {
+          if (CONDITIONAL_TRAITS.has(trait)) {
+            if (localStorage.getItem(`trait_active_${trait}`) === null) {
+              localStorage.setItem(`trait_active_${trait}`, 'false');
+              console.log(`[INIT] Initialized trait_active_${trait} = false`);
+            }
+          }
+        });
+        
+        const selectedPerks = characterData.selectedPerks || [];
+        selectedPerks.forEach(perk => {
+          const perkId = perk.id || perk;
+          if (CONDITIONAL_PERK_IDS.has(perkId) && !AUTO_MANAGED_PERKS.has(perkId)) {
+            if (localStorage.getItem(`perk_active_${perkId}`) === null) {
+              localStorage.setItem(`perk_active_${perkId}`, 'false');
+              console.log(`[INIT] Initialized perk_active_${perkId} = false`);
+            }
+          }
+        });
+        
+        // RECALCULATE LEVEL FROM TOTALXP
+        if (characterData.totalXP !== undefined && typeof getLevelFromXP === 'function') {
+          const calculatedLevel = getLevelFromXP(characterData.totalXP || 0);
+          console.log(`[IMPORTANT] Recalculating level from totalXP: ${characterData.totalXP} -> Level ${calculatedLevel} (was ${characterData.level})`);
+          characterData.level = calculatedLevel;
+        }
+        
+        // Display character info
+        qs('char-name').textContent = characterData.name || 'Unknown';
+        qs('play-name').textContent = characterData.player || 'Unknown';
+        qs('char-race').textContent = characterData.race || 'Human';
+        const levelValue = characterData.level || 1;
+        qs('char-level').textContent = levelValue;
+        console.log(`Set char-level to: ${levelValue} (totalXP: ${characterData.totalXP})`);
+        console.log('Character data level field:', characterData.level);
+        
+        // Set max HP
+        maxHP = characterData.stats?.Hit_Points || 15;
+        qs('char-max-hp').textContent = maxHP;
+        console.log('Set maxHP to:', maxHP);
+        
+        // Check if current HP is saved, otherwise use max HP
+        let currentHP = localStorage.getItem('currentHP');
+        if (currentHP === null) {
+          currentHP = maxHP;
+          localStorage.setItem('currentHP', currentHP);
+        } else {
+          currentHP = parseInt(currentHP);
+        }
+        console.log('Current HP:', currentHP);
+        
+        // Initialize Adrenaline Rush state based on current HP
+        updateAdrenalineRush(currentHP);
+        
+        // Build health tracking UI
+        renderHealthTracker(currentHP);
+
+        // Display traits
+        console.log('Displaying traits:', characterData.selectedTraits);
+        displayCharacterTraits(characterData.selectedTraits || []);
+
+        // Display selected perks (both conditional and unconditional)
+        console.log('Rendering selected perks:', characterData.selectedPerks);
+        console.log('[DEBUG] About to call renderGameSelectedPerks, function exists?', typeof renderGameSelectedPerks);
+        console.log('[DEBUG] CONDITIONAL_PERK_IDS exists?', typeof CONDITIONAL_PERK_IDS);
+        console.log('[DEBUG] AUTO_MANAGED_PERKS exists?', typeof AUTO_MANAGED_PERKS);
+        try {
+          renderGameSelectedPerks(characterData.selectedPerks || []);
+          console.log('[DEBUG] renderGameSelectedPerks call completed');
+        } catch (e) {
+          console.error('[DEBUG] Error calling renderGameSelectedPerks:', e.message, e);
+        }
+
+        // Initialize attribute display with conditional bonuses
+        updateGameAttributeDisplay();
+
+        // Display skills with conditional bonuses
+        console.log('Rendering skills:', characterData.skills);
+        renderSkills(characterData.skills || {}, characterData);
+
+        // Display tools
+        console.log('Rendering tools');
+        renderTools(characterData);
+
+        console.log('=== loadCharacter() completed successfully ===');
+      } catch (err) {
+        alert('Error loading character data.');
+        console.error('Error in loadCharacter:', err);
+        console.error('Stack trace:', err.stack);
+      }
+    }
+
+    function downloadCharacter() {
+      const stored = localStorage.getItem('characterData');
+      if (!stored) {
+        alert('No character data to download.');
+        return;
+      }
+
+      try {
+        const characterData = JSON.parse(stored);
+        const blob = new Blob([JSON.stringify(characterData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${characterData.name || 'character'}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert('Error downloading character.');
+        console.error(err);
+      }
+    }
+
+    function returnHome() {
+      localStorage.removeItem('characterData');
+      localStorage.removeItem('currentHP');
+      window.location.href = 'index.html';
+    }
+
+    // Load character when page loads
+    document.addEventListener('DOMContentLoaded', loadCharacter);
+  </script>
+</body>
+</html>
