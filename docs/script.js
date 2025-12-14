@@ -1638,7 +1638,7 @@ document.addEventListener('visibilitychange', () => {
     // Page is now visible - refresh skill display in case data was modified
     const skillDisplayEl = qs('base_guns');
     if (skillDisplayEl) {
-      // Only on main character sheet (chargen.html), not on advancement page
+      // Only on main character sheet (index.html), not on advancement page
       updateSkillDisplay();
       console.log('Page visibility: refreshed skill display');
     }

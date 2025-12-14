@@ -2137,6 +2137,10 @@ function checkPerkEligibility(perkId, character, ignoreRaceRestriction = false, 
     console.log(`  - ELIGIBLE for ${perkId}`);
   }
   
+  if (gainAttributePerks.includes(perkId)) {
+    console.log(`  - ELIGIBLE for ${perkId}`);
+  }
+  
   return { eligible: true, reason: '' };
 }
 
