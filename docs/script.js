@@ -418,13 +418,13 @@ function handleAttributeChange(attrId, previousValue) {
 
 function getFormData(){
   console.log('getFormData() called');
-  // Collect tag skills from checkboxes if they exist (index.html)
+  // Collect tag skills from checkboxes if they exist (chargen.html)
   // Otherwise, preserve from loaded character data (advancement.html)
   let tagSkills = {};
   const checkboxes = document.querySelectorAll('.tag-checkbox');
   
   if (checkboxes.length > 0) {
-    // We're on index.html with checkboxes
+    // We're on chargen.html with checkboxes
     checkboxes.forEach(checkbox => {
       tagSkills[checkbox.dataset.skill] = checkbox.checked;
     });
@@ -521,7 +521,7 @@ function setFormData(data){
   
   // Restore tag skills
   const tagSkills = data.tagSkills||{}
-  // Only restore tag checkbox states if checkboxes exist (index.html)
+  // Only restore tag checkbox states if checkboxes exist (chargen.html)
   const checkboxes = document.querySelectorAll('.tag-checkbox');
   if (checkboxes.length > 0) {
     checkboxes.forEach(checkbox => {
@@ -589,6 +589,8 @@ function saveCharacterData() {
     console.warn('WARNING: Form data is invalid or has no name!', formData);
   }
   localStorage.setItem('falloutCharacter', JSON.stringify(formData));
+  // Clear any old characterData from previous uploads to avoid conflicts
+  localStorage.removeItem('characterData');
   console.log('Saved to localStorage. Retrieving to verify:', localStorage.getItem('falloutCharacter'));
 }
 
@@ -1392,6 +1394,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
   try {
     console.log('DOMContentLoaded fired, setting up event listeners');
     
+    // Skip character creation UI setup if we're on the game page
+    if (document.title === 'Play Game - Fallout Character Generator') {
+      return;
+    }
+    
     // Try to load dev config for local development
     fetch('dev-config.json')
       .then(response => {
@@ -1455,24 +1462,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     } else {
       console.warn('load-file input not found');
     }
-    
-    const fillSampleBtn = qs('fill-sample');
-    if (fillSampleBtn) {
-      fillSampleBtn.addEventListener('click', ()=>{
-        const sample = {
-          name: 'Sample Vault Dweller',
-          age: 28,
-          gender: 'Male',
-          attributes: {strength:6,perception:7,endurance:5,charisma:4,intelligence:8,agility:6,luck:3},
-          occupation: 'Vault Technician',
-          notes: 'Ready for adventure.'
-        }
-        setFormData(sample)
-      });
-      console.log('Attached fill-sample handler');
-    } else {
-      console.warn('fill-sample button not found');
-    }
 
     // Advancement button handler - save and navigate
     const advBtn = qs('go-advancement');
@@ -1513,7 +1502,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       console.warn('WARNING: go-advancement button not found in DOM');
     }
 
-  // Only set up index.html-specific handlers if we're on index.html
+  // Only set up chargen.html-specific handlers if we're on chargen.html
   if (qs('gender')) {
     // Dropdown change handlers
     qs('gender').addEventListener('change', (e) => {
@@ -1602,7 +1591,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       });
     });
 
-    // Initialize stats on page load (only on index.html)
+    // Initialize stats on page load (only on chargen.html)
     updateAttributeDisplay();
     updateSecondaryStats();
     updateSkillDisplay();
@@ -1649,7 +1638,7 @@ document.addEventListener('visibilitychange', () => {
     // Page is now visible - refresh skill display in case data was modified
     const skillDisplayEl = qs('base_guns');
     if (skillDisplayEl) {
-      // Only on main character sheet (index.html), not on advancement page
+      // Only on main character sheet (chargen.html), not on advancement page
       updateSkillDisplay();
       console.log('Page visibility: refreshed skill display');
     }

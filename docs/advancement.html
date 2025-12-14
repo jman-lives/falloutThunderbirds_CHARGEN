@@ -11,8 +11,7 @@
     <h1>Character Advancement & Perks</h1>
 
     <div class="controls" style="margin-bottom: 16px;">
-      <a href="index.html" style="display: inline-block; padding: 6px 12px; background-color: #2196F3; color: white; border: none; border-radius: 4px; text-decoration: none; cursor: pointer; font-weight: bold;">← Back to Character</a>
-      <button type="button" id="download" style="margin-left: 8px;">Download JSON</button>
+      <a href="index.html" style="display: inline-block; padding: 6px 12px; background-color: #2196F3; color: white; border: none; border-radius: 4px; text-decoration: none; cursor: pointer; font-weight: bold;">← Back to Home</a>
     </div>
 
     <!-- Character Summary -->
@@ -146,8 +145,11 @@
       </div>
 
       <section>
-        <h2>Advancement</h2>
-        <button type="button" id="level-up-btn" style="width: 100%; padding: 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1.2rem;">Level Up</button>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <button type="button" id="level-up-btn" style="width: 100%; padding: 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1.2rem;">Level Up</button>
+          <button type="button" id="download" style="width: 100%; padding: 20px; background-color: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1.2rem; display: none;">Download JSON</button>
+          <a href="equipmentchoice.html" id="equipment-choice-btn" style="width: 100%; padding: 20px; background-color: #FF9800; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1.2rem; text-decoration: none; text-align: center; display: none;">Equipment Selection →</a>
+        </div>
       </section>
     </form>
 
@@ -155,7 +157,30 @@
   </main>
 
   <script src="script.js?v=1"></script>
+  <script>
+    // Set the equipment button flag EARLY before other scripts run
+    // If coming from levelup session, ALWAYS show download (not equipment)
+    const isLevelUpSession = localStorage.getItem('isLevelUpSession') === 'true';
+    const fromChargen = localStorage.getItem('fromChargen') === 'true' && !isLevelUpSession;
+    window.showEquipmentButton = fromChargen;
+    console.log('[advancement.html] isLevelUpSession:', isLevelUpSession, 'fromChargen:', fromChargen, 'showEquipmentButton:', window.showEquipmentButton);
+  </script>
   <script src="advancement.js?v=1"></script>
   <script src="advancement-page.js?v=1"></script>
+  <script>
+    // Hide/show buttons initially based on source
+    document.addEventListener('DOMContentLoaded', () => {
+      const downloadBtn = qs('download');
+      const equipmentBtn = qs('equipment-choice-btn');
+      
+      // Set initial visibility - both start hidden, will be shown by advancement-page.js after leveling
+      if (downloadBtn) {
+        downloadBtn.style.display = 'none';
+      }
+      if (equipmentBtn) {
+        equipmentBtn.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
