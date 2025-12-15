@@ -50,14 +50,16 @@
           <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #ffe646;">Allocated: <span id="points-allocated">0</span> | Remaining: <span id="points-remaining">5</span></p>
           <p id="points-warning" style="margin: 4px 0 0 0; font-size: 0.85rem; color: #d32f2f; display: none;"></p>
         </div>
-        <div class="attrs">
-          <label>Strength (STR) <input type="number" id="strength" min="1" value="5"> <span id="strength-effective" style="color: #999; font-size: 0.9rem;"></span></label>
-          <label>Perception (PE) <input type="number" id="perception" min="1" value="5"> <span id="perception-effective" style="color: #999; font-size: 0.9rem;"></span></label>
-          <label>Endurance (EN) <input type="number" id="endurance" min="1" value="5"> <span id="endurance-effective" style="color: #999; font-size: 0.9rem;"></span></label>
-          <label>Charisma (CH) <input type="number" id="charisma" min="1" value="5"> <span id="charisma-effective" style="color: #999; font-size: 0.9rem;"></span></label>
-          <label>Intelligence (IN) <input type="number" id="intelligence" min="1" value="5"> <span id="intelligence-effective" style="color: #999; font-size: 0.9rem;"></span></label>
-          <label>Agility (AG) <input type="number" id="agility" min="1" value="5"> <span id="agility-effective" style="color: #999; font-size: 0.9rem;"></span></label>
-          <label>Luck (LK) <input type="number" id="luck" min="1" value="5"> <span id="luck-effective" style="color: #999; font-size: 0.9rem;"></span></label>
+        <!-- Hidden inputs for attribute values (used by form submission logic) -->
+        <input type="hidden" id="strength" name="strength" value="5">
+        <input type="hidden" id="perception" name="perception" value="5">
+        <input type="hidden" id="endurance" name="endurance" value="5">
+        <input type="hidden" id="charisma" name="charisma" value="5">
+        <input type="hidden" id="intelligence" name="intelligence" value="5">
+        <input type="hidden" id="agility" name="agility" value="5">
+        <input type="hidden" id="luck" name="luck" value="5">
+        <div class="attribute-button-grid" id="attribute-buttons">
+          <!-- Attributes will be rendered as button controls -->
         </div>
       </section>
 

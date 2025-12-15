@@ -122,9 +122,9 @@
         <button type="button" id="select-package-btn" class="equipment-btn equipment-btn-primary">
           📦 Select Package
         </button>
-        <button type="button" id="go-store-btn" class="equipment-btn equipment-btn-secondary">
+        <!-- <button type="button" id="go-store-btn" class="equipment-btn equipment-btn-secondary">
           🏪 Go To Store
-        </button>
+        </button> -->
       </div>
 
       <div class="equipment-footer">
@@ -141,9 +141,7 @@
     });
 
     document.getElementById('go-store-btn').addEventListener('click', () => {
-      // TODO: Implement go to store functionality
-      console.log('Go To Store clicked');
-      // This could navigate to a store page or show equipment selection interface
+      window.location.href = 'store.html';
     });
   </script>
 </body>

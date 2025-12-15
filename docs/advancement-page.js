@@ -97,7 +97,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const downloadBtn = qs('download');
   if (downloadBtn) {
     downloadBtn.addEventListener('click', () => {
-      downloadJSON(characterData, (characterData.name || 'character') + '.json');
+      const timestamp = getTimestamp();
+      downloadJSON(characterData, `${characterData.name || 'character'}_${timestamp}.json`);
     });
   }
 
@@ -1129,12 +1130,23 @@ function removeRank(perkId) {
   renderSelectedPerks(perksEarned);
 }
 
+function getTimestamp() {
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(now.getUTCDate()).padStart(2, '0');
+  const hours = String(now.getUTCHours()).padStart(2, '0');
+  const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+  return `${year}${month}${day}${hours}${minutes}`;
+}
+
 function downloadJSON(obj, filename){
   const blob = new Blob([JSON.stringify(obj,null,2)],{type:'application/json'})
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = filename || `characterSheet_${obj.name || 'characterSheet'}.json`
+  const timestamp = getTimestamp();
+  a.download = filename || `${obj.name || 'characterSheet'}_${timestamp}.json`
   document.body.appendChild(a)
   a.click()
   a.remove()
