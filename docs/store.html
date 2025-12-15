@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fallout Gear Store</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .store-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 24px;
+      background: linear-gradient(180deg, #071026 0%, #08131a 100%);
+    }
+
+    .store-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .store-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+    }
+
+    .store-budget {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 16px 24px;
+      border-radius: 8px;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .budget-label {
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .budget-amount {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #34d399;
+      font-family: 'Courier New', monospace;
+    }
+
+    .budget-remaining {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .store-controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 16px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .search-box::placeholder {
+      color: var(--muted);
+    }
+
+    .type-filter {
+      padding: 10px 16px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text);
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .type-filter:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(96, 165, 250, 0.5);
+    }
+
+    .type-filter-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .type-tag {
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      background: rgba(96, 165, 250, 0.1);
+      color: #60a5fa;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .type-tag:hover {
+      background: rgba(96, 165, 250, 0.2);
+      border-color: #60a5fa;
+    }
+
+    .type-tag.active {
+      background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      border-color: #8b5cf6;
+      color: white;
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+    }
+
+    .store-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .store-btn-primary {
+      background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      color: white;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    }
+
+    .store-btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+    }
+
+    .store-btn-secondary {
+      background: transparent;
+      color: #60a5fa;
+      border: 1px solid #60a5fa;
+    }
+
+    .store-btn-secondary:hover {
+      background: rgba(96, 165, 250, 0.1);
+    }
+
+    .store-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .store-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .item-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .item-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(96, 165, 250, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+    }
+
+    .item-card.in-cart {
+      background: rgba(52, 211, 153, 0.1);
+      border-color: #34d399;
+    }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 8px;
+      gap: 12px;
+    }
+
+    .item-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #a78bfa;
+      margin: 0;
+    }
+
+    .item-price {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fbbf24;
+      font-family: 'Courier New', monospace;
+      white-space: nowrap;
+    }
+
+    .item-weight {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .item-tags {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .item-tag {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(96, 165, 250, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(96, 165, 250, 0.4);
+    }
+
+    .item-tag.secondary {
+      background: rgba(168, 85, 247, 0.2);
+      color: #a78bfa;
+      border-color: rgba(168, 85, 247, 0.4);
+    }
+
+    .item-description {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 12px;
+      flex: 1;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .item-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .item-btn-add {
+      background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      color: white;
+    }
+
+    .item-btn-add:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+    }
+
+    .item-btn-add:disabled {
+      background: rgba(139, 92, 246, 0.3);
+      cursor: not-allowed;
+      color: var(--muted);
+    }
+
+    .item-btn-remove {
+      background: rgba(255, 0, 0, 0.2);
+      color: #ff7b7b;
+      border: 1px solid #ff7b7b;
+    }
+
+    .item-btn-remove:hover {
+      background: rgba(255, 0, 0, 0.3);
+    }
+
+    .item-quantity {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: #34d399;
+      font-weight: 600;
+    }
+
+    .store-footer {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .cart-summary {
+      font-size: 1.1rem;
+      color: var(--muted);
+    }
+
+    .cart-total {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fbbf24;
+      font-family: 'Courier New', monospace;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .store-msg {
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .store-msg-error {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid #ff7b7b;
+      color: #ff9999;
+    }
+
+    .store-msg-success {
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid #34d399;
+      color: #6ee7b7;
+    }
+
+    @media (max-width: 768px) {
+      .store-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+
+      .store-title {
+        font-size: 1.8rem;
+      }
+
+      .store-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .store-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="store-container">
+    <div class="store-header">
+      <h1 class="store-title">Gear Store</h1>
+      <div class="store-budget">
+        <div>
+          <div class="budget-label">AVAILABLE CREDIT</div>
+          <div class="budget-amount" id="budget-display">80,000</div>
+        </div>
+        <div>
+          <div class="budget-label">REMAINING</div>
+          <div class="budget-amount" id="remaining-display">80,000</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="message" class="store-msg" style="display: none;"></div>
+
+    <div class="store-controls">
+      <input
+        type="text"
+        id="search-box"
+        class="search-box"
+        placeholder="Search items..."
+      />
+      <div class="type-filter-tags" id="type-filters"></div>
+      <button id="clear-cart-btn" class="store-btn store-btn-secondary">
+        Clear Cart
+      </button>
+    </div>
+
+    <div class="store-grid" id="store-grid"></div>
+
+    <div class="store-footer">
+      <div>
+        <div class="cart-summary">
+          Items in cart: <span id="cart-count">0</span>
+        </div>
+        <div class="cart-summary">
+          Total weight: <span id="cart-weight">0</span> lbs
+        </div>
+      </div>
+      <div>
+        <div class="cart-summary">Total cost:</div>
+        <div class="cart-total" id="cart-total">0</div>
+      </div>
+      <div class="action-buttons">
+        <button id="checkout-btn" class="store-btn store-btn-primary">
+          Proceed to Checkout
+        </button>
+        <a href="equipmentchoice.html" class="store-btn store-btn-secondary">
+          ← Go Back
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Equipment data structure
+    let storeData = {
+      items: [],
+      budget: 80000,
+      cart: {},
+      selectedType: null
+    };
+
+    // Map files to types and categories
+    const fileTypeMap = {
+      'equipment.md': { primary: 'Equipment', secondary: null, category: null },
+      'armors.md': { primary: 'Armor', secondary: null, category: null },
+      'assault_rifles.md': { primary: 'Assault Rifle', secondary: 'Guns', category: 'Rifles' },
+      'machine_guns.md': { primary: 'Machine Gun', secondary: 'Guns', category: 'Guns' },
+      'melee_skill_weapons.md': { primary: 'Melee Weapon', secondary: null, category: null },
+      'pistols.md': { primary: 'Pistol', secondary: 'Guns', category: 'Pistols' },
+      'primitive_missile_weapons.md': { primary: 'Missile Weapon', secondary: null, category: null },
+      'rifles.md': { primary: 'Rifle', secondary: 'Guns', category: 'Rifles' },
+      'shotguns.md': { primary: 'Shotgun', secondary: 'Guns', category: 'Shotguns' },
+      'submachine_guns.md': { primary: 'Submachine Gun', secondary: 'Guns', category: 'Submachine Guns' },
+      'unarmed_skill_weapons.md': { primary: 'Unarmed Weapon', secondary: null, category: null }
+    };
+
+    // Load configuration and equipment data
+    async function loadStoreData() {
+      try {
+        // Load config
+        const configRes = await fetch('prod-config.json');
+        const config = await configRes.json();
+        storeData.budget = config.storeCredit || 80000;
+        updateBudgetDisplay();
+
+        // Load all equipment markdown files
+        const equipmentFiles = [
+          'equipment.md',
+          'armors.md',
+          'assault_rifles.md',
+          'machine_guns.md',
+          'melee_skill_weapons.md',
+          'pistols.md',
+          'primitive_missile_weapons.md',
+          'rifles.md',
+          'shotguns.md',
+          'submachine_guns.md',
+          'unarmed_skill_weapons.md'
+        ];
+
+        for (const file of equipmentFiles) {
+          try {
+            const equipRes = await fetch(`../equipment%20instructions/${file}`);
+            if (equipRes.ok) {
+              const equipText = await equipRes.text();
+              const typeInfo = fileTypeMap[file];
+              parseEquipmentMarkdown(equipText, typeInfo);
+            }
+          } catch (error) {
+            console.warn(`Failed to load ${file}:`, error);
+          }
+        }
+
+        initializeTypeFilters();
+        renderStore();
+      } catch (error) {
+        console.error('Error loading store data:', error);
+        showMessage('Failed to load store data', 'error');
+      }
+    }
+
+    function parseEquipmentMarkdown(markdown, typeInfo) {
+      const lines = markdown.split('\n');
+      let currentItem = null;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Match item header (### Item Name)
+        const itemMatch = line.match(/^###\s+(.+)$/);
+        if (itemMatch) {
+          if (currentItem && currentItem.name) {
+            storeData.items.push(currentItem);
+          }
+          currentItem = {
+            name: itemMatch[1].trim(),
+            value: 0,
+            weight: 0,
+            description: '',
+            type: typeInfo.primary,
+            tags: []
+          };
+          if (typeInfo.secondary) {
+            currentItem.tags.push(typeInfo.secondary);
+          }
+          if (typeInfo.category) {
+            currentItem.tags.push(typeInfo.category);
+          }
+          continue;
+        }
+
+        // Match value
+        if (currentItem && line.includes('Value:')) {
+          const valueMatch = line.match(/Value:\s*(\d+)/);
+          if (valueMatch) {
+            currentItem.value = parseInt(valueMatch[1]);
+          }
+          continue;
+        }
+
+        // Match weight
+        if (currentItem && line.match(/^W:\s*(\d+)/)) {
+          const weightMatch = line.match(/W:\s*([\d.]+)\s*lbs?/);
+          if (weightMatch) {
+            currentItem.weight = parseFloat(weightMatch[1]);
+          }
+          continue;
+        }
+
+        // Collect description (non-empty lines that don't start with ###, Value:, or W:)
+        if (
+          currentItem &&
+          line.trim() &&
+          !line.match(/^#+/) &&
+          !line.includes('Value:') &&
+          !line.match(/^W:/) &&
+          !line.match(/^.*\*\*/)
+        ) {
+          currentItem.description += (currentItem.description ? ' ' : '') + line.trim();
+        }
+      }
+
+      // Add last item
+      if (currentItem && currentItem.name) {
+        storeData.items.push(currentItem);
+      }
+
+      // Filter out items without value
+      storeData.items = storeData.items.filter(item => item.value > 0);
+    }
+
+    function initializeTypeFilters() {
+      const types = [...new Set(storeData.items.map(item => item.type))].sort();
+      const filterContainer = document.getElementById('type-filters');
+      filterContainer.innerHTML = '';
+
+      const allTag = document.createElement('button');
+      allTag.className = 'type-tag active';
+      allTag.textContent = 'All Items';
+      allTag.onclick = () => setTypeFilter(null);
+      filterContainer.appendChild(allTag);
+
+      types.forEach(type => {
+        const tag = document.createElement('button');
+        tag.className = 'type-tag';
+        tag.textContent = type;
+        tag.onclick = () => setTypeFilter(type);
+        filterContainer.appendChild(tag);
+      });
+    }
+
+    function setTypeFilter(type) {
+      storeData.selectedType = type;
+      updateTypeFilterUI();
+      renderStore(filterItems());
+    }
+
+    function updateTypeFilterUI() {
+      const tags = document.querySelectorAll('.type-tag');
+      tags.forEach(tag => {
+        if (storeData.selectedType === null && tag.textContent === 'All Items') {
+          tag.classList.add('active');
+        } else if (tag.textContent === storeData.selectedType) {
+          tag.classList.add('active');
+        } else {
+          tag.classList.remove('active');
+        }
+      });
+    }
+
+    function filterItems() {
+      let filtered = storeData.items;
+
+      // Filter by type
+      if (storeData.selectedType !== null) {
+        filtered = filtered.filter(item => item.type === storeData.selectedType);
+      }
+
+      // Filter by search
+      const query = document.getElementById('search-box').value.toLowerCase();
+      if (query) {
+        filtered = filtered.filter(
+          item =>
+            item.name.toLowerCase().includes(query) ||
+            item.description.toLowerCase().includes(query)
+        );
+      }
+
+      return filtered;
+    }
+
+    function renderStore(filteredItems = null) {
+      const items = filteredItems || storeData.items;
+      const grid = document.getElementById('store-grid');
+      grid.innerHTML = '';
+
+      if (items.length === 0) {
+        grid.innerHTML =
+          '<p style="grid-column: 1/-1; text-align: center; color: var(--muted);">No items found</p>';
+        return;
+      }
+
+      items.forEach(item => {
+        const card = createItemCard(item);
+        grid.appendChild(card);
+      });
+    }
+
+    function createItemCard(item) {
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      if (storeData.cart[item.name]) {
+        card.classList.add('in-cart');
+      }
+
+      const quantity = storeData.cart[item.name] || 0;
+
+      const tagsHTML = item.tags && item.tags.length > 0 
+        ? `<div class="item-tags">${item.tags.map((tag, idx) => `<span class="item-tag${idx === 0 ? ' secondary' : ''}">${tag}</span>`).join('')}</div>`
+        : '';
+
+      card.innerHTML = `
+        <div class="item-header">
+          <h3 class="item-name">${item.name}</h3>
+          <div class="item-price">${item.value}</div>
+        </div>
+        <div class="item-weight">Weight: ${item.weight} lbs</div>
+        ${tagsHTML}
+        <p class="item-description">${item.description}</p>
+        <div class="item-actions">
+          <button class="item-btn item-btn-add" onclick="addToCart('${item.name.replace(/'/g, "\\'")}', ${item.value}, ${item.weight})">
+            + Add
+          </button>
+          ${quantity > 0 ? `
+            <button class="item-btn item-btn-remove" onclick="removeFromCart('${item.name.replace(/'/g, "\\'")}')">
+              Remove
+            </button>
+            <div class="item-quantity">×${quantity}</div>
+          ` : ''}
+        </div>
+      `;
+
+      return card;
+    }
+
+    function addToCart(itemName, price, weight) {
+      const cartCost = getCartCost();
+      if (cartCost + price > storeData.budget) {
+        showMessage('Insufficient credit for this purchase', 'error');
+        return;
+      }
+
+      if (!storeData.cart[itemName]) {
+        storeData.cart[itemName] = 0;
+      }
+      storeData.cart[itemName]++;
+      updateCart();
+    }
+
+    function removeFromCart(itemName) {
+      if (storeData.cart[itemName] > 1) {
+        storeData.cart[itemName]--;
+      } else {
+        delete storeData.cart[itemName];
+      }
+      updateCart();
+    }
+
+    function updateCart() {
+      renderStore(filterItems());
+      updateCartDisplay();
+    }
+
+    function updateCartDisplay() {
+      const items = Object.keys(storeData.cart).length;
+      const weight = getCartWeight();
+      const cost = getCartCost();
+
+      document.getElementById('cart-count').textContent = items;
+      document.getElementById('cart-weight').textContent = weight.toFixed(1);
+      document.getElementById('cart-total').textContent = cost.toLocaleString();
+
+      const remaining = storeData.budget - cost;
+      document.getElementById('remaining-display').textContent = remaining.toLocaleString();
+    }
+
+    function getCartCost() {
+      return Object.entries(storeData.cart).reduce((total, [itemName, qty]) => {
+        const item = storeData.items.find(i => i.name === itemName);
+        return total + (item ? item.value * qty : 0);
+      }, 0);
+    }
+
+    function getCartWeight() {
+      return Object.entries(storeData.cart).reduce((total, [itemName, qty]) => {
+        const item = storeData.items.find(i => i.name === itemName);
+        return total + (item ? item.weight * qty : 0);
+      }, 0);
+    }
+
+    function updateBudgetDisplay() {
+      document.getElementById('budget-display').textContent = storeData.budget.toLocaleString();
+      document.getElementById('remaining-display').textContent = storeData.budget.toLocaleString();
+    }
+
+    function showMessage(text, type) {
+      const msgEl = document.getElementById('message');
+      msgEl.textContent = text;
+      msgEl.className = `store-msg store-msg-${type}`;
+      msgEl.style.display = 'block';
+
+      setTimeout(() => {
+        msgEl.style.display = 'none';
+      }, 4000);
+    }
+
+    // Event listeners
+    document.getElementById('search-box').addEventListener('input', () => {
+      renderStore(filterItems());
+    });
+
+    document.getElementById('clear-cart-btn').addEventListener('click', () => {
+      storeData.cart = {};
+      updateCart();
+      showMessage('Cart cleared', 'success');
+    });
+
+    document.getElementById('checkout-btn').addEventListener('click', () => {
+      if (Object.keys(storeData.cart).length === 0) {
+        showMessage('Your cart is empty', 'error');
+        return;
+      }
+
+      // Store cart in session storage for next page
+      const cartSummary = {
+        items: storeData.cart,
+        totalCost: getCartCost(),
+        totalWeight: getCartWeight(),
+        budgetUsed: getCartCost(),
+        budgetRemaining: storeData.budget - getCartCost()
+      };
+
+      sessionStorage.setItem('storeCart', JSON.stringify(cartSummary));
+      showMessage('Proceeding to checkout...', 'success');
+
+      // Navigate to next page (can be customized based on your flow)
+      setTimeout(() => {
+        window.location.href = 'index.html'; // Change this to the appropriate next page
+      }, 1000);
+    });
+
+    // Load data on page load
+    window.addEventListener('load', loadStoreData);
+  </script>
+</body>
+</html>

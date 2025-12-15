@@ -296,6 +296,68 @@ function renderTraits() {
   });
 }
 
+/**
+ * Render attribute buttons as a button-based interface
+ * Replaces the old number input system with +/- buttons for better UX
+ */
+function renderAttributeButtons() {
+  const container = qs('attribute-buttons');
+  if (!container) return;
+  
+  const race = qs('race')?.value || 'Human';
+  const raceLimits = RACIAL_LIMITS[race] || RACIAL_LIMITS.Human;
+  const formData = getFormData();
+  const traitMods = calculateTraitAttributeModifiers(formData.selectedTraits);
+  
+  const attributeLabels = {
+    strength: 'Strength (STR)',
+    perception: 'Perception (PE)',
+    endurance: 'Endurance (EN)',
+    charisma: 'Charisma (CH)',
+    intelligence: 'Intelligence (IN)',
+    agility: 'Agility (AG)',
+    luck: 'Luck (LK)'
+  };
+  
+  let html = '';
+  ATTRIBUTE_NAMES.forEach(attrName => {
+    const currentValue = Number(qs(attrName).value) || BASE_ATTRIBUTE_VALUE;
+    const traitMod = traitMods[attrName] || 0;
+    const effectiveValue = currentValue + traitMod;
+    const limits = raceLimits[attrName];
+    const canDecrease = currentValue > limits.min;
+    const canIncrease = currentValue < limits.max;
+    
+    const pointsAllocated = calculatePointsAllocated();
+    const pointsRemaining = CHARACTER_POINTS_POOL - pointsAllocated;
+    
+    // Only allow increase if we have points remaining (unless it's to decrease)
+    const canIncreaseWithPoints = canIncrease && pointsRemaining > 0;
+    
+    const modColor = traitMod > 0 ? '#34d399' : (traitMod < 0 ? '#ff6b6b' : 'var(--muted)');
+    const modDisplay = traitMod !== 0 
+      ? `<div class="attribute-info" style="color: ${modColor}; font-weight: bold;">${traitMod > 0 ? '+' : ''}${traitMod}</div>` 
+      : '';
+    
+    html += `
+      <div class="attribute-button-item">
+        <div class="attribute-name">${attributeLabels[attrName]}</div>
+        <div class="attribute-controls">
+          <button type="button" class="attribute-btn" data-attr="${attrName}" data-action="decrease" 
+            ${!canDecrease ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>−</button>
+          <div class="attribute-value">${effectiveValue}</div>
+          <button type="button" class="attribute-btn" data-attr="${attrName}" data-action="increase" 
+            ${!canIncreaseWithPoints ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>+</button>
+        </div>
+        ${modDisplay}
+        <div class="attribute-info">${limits.min}–${limits.max}</div>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
+
 // #endregion TRAITS DEFINITION
 
 // #region CHARACTER POINT VALIDATION
@@ -1359,12 +1421,23 @@ function randomizeCharacter(){
   renderOutput(getFormData());
 }
 
+function getTimestamp() {
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(now.getUTCDate()).padStart(2, '0');
+  const hours = String(now.getUTCHours()).padStart(2, '0');
+  const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+  return `${year}${month}${day}${hours}${minutes}`;
+}
+
 function downloadJSON(obj, filename){
   const blob = new Blob([JSON.stringify(obj,null,2)],{type:'application/json'})
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = filename || `characterSheet_${obj.name || 'characterSheet'}.json`
+  const timestamp = getTimestamp();
+  a.download = filename || `${obj.name || 'characterSheet'}_${timestamp}.json`
   document.body.appendChild(a)
   a.click()
   a.remove()
@@ -1551,26 +1624,45 @@ document.addEventListener('DOMContentLoaded', ()=>{
       
       updatePointsPoolDisplay();
       renderTraits();
+      renderAttributeButtons();
       renderOutput(getFormData())
     })
 
-    // Attribute change handlers - auto-calculate secondary stats and update points pool
-    const attributeInputs = ['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'];
-    
-    attributeInputs.forEach(attrId => {
-      qs(attrId).addEventListener('change', () => {
-        updateAttributeDisplay();
-        updateSecondaryStats();
-        updateSkillDisplay();
-        updatePointsPoolDisplay();
-      });
-      qs(attrId).addEventListener('input', function() {
-        const previousValue = this.previousValue || BASE_ATTRIBUTE_VALUE;
-        handleAttributeChange(attrId, previousValue);
-        this.previousValue = this.value;
-      });
-      // Store initial value
-      qs(attrId).previousValue = qs(attrId).value;
+    // Attribute button click handlers - handle +/- button interactions
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.attribute-btn');
+      if (!btn) return;
+      
+      const attrName = btn.dataset.attr;
+      const action = btn.dataset.action;
+      const input = qs(attrName);
+      
+      if (!input) return;
+      
+      let currentValue = Number(input.value) || BASE_ATTRIBUTE_VALUE;
+      const race = qs('race')?.value || 'Human';
+      const raceLimits = RACIAL_LIMITS[race] || RACIAL_LIMITS.Human;
+      const limits = raceLimits[attrName];
+      
+      if (action === 'increase' && currentValue < limits.max) {
+        const pointsAllocated = calculatePointsAllocated();
+        const pointsRemaining = CHARACTER_POINTS_POOL - pointsAllocated;
+        
+        // Only allow increase if we have points remaining
+        if (pointsRemaining > 0) {
+          input.value = currentValue + 1;
+        }
+      } else if (action === 'decrease' && currentValue > limits.min) {
+        input.value = currentValue - 1;
+      }
+      
+      // Trigger updates
+      updateAttributeDisplay();
+      updateSecondaryStats();
+      updateSkillDisplay();
+      updatePointsPoolDisplay();
+      renderAttributeButtons();
+      renderOutput(getFormData());
     });
 
     // Tag skill checkbox change handlers
@@ -1598,6 +1690,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     updatePointsPoolDisplay();
     updateAdvancementDisplay();
     renderTraits();
+    renderAttributeButtons();
     
     // initial render
     renderOutput(getFormData())
