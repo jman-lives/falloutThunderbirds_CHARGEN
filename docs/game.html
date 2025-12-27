@@ -1623,25 +1623,35 @@
     }
 
     function decreaseHP() {
+      const stored = localStorage.getItem('characterData');
+      const characterData = JSON.parse(stored);
+      const maxHealthHP = characterData.stats?.Hit_Points || 15;
+      
       let currentHP = parseInt(localStorage.getItem('currentHP'));
-      if (currentHP === null) currentHP = maxHP;
+      if (currentHP === null) currentHP = maxHealthHP;
       const newHP = Math.max(0, currentHP - 1);
       localStorage.setItem('currentHP', newHP);
-      renderHealthTracker(newHP);
+      
+      renderHealthTracker(newHP, maxHealthHP);
       updateAdrenalineRush(newHP);
       updateGameAttributeDisplay();
-      renderGameSelectedPerks(JSON.parse(localStorage.getItem('characterData')).selectedPerks || []);
+      renderGameSelectedPerks(characterData.selectedPerks || []);
     }
 
     function increaseHP() {
+      const stored = localStorage.getItem('characterData');
+      const characterData = JSON.parse(stored);
+      const maxHealthHP = characterData.stats?.Hit_Points || 15;
+      
       let currentHP = parseInt(localStorage.getItem('currentHP'));
-      if (currentHP === null || isNaN(currentHP)) currentHP = maxHP;
-      const newHP = Math.min(maxHP, currentHP + 1);
+      if (currentHP === null || isNaN(currentHP)) currentHP = maxHealthHP;
+      const newHP = Math.min(maxHealthHP, currentHP + 1);
       localStorage.setItem('currentHP', newHP);
-      renderHealthTracker(newHP);
+      
+      renderHealthTracker(newHP, maxHealthHP);
       updateAdrenalineRush(newHP);
       updateGameAttributeDisplay();
-      renderGameSelectedPerks(JSON.parse(localStorage.getItem('characterData')).selectedPerks || []);
+      renderGameSelectedPerks(characterData.selectedPerks || []);
     }
 
     function updateAdrenalineRush(currentHP) {
