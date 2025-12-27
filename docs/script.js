@@ -26,8 +26,12 @@ function logChargenStart() {
     fromChargen: localStorage.getItem('fromChargen'),
     isLevelUpSession: localStorage.getItem('isLevelUpSession')
   });
-  // Navigate to advancement page
-  window.location.href = 'advancement.html';
+  // Detect if we're on debug page and navigate to corresponding advancement page
+  const currentPage = window.location.pathname;
+  const target = currentPage.includes('debug') ? 'advancement-debug.html' : 'advancement.html';
+  // Use absolute path from root to handle GitHub Pages correctly
+  const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+  window.location.href = basePath + target;
 }
 
 // RACIAL_LIMITS is defined in advancement.js
@@ -1529,7 +1533,10 @@ function downloadJSON(obj, filename){
 }
 
 function renderOutput(obj){
-  qs('output').textContent = JSON.stringify(obj,null,2)
+  const outputEl = qs('output');
+  if (outputEl) {
+    outputEl.textContent = JSON.stringify(obj,null,2);
+  }
   saveCharacterData()
 }
 
@@ -1627,36 +1634,58 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const advBtn = qs('go-advancement');
     console.log('Looking for go-advancement button:', advBtn);
     if (advBtn) {
-      advBtn.addEventListener('click', ()=>{
-        console.log('Go to advancement button clicked');
-        const playerName = qs('player').value.trim();
-        const characterName = qs('name').value.trim();
+      // CRITICAL: Remove any existing onclick attributes that may be in cached HTML
+      advBtn.onclick = null;
+      advBtn.removeAttribute('onclick');
+      
+      // Remove any existing listeners first by cloning
+      const newAdvBtn = advBtn.cloneNode(true);
+      newAdvBtn.onclick = null;
+      newAdvBtn.removeAttribute('onclick');
+      advBtn.parentNode.replaceChild(newAdvBtn, advBtn);
+      const advBtnFresh = qs('go-advancement');
+      
+      advBtnFresh.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        console.log('%c[ADVANCEMENT BUTTON CLICKED]', 'color: #FF9800; font-weight: bold;');
+        const playerField = qs('player');
+        const nameField = qs('name');
+        const playerName = playerField ? playerField.value.trim() : '';
+        const characterName = nameField ? nameField.value.trim() : '';
+        
+        console.log('  Player Name:', JSON.stringify(playerName), 'Length:', playerName.length);
+        console.log('  Character Name:', JSON.stringify(characterName), 'Length:', characterName.length);
         
         // Check if Player field is filled
         if (!playerName) {
+          console.warn('  ❌ Player field is EMPTY - blocking navigation');
           alert('Please enter a Player name before accessing Advancement & Perks');
-          console.warn('Player field is empty, navigation blocked');
-          return;
+          console.log('  ❌ Blocked - returning early');
+          return false;
         }
+        console.log('  ✓ Player name OK');
         
         // Check if Character Name field is filled
         if (!characterName) {
+          console.warn('  ❌ Character Name field is EMPTY - blocking navigation');
           alert('Please enter a Character Name before accessing Advancement & Perks');
-          console.warn('Character Name field is empty, navigation blocked');
-          return;
+          console.log('  ❌ Blocked - returning early');
+          return false;
         }
+        console.log('  ✓ Character name OK');
         
+        console.log('  ✅ All validations passed - proceeding with navigation');
         const formData = getFormData();
         console.log('Current form data:', formData);
         saveCharacterData();
         console.log('Data saved, navigating to advancement page');
-        // Detect if we're on debug page and navigate to corresponding advancement page
-        const currentPage = window.location.pathname;
-        const target = currentPage.includes('debug') ? 'advancement-debug.html' : 'advancement.html';
-        // Use absolute path from root to handle GitHub Pages correctly
-        const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-        window.location.href = basePath + target;
-      })
+        // Call logChargenStart to set flags and navigate
+        logChargenStart();
+        return false;
+      }, true); // Use capture phase
       console.log('Event listener attached to advancement button');
     } else {
       console.warn('WARNING: go-advancement button not found in DOM');
@@ -1688,6 +1717,24 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
       }
       
+      // Unselect traits that are no longer valid for the new race
+      const traitCheckboxes = document.querySelectorAll('.trait-checkbox');
+      traitCheckboxes.forEach(checkbox => {
+        const traitId = checkbox.dataset.trait;
+        const trait = TRAITS[traitId];
+        
+        if (trait) {
+          const isRestricted = trait.restrictions.length > 0 && 
+            (trait.restrictions.includes(selectedRace) || 
+             trait.restrictions.some(r => r.includes('only') && !r.toLowerCase().includes(selectedRace.toLowerCase())));
+          
+          if (isRestricted && checkbox.checked) {
+            checkbox.checked = false;
+            console.log(`Unselected trait "${trait.name}" - not available for ${selectedRace}`);
+          }
+        }
+      });
+      
       // Re-render traits when race changes
       renderTraits();
       
@@ -1711,6 +1758,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       
       updatePointsPoolDisplay();
       renderTraits();
+      updateTraitSelectionDisplay();
       renderAttributeButtons();
       renderOutput(getFormData())
     })
