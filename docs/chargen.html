@@ -11,7 +11,7 @@
     <div class="controls" style="margin-bottom: 16px; display: flex; gap: 8px; width: 100%;">
       <a href="index.html" style="flex: 1; padding: 6px 12px; background-color: #2196F3; color: white; border: none; border-radius: 4px; text-decoration: none; cursor: pointer; font-weight: bold; text-align: center;">← Back to Home</a>
       <button type="button" id="randomize" style="flex: 1; padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Generate Random</button>
-      <button type="button" id="go-advancement" style="flex: 1; padding: 6px 12px; background-color: #FF9800; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;" onclick="localStorage.setItem('fromChargen', 'true');">Advancement & Perks →</button>
+      <button type="button" id="go-advancement" style="flex: 1; padding: 6px 12px; background-color: #FF9800; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;" onclick="logChargenStart();">Advancement & Perks →</button>
     </div>
     <h1>Character Generator</h1>
 
@@ -239,7 +239,7 @@
     <pre id="output" aria-live="polite"></pre>
   </main>
 
-  <script src="advancement.js?v=1"></script>
-  <script src="script.js?v=1"></script>
+  <script src="advancement.js?v=2"></script>
+  <script src="script.js?v=2"></script>
 </body>
 </html>

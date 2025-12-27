@@ -483,7 +483,7 @@
       const container = qs('traits-container');
       
       if (!Array.isArray(selectedTraits) || selectedTraits.length === 0) {
-        container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No traits selected.</p>';
+        container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">This character has no traits.</p>';
         return;
       }
 
@@ -576,13 +576,8 @@
     function displayPerks(perkEffects) {
       const container = qs('perks-container');
       
-      console.log('displayPerks called with:', perkEffects);
-      console.log('perkEffects type:', typeof perkEffects);
-      console.log('Is perkEffects an object?', perkEffects && typeof perkEffects === 'object');
-      console.log('perkEffects keys:', perkEffects ? Object.keys(perkEffects) : 'N/A');
       
       if (!perkEffects || Object.keys(perkEffects).length === 0) {
-        console.log('No perk effects to display');
         container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No perks selected.</p>';
         return;
       }
@@ -759,13 +754,8 @@
     function displayPerks(perkEffects) {
       const container = qs('perks-container');
       
-      console.log('displayPerks called with:', perkEffects);
-      console.log('perkEffects type:', typeof perkEffects);
-      console.log('Is perkEffects an object?', perkEffects && typeof perkEffects === 'object');
-      console.log('perkEffects keys:', perkEffects ? Object.keys(perkEffects) : 'N/A');
       
       if (!perkEffects || Object.keys(perkEffects).length === 0) {
-        console.log('No perk effects to display');
         container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No perks selected.</p>';
         return;
       }
@@ -926,7 +916,6 @@
     function renderConditionalPerks(selectedPerks) {
       const container = qs('conditional-perks-container');
       
-      console.log('renderConditionalPerks called with:', selectedPerks);
       
       // Descriptions for conditional perks
       const conditionalPerkDescriptions = {
@@ -949,15 +938,12 @@
       const conditionalPerks = Array.isArray(selectedPerks) 
         ? selectedPerks.filter(perk => {
             const isConditional = perk && perk.id && CONDITIONAL_PERK_IDS.has(perk.id) && !AUTO_MANAGED_PERKS.has(perk.id);
-            console.log(`Perk ${perk?.id}: isConditional=${isConditional}, isInSet=${CONDITIONAL_PERK_IDS.has(perk?.id)}, isAutoManaged=${AUTO_MANAGED_PERKS.has(perk?.id)}`);
             return isConditional;
           })
         : [];
       
-      console.log('Filtered conditional perks:', conditionalPerks);
       
       if (conditionalPerks.length === 0) {
-        console.log('No conditional perks to display');
         container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No conditional perks selected.</p>';
         return;
       }
@@ -992,25 +978,19 @@
     }
 
     function renderGameSelectedPerks(selectedPerks) {
-      console.log('[RENDER_PERKS_START]');
-      console.log('[RENDER_PERKS] Starting renderGameSelectedPerks with:', selectedPerks);
       
       try {
         const container = qs('perks-container');
-        console.log('[RENDER_PERKS] Container:', container?.id || 'NOT FOUND');
         
         if (!container) {
-          console.error('[RENDER_PERKS] ERROR: Container not found!');
           return;
         }
         
         if (!Array.isArray(selectedPerks) || selectedPerks.length === 0) {
-          console.log('[RENDER_PERKS] No perks in array');
           container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No perks selected.</p>';
           return;
         }
 
-        console.log('[RENDER_PERKS] Processing', selectedPerks.length, 'perks');
         
         // Detailed perk information
         const perkDetails = {
@@ -1406,7 +1386,6 @@
 
         const perkHTML = selectedPerks.map((perk, idx) => {
           const perkId = perk.id || perk;
-          console.log(`[RENDER_PERKS] Processing perk ${idx}: ${perkId}`);
           
           const isConditional = CONDITIONAL_PERK_IDS.has(perkId);
           const isAutoManaged = AUTO_MANAGED_PERKS.has(perkId);
@@ -1434,7 +1413,6 @@
             showToggle = true;
           }
           
-          console.log(`[RENDER_PERKS] Perk ${perkId}: type=${typeLabel}, conditional=${isConditional}, autoManaged=${isAutoManaged}`);
           
           // Build toggle button or static display
           let toggleButton;
@@ -1489,12 +1467,8 @@
           `;
         }).join('');
 
-        console.log('[RENDER_PERKS] HTML created, length:', perkHTML.length);
         container.innerHTML = perkHTML;
-        console.log('[RENDER_PERKS] Successfully rendered', selectedPerks.length, 'perks');
       } catch (err) {
-        console.error('[RENDER_PERKS] CAUGHT ERROR:', err.message);
-        console.error('[RENDER_PERKS] Stack:', err.stack);
       }
     }
 
@@ -1502,13 +1476,9 @@
       const isActive = localStorage.getItem(`perk_active_${perkId}`) === 'true';
       const newActive = !isActive;
       
-      console.log(`[TOGGLE_PERK] Toggling perk ${perkId}:`);
-      console.log(`  - Current state: ${isActive} (localStorage value: ${localStorage.getItem(`perk_active_${perkId}`)})`);
-      console.log(`  - New state will be: ${newActive}`);
       
       localStorage.setItem(`perk_active_${perkId}`, newActive);
       
-      console.log(`  - After set, localStorage.perk_active_${perkId} = ${localStorage.getItem(`perk_active_${perkId}`)}`);
       
       // Update button styling
       if (newActive) {
@@ -1521,7 +1491,6 @@
         buttonElement.textContent = '○ ' + buttonElement.textContent.slice(2);
       }
       
-      console.log('[TOGGLE_PERK] About to call updateGameAttributeDisplay...');
       // Re-calculate attributes and skills with new perk active/inactive state
       updateGameAttributeDisplay();
     }
@@ -1530,13 +1499,9 @@
       const isActive = localStorage.getItem(`trait_active_${traitId}`) === 'true';
       const newActive = !isActive;
       
-      console.log(`[TOGGLE_TRAIT] Toggling ${traitId}:`);
-      console.log(`  - Current state: ${isActive} (localStorage value: ${localStorage.getItem(`trait_active_${traitId}`)})`);
-      console.log(`  - New state will be: ${newActive}`);
       
       localStorage.setItem(`trait_active_${traitId}`, newActive);
       
-      console.log(`  - After set, localStorage.trait_active_${traitId} = ${localStorage.getItem(`trait_active_${traitId}`)}`);
       
       // Re-render traits to update button state
       const stored = localStorage.getItem('characterData');
@@ -1545,11 +1510,9 @@
           const characterData = JSON.parse(stored);
           displayCharacterTraits(characterData.selectedTraits || []);
           
-          console.log('[TOGGLE_TRAIT] About to call updateGameAttributeDisplay...');
           // Re-calculate attributes and skills with new trait active/inactive state
           updateGameAttributeDisplay();
         } catch (err) {
-          console.error('Error toggling trait:', err);
         }
       }
     }
@@ -1577,15 +1540,31 @@
     }
 
     function updateAdrenalineRush(currentHP) {
-      // Adrenaline Rush auto-activates when HP < 50% of max
-      const threshold = maxHP / 2;
-      const shouldBeActive = currentHP < threshold;
-      const isActive = localStorage.getItem('perk_active_adrenaline_rush') === 'true';
+      // Adrenaline Rush auto-activates when HP < 50% of max, but only if the character has the perk
+      const stored = localStorage.getItem('characterData');
+      if (!stored) return;
       
-      if (shouldBeActive && !isActive) {
-        localStorage.setItem('perk_active_adrenaline_rush', 'true');
-      } else if (!shouldBeActive && isActive) {
-        localStorage.setItem('perk_active_adrenaline_rush', 'false');
+      try {
+        const characterData = JSON.parse(stored);
+        const selectedPerks = characterData.selectedPerks || [];
+        const hasAdrenalineRush = Array.isArray(selectedPerks) && selectedPerks.some(perk => perk && perk.id === 'adrenaline_rush');
+        
+        // Only allow Adrenaline Rush to be active if character has the perk
+        if (!hasAdrenalineRush) {
+          localStorage.setItem('perk_active_adrenaline_rush', 'false');
+          return;
+        }
+        
+        const threshold = maxHP / 2;
+        const shouldBeActive = currentHP < threshold;
+        const isActive = localStorage.getItem('perk_active_adrenaline_rush') === 'true';
+        
+        if (shouldBeActive && !isActive) {
+          localStorage.setItem('perk_active_adrenaline_rush', 'true');
+        } else if (!shouldBeActive && isActive) {
+          localStorage.setItem('perk_active_adrenaline_rush', 'false');
+        }
+      } catch (err) {
       }
     }
 
@@ -1607,48 +1586,31 @@
         let agility = parseInt(attrs.agility) || 0;
         let luck = parseInt(attrs.luck) || 0;
         
-        console.log('[ATTRIBUTES] Base values:', { strength, perception, endurance, charisma, intelligence, agility, luck });
-        console.log('[ATTRIBUTES] Selected traits:', selectedTraits);
-        console.log('[ATTRIBUTES] Trait active states:');
-        console.log('  - night_person:', localStorage.getItem('trait_active_night_person'));
-        console.log('  - sex_appeal:', localStorage.getItem('trait_active_sex_appeal'));
-        console.log('[ATTRIBUTES] Perk active states:');
-        console.log('  - adrenaline_rush:', localStorage.getItem('perk_active_adrenaline_rush'));
-        console.log('  - presence:', localStorage.getItem('perk_active_presence'));
-        console.log('  - brown_noser:', localStorage.getItem('perk_active_brown_noser'));
         
         // Apply conditional attribute bonuses from perks
         if (localStorage.getItem('perk_active_adrenaline_rush') === 'true' && currentHP < maxHP / 2) {
           strength += 1;
-          console.log('[ATTRIBUTES] Applied Adrenaline Rush +1 STR, new strength:', strength);
         }
         if (localStorage.getItem('perk_active_presence') === 'true') {
           charisma += 1;
-          console.log('[ATTRIBUTES] Applied Presence +1 CHR, charisma now:', charisma);
         }
         if (localStorage.getItem('perk_active_brown_noser') === 'true') {
           charisma += 1;
-          console.log('[ATTRIBUTES] Applied Brown Noser +1 CHR, charisma now:', charisma);
         }
         
         // Apply trait bonuses - Night Person (check if explicitly true)
         if (selectedTraits.includes('night_person') && localStorage.getItem('trait_active_night_person') === 'true') {
           intelligence += 1; // +1 INT at night
           perception += 1;   // +1 PER at night
-          console.log('[ATTRIBUTES] Applied Night Person +1 INT/PER, INT now:', intelligence, 'PER now:', perception);
         } else if (selectedTraits.includes('night_person')) {
-          console.log('[ATTRIBUTES] Night Person trait present but NOT active (trait_active_night_person =', localStorage.getItem('trait_active_night_person'), ')');
         }
         
         // Apply trait bonuses - Sex Appeal (check if explicitly true)
         if (selectedTraits.includes('sex_appeal') && localStorage.getItem('trait_active_sex_appeal') === 'true') {
           charisma += 1; // +1 CHA with opposite sex
-          console.log('[ATTRIBUTES] Applied Sex Appeal +1 CHR, charisma now:', charisma);
         } else if (selectedTraits.includes('sex_appeal')) {
-          console.log('[ATTRIBUTES] Sex Appeal trait present but NOT active (trait_active_sex_appeal =', localStorage.getItem('trait_active_sex_appeal'), ')');
         }
         
-        console.log('[ATTRIBUTES] Final values:', { strength, perception, endurance, charisma, intelligence, agility, luck });
         
         qs('attr-str').textContent = strength || '—';
         qs('attr-per').textContent = perception || '—';
@@ -1660,15 +1622,12 @@
         
         renderSkills(characterData.skills || {}, characterData);
       } catch (err) {
-        console.error('Error updating attributes:', err);
       }
     }
 
     function loadCharacter() {
-      console.log('=== loadCharacter() started ===');
       
       const stored = localStorage.getItem('characterData');
-      console.log('localStorage.characterData exists:', !!stored);
       
       if (!stored) {
         alert('No character data found. Please upload a character file.');
@@ -1678,10 +1637,7 @@
 
       try {
         const characterData = JSON.parse(stored);
-        console.log('Parsed characterData:', JSON.stringify(characterData, null, 2));
-        console.log('Character level from data:', characterData.level);
-        console.log('Character selectedPerks from data:', characterData.selectedPerks);
-        console.log('Character perkEffects from data:', characterData.perkEffects);
+        console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', characterData);
         
         // Initialize trait and perk active states to false if not already set
         const selectedTraits = characterData.selectedTraits || [];
@@ -1690,7 +1646,6 @@
           if (CONDITIONAL_TRAITS.has(trait)) {
             if (localStorage.getItem(`trait_active_${trait}`) === null) {
               localStorage.setItem(`trait_active_${trait}`, 'false');
-              console.log(`[INIT] Initialized trait_active_${trait} = false`);
             }
           }
         });
@@ -1701,7 +1656,6 @@
           if (CONDITIONAL_PERK_IDS.has(perkId) && !AUTO_MANAGED_PERKS.has(perkId)) {
             if (localStorage.getItem(`perk_active_${perkId}`) === null) {
               localStorage.setItem(`perk_active_${perkId}`, 'false');
-              console.log(`[INIT] Initialized perk_active_${perkId} = false`);
             }
           }
         });
@@ -1709,7 +1663,6 @@
         // RECALCULATE LEVEL FROM TOTALXP
         if (characterData.totalXP !== undefined && typeof getLevelFromXP === 'function') {
           const calculatedLevel = getLevelFromXP(characterData.totalXP || 0);
-          console.log(`[IMPORTANT] Recalculating level from totalXP: ${characterData.totalXP} -> Level ${calculatedLevel} (was ${characterData.level})`);
           characterData.level = calculatedLevel;
         }
         
@@ -1719,13 +1672,10 @@
         qs('char-race').textContent = characterData.race || 'Human';
         const levelValue = characterData.level || 1;
         qs('char-level').textContent = levelValue;
-        console.log(`Set char-level to: ${levelValue} (totalXP: ${characterData.totalXP})`);
-        console.log('Character data level field:', characterData.level);
         
         // Set max HP
         maxHP = characterData.stats?.Hit_Points || 15;
         qs('char-max-hp').textContent = maxHP;
-        console.log('Set maxHP to:', maxHP);
         
         // Check if current HP is saved, otherwise use max HP
         let currentHP = localStorage.getItem('currentHP');
@@ -1735,7 +1685,6 @@
         } else {
           currentHP = parseInt(currentHP);
         }
-        console.log('Current HP:', currentHP);
         
         // Initialize Adrenaline Rush state based on current HP
         updateAdrenalineRush(currentHP);
@@ -1744,37 +1693,25 @@
         renderHealthTracker(currentHP);
 
         // Display traits
-        console.log('Displaying traits:', characterData.selectedTraits);
         displayCharacterTraits(characterData.selectedTraits || []);
 
         // Display selected perks (both conditional and unconditional)
-        console.log('Rendering selected perks:', characterData.selectedPerks);
-        console.log('[DEBUG] About to call renderGameSelectedPerks, function exists?', typeof renderGameSelectedPerks);
-        console.log('[DEBUG] CONDITIONAL_PERK_IDS exists?', typeof CONDITIONAL_PERK_IDS);
-        console.log('[DEBUG] AUTO_MANAGED_PERKS exists?', typeof AUTO_MANAGED_PERKS);
         try {
           renderGameSelectedPerks(characterData.selectedPerks || []);
-          console.log('[DEBUG] renderGameSelectedPerks call completed');
         } catch (e) {
-          console.error('[DEBUG] Error calling renderGameSelectedPerks:', e.message, e);
         }
 
         // Initialize attribute display with conditional bonuses
         updateGameAttributeDisplay();
 
         // Display skills with conditional bonuses
-        console.log('Rendering skills:', characterData.skills);
         renderSkills(characterData.skills || {}, characterData);
 
         // Display tools
-        console.log('Rendering tools');
         renderTools(characterData);
 
-        console.log('=== loadCharacter() completed successfully ===');
       } catch (err) {
         alert('Error loading character data.');
-        console.error('Error in loadCharacter:', err);
-        console.error('Stack trace:', err.stack);
       }
     }
 
@@ -1787,18 +1724,22 @@
 
       try {
         const characterData = JSON.parse(stored);
+        // Use consistent filename format across all screens
+        const charName = characterData.name || 'character';
+        const dateStamp = new Date().toISOString().split('T')[0];
+        const filename = `${charName.toLowerCase().replace(/\s+/g, '_')}_${dateStamp}.json`;
+        
         const blob = new Blob([JSON.stringify(characterData, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${characterData.name || 'character'}.json`;
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
       } catch (err) {
         alert('Error downloading character.');
-        console.error(err);
       }
     }
 

@@ -5,6 +5,178 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Character Advancement & Perks</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Perk Selection Modal Styles */
+    .perk-selection-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .perk-selection-modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .perk-selection-content {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      border: 3px solid #FF9800;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 700px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 50px rgba(255, 152, 0, 0.4);
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .perk-selection-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      border-bottom: 2px solid rgba(255, 152, 0, 0.4);
+      padding-bottom: 16px;
+    }
+
+    .perk-selection-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #FF9800;
+      margin: 0;
+    }
+
+    .perk-selection-description {
+      font-size: 0.95rem;
+      color: #aaa;
+      margin-bottom: 24px;
+      line-height: 1.6;
+      padding: 12px;
+      background: rgba(255, 152, 0, 0.1);
+      border-radius: 6px;
+      border-left: 3px solid #FF9800;
+    }
+
+    .perk-selection-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .perk-option-item {
+      padding: 14px;
+      border: 2px solid rgba(255, 152, 0, 0.3);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(255, 152, 0, 0.05);
+    }
+
+    .perk-option-item:hover {
+      background: rgba(255, 152, 0, 0.15);
+      border-color: #FF9800;
+      transform: translateX(4px);
+    }
+
+    .perk-option-item.selected {
+      background: rgba(255, 152, 0, 0.25);
+      border-color: #FF9800;
+      box-shadow: 0 0 12px rgba(255, 152, 0, 0.3);
+    }
+
+    .perk-option-label {
+      font-weight: 600;
+      color: #FFB74D;
+      margin-bottom: 4px;
+      font-size: 1rem;
+    }
+
+    .perk-option-details {
+      font-size: 0.85rem;
+      color: #ccc;
+    }
+
+    .perk-selection-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .perk-selection-btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1rem;
+    }
+
+    .perk-selection-btn-confirm {
+      background: linear-gradient(135deg, #4CAF50, #66BB6A);
+      color: white;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+
+    .perk-selection-btn-confirm:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(76, 175, 80, 0.5);
+    }
+
+    .perk-selection-btn-confirm:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .perk-selection-btn-cancel {
+      background: linear-gradient(135deg, #888, #aaa);
+      color: white;
+      box-shadow: 0 4px 12px rgba(136, 136, 136, 0.3);
+    }
+
+    .perk-selection-btn-cancel:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(136, 136, 136, 0.5);
+    }
+
+    .perk-selection-counter {
+      font-size: 0.9rem;
+      color: #FFB74D;
+      margin-top: 12px;
+      text-align: center;
+      font-weight: 600;
+    }
+  </style>
 </head>
 <body>
   <main class="container">
@@ -156,17 +328,34 @@
     <pre id="output" aria-live="polite"></pre>
   </main>
 
-  <script src="script.js?v=1"></script>
+  <!-- Perk Selection Modal -->
+  <div id="perk-selection-modal" class="perk-selection-modal">
+    <div class="perk-selection-content">
+      <div class="perk-selection-header">
+        <h2 class="perk-selection-title" id="perk-selection-title">Select Option</h2>
+        <button type="button" class="modal-close" id="close-perk-modal" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #FF9800; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: color 0.2s ease;" onmouseover="this.style.color='#FFA726'" onmouseout="this.style.color='#FF9800'">&times;</button>
+      </div>
+      <p class="perk-selection-description" id="perk-selection-description">Select from the options below:</p>
+      <div class="perk-selection-options" id="perk-selection-options"></div>
+      <div class="perk-selection-counter" id="perk-selection-counter"></div>
+      <div class="perk-selection-buttons">
+        <button type="button" id="confirm-perk-selection" class="perk-selection-btn perk-selection-btn-confirm">Confirm Selection</button>
+        <button type="button" id="cancel-perk-selection" class="perk-selection-btn perk-selection-btn-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js?v=2"></script>
+  <script src="perk-selection-modal.js?v=1"></script>
   <script>
     // Set the equipment button flag EARLY before other scripts run
     // If coming from levelup session, ALWAYS show download (not equipment)
     const isLevelUpSession = localStorage.getItem('isLevelUpSession') === 'true';
     const fromChargen = localStorage.getItem('fromChargen') === 'true' && !isLevelUpSession;
     window.showEquipmentButton = fromChargen;
-    console.log('[advancement.html] isLevelUpSession:', isLevelUpSession, 'fromChargen:', fromChargen, 'showEquipmentButton:', window.showEquipmentButton);
   </script>
-  <script src="advancement.js?v=1"></script>
-  <script src="advancement-page.js?v=1"></script>
+  <script src="advancement.js?v=2"></script>
+  <script src="advancement-page.js?v=2"></script>
   <script>
     // Hide/show buttons initially based on source
     document.addEventListener('DOMContentLoaded', () => {

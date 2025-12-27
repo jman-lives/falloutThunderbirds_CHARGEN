@@ -53,21 +53,47 @@ let characterData = {};
 // Store production config
 let prodConfig = {};
 
+// Log character data from localStorage at page load
+function logCharacterFromStorage() {
+  const character = localStorage.getItem('falloutCharacter');
+  if (character) {
+    try {
+      const charData = JSON.parse(character);
+      console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', charData);
+    } catch (e) {
+      console.warn('Failed to parse character data from localStorage:', e);
+    }
+  } else {
+    console.log('%c[NO CHARACTER IN STORAGE]', 'color: #FF9800; font-weight: bold;');
+  }
+}
+
 // Load character data from localStorage when page loads
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('advancement-page DOMContentLoaded fired');
+  // Log character data from storage at page load
+  logCharacterFromStorage();
+  
   await loadProdConfig();
   await loadCharacterData();
-  console.log('characterData after load:', characterData);
   
   // Check if this is a level up session (character uploaded from levelup.html)
   const isLevelUpSession = localStorage.getItem('isLevelUpSession') === 'true';
-  console.log('[DOMContentLoaded] isLevelUpSession:', isLevelUpSession);
+  const fromChargen = localStorage.getItem('fromChargen') === 'true';
+  const currentLevel = getLevelFromXP(characterData.totalXP || 0);
   
-  if (isLevelUpSession) {
-    // For level up sessions, get current level and set max to current + 1 (unless Here and Now applies)
-    const currentLevel = getLevelFromXP(characterData.totalXP || 0);
-    console.log('[DOMContentLoaded] Current level:', currentLevel);
+  console.log('%c[ADVANCEMENT PAGE INIT]', 'color: #FF9800; font-weight: bold;');
+  console.log('  isLevelUpSession:', isLevelUpSession);
+  console.log('  fromChargen:', fromChargen);
+  console.log('  currentLevel:', currentLevel);
+  console.log('  totalXP:', characterData.totalXP);
+  console.log('  prodConfig BEFORE:', prodConfig);
+  
+  // Level-up sessions override the max level to only allow one level-up (or two with Here and Now)
+  // Chargen sessions use the fixed chargenMaxLevel from config
+  if (isLevelUpSession && !fromChargen) {
+    console.log('  → Using LEVEL-UP SESSION logic');
+    // For level up sessions, calculate the maximum level based on current level + increment
+    const levelupIncrement = prodConfig.levelupMaxLevelIncrement || 1;
     
     // Check if character has Here and Now perk that can be used
     const selectedPerks = characterData.selectedPerks || [];
@@ -75,15 +101,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     const canUseHereAndNow = hereAndNowPerk && !hereAndNowPerk.hasIncreasedMaxLevel;
     
     if (canUseHereAndNow) {
-      // Here and Now perk allows leveling up twice
-      prodConfig.levelsForchargen = currentLevel + 2;
-      console.log('[DOMContentLoaded] Here and Now available - max level set to:', prodConfig.levelsForchargen);
+      // Here and Now perk allows leveling up twice (overrides the levelupMaxLevelIncrement)
+      prodConfig.chargenMaxLevel = currentLevel + 2;
+      console.log('    Here and Now active: chargenMaxLevel =', prodConfig.chargenMaxLevel);
     } else {
-      // Normal level up - can only go up one level
-      prodConfig.levelsForchargen = currentLevel + 1;
-      console.log('[DOMContentLoaded] Normal level up - max level set to:', prodConfig.levelsForchargen);
+      // Normal level up - can advance by levelupMaxLevelIncrement levels
+      prodConfig.chargenMaxLevel = currentLevel + levelupIncrement;
+      console.log('    Normal level-up: chargenMaxLevel =', prodConfig.chargenMaxLevel);
     }
+  } else {
+    // This is a chargen session - use the configured chargenMaxLevel (default 4)
+    // Don't override it - characters should reach max level 4 during chargen
+    console.log('  → Using CHARGEN SESSION logic');
+    prodConfig.chargenMaxLevel = prodConfig.chargenMaxLevel || 4;
+    console.log('    chargenMaxLevel =', prodConfig.chargenMaxLevel);
   }
+  
+  console.log('  prodConfig AFTER:', prodConfig);
   
   // Set up event listeners (only if elements exist)
   const levelUpBtn = qs('level-up-btn');
@@ -97,8 +131,40 @@ document.addEventListener('DOMContentLoaded', async () => {
   const downloadBtn = qs('download');
   if (downloadBtn) {
     downloadBtn.addEventListener('click', () => {
-      const timestamp = getTimestamp();
-      downloadJSON(characterData, `${characterData.name || 'character'}_${timestamp}.json`);
+      // Create a complete character sheet JSON with all data - same format as review.html
+      const characterSheet = {
+        // Include all character data
+        player: characterData.player || '',
+        name: characterData.name || '',
+        race: characterData.race || '',
+        age: characterData.age || '',
+        gender: characterData.gender || '',
+        attributes: characterData.attributes || {},
+        tagSkills: characterData.tagSkills || {},
+        skills: characterData.skills || {},
+        level: characterData.level || 1,
+        totalXP: characterData.totalXP || 0,
+        selectedPerks: characterData.selectedPerks || [],
+        stats: characterData.stats || {},
+        notes: characterData.notes || null,
+        selectedTraits: characterData.selectedTraits || [],
+        createdAt: characterData.createdAt || new Date().toISOString(),
+        equipment: characterData.equipment || null,
+        money: characterData.money !== undefined ? characterData.money : 80000,
+        skillIncreases: characterData.skillIncreases || {},
+        skillPointsSpent: characterData.skillPointsSpent || {},
+        skillsConfirmed: characterData.skillsConfirmed || false,
+        perksConfirmed: characterData.perksConfirmed || false,
+        perkEffects: characterData.perkEffects || {},
+        // Add metadata
+        savedAt: new Date().toISOString(),
+        version: '1.0'
+      };
+      // Generate filename - same format as review.html for consistency
+      const charName = characterData.name || 'character';
+      const dateStamp = new Date().toISOString().split('T')[0];
+      const filename = `${charName.toLowerCase().replace(/\s+/g, '_')}_${dateStamp}.json`;
+      downloadJSON(characterSheet, filename);
     });
   }
 
@@ -136,107 +202,116 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateDisplay();
   updateSkillRanking();
   renderOutput(characterData);
-  console.log('Page initialization complete. Character data:', characterData);
 });
 
 // Load production configuration
 async function loadProdConfig() {
   try {
-    const response = await fetch('prod-config.json');
+    const timestamp = new Date().getTime();
+    const response = await fetch(`prod-config.json?t=${timestamp}`);
     prodConfig = await response.json();
-    console.log('[loadProdConfig] Loaded prod-config:', prodConfig);
+    
+    console.log('  prodConfig loaded from prod-config.json:', prodConfig);
+    
+    // Handle legacy config values for backwards compatibility
+    if (prodConfig.levelsForchargen && !prodConfig.chargenMaxLevel) {
+      prodConfig.chargenMaxLevel = prodConfig.levelsForchargen;
+    }
+    if (prodConfig.levelsForLevelUp && !prodConfig.levelupMaxLevelIncrement) {
+      prodConfig.levelupMaxLevelIncrement = prodConfig.levelsForLevelUp;
+    }
+    
+    // Try to load dev-config for development overrides
+    try {
+      const devResponse = await fetch(`dev-config.json?t=${timestamp}`);
+      const devConfig = await devResponse.json();
+      console.log('  dev-config.json loaded:', devConfig);
+      
+      // Override with dev config values if present
+      if (devConfig.chargenMaxLevel) {
+        console.log('  → Overriding chargenMaxLevel to', devConfig.chargenMaxLevel, '(from dev-config)');
+        prodConfig.chargenMaxLevel = devConfig.chargenMaxLevel;
+      }
+      if (devConfig.levelupMaxLevelIncrement) {
+        prodConfig.levelupMaxLevelIncrement = devConfig.levelupMaxLevelIncrement;
+      }
+      // Handle legacy dev-config values
+      if (devConfig.levelsForchargen && !devConfig.chargenMaxLevel) {
+        console.log('  → Legacy: Overriding chargenMaxLevel to', devConfig.levelsForchargen, '(from dev-config legacy value)');
+        prodConfig.chargenMaxLevel = devConfig.levelsForchargen;
+      }
+      if (devConfig.levelsForLevelUp && !devConfig.levelupMaxLevelIncrement) {
+        prodConfig.levelupMaxLevelIncrement = devConfig.levelsForLevelUp;
+      }
+    } catch (devErr) {
+      console.log('  dev-config.json not found or failed to load (OK for production)');
+    }
   } catch (e) {
-    console.warn('[loadProdConfig] Could not load prod-config:', e);
-    prodConfig = { levelsForchargen: 99 }; // Default fallback
+    prodConfig = { chargenMaxLevel: 4, levelupMaxLevelIncrement: 1 }; // Default fallback
   }
 }
 
 // Load character data from localStorage
 async function loadCharacterData() {
-  console.log('[loadCharacterData] Starting...');
   
   // First, check if we have stored character data from levelup session
   let stored = localStorage.getItem('characterData');
-  console.log('[loadCharacterData] Level up session character exists:', !!stored);
   
   // If not from levelup, check for normal chargen stored data
   if (!stored) {
     stored = localStorage.getItem('falloutCharacter');
-    console.log('[loadCharacterData] Chargen stored character exists:', !!stored);
   }
   
   if (stored) {
     // We have stored data, use it
     try {
       characterData = JSON.parse(stored);
-      console.log('[loadCharacterData] Successfully parsed stored data:', characterData);
       
       // Recalculate level from totalXP if it exists
       if (characterData.totalXP !== undefined && typeof getLevelFromXP === 'function') {
         const calculatedLevel = getLevelFromXP(characterData.totalXP || 0);
-        console.log(`[loadCharacterData] Recalculating level from totalXP: ${characterData.totalXP} -> Level ${calculatedLevel} (was ${characterData.level})`);
         characterData.level = calculatedLevel;
       }
     } catch (err) {
-      console.error('[loadCharacterData] Failed to parse stored data:', err);
       characterData = {};
     }
   } else {
     // No stored data - check if we should generate a test character
-    console.log('[loadCharacterData] No stored character, checking dev-config...');
     try {
       const response = await fetch('dev-config.json');
       const devConfig = await response.json();
-      console.log('[loadCharacterData] devConfig:', devConfig);
       
       if (devConfig.autoLoadTestCharacter) {
-        console.log('[loadCharacterData] autoLoadTestCharacter is true, generating test character...');
         characterData = generateTestCharacter();
-        console.log('[loadCharacterData] Generated test character:', characterData);
         localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
       } else {
-        console.log('[loadCharacterData] autoLoadTestCharacter is false or not set');
         characterData = {};
       }
     } catch (e) {
-      console.warn('[loadCharacterData] Could not load dev-config:', e);
       characterData = {};
     }
   }
   
-  console.log('[loadCharacterData] Finished. characterData:', characterData);
 }
 
 // This function is no longer used - kept for reference
 // Load test character if autoLoadTestCharacter is enabled in dev-config
 async function loadTestCharacterIfConfigured_DEPRECATED() {
-  console.log('[loadTestCharacterIfConfigured] Starting...');
   try {
-    console.log('[loadTestCharacterIfConfigured] Fetching dev-config.json...');
     const response = await fetch('dev-config.json');
-    console.log('[loadTestCharacterIfConfigured] Response status:', response.status);
     const devConfig = await response.json();
-    console.log('[loadTestCharacterIfConfigured] devConfig loaded:', devConfig);
-    console.log('[loadTestCharacterIfConfigured] autoLoadTestCharacter:', devConfig.autoLoadTestCharacter);
     
     if (devConfig.autoLoadTestCharacter) {
-      console.log('[loadTestCharacterIfConfigured] Auto-generating test character...');
       characterData = generateTestCharacter();
-      console.log('[loadTestCharacterIfConfigured] Generated test character:', characterData);
       localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
-      console.log('[loadTestCharacterIfConfigured] Saved to localStorage');
     } else {
-      console.log('[loadTestCharacterIfConfigured] autoLoadTestCharacter is false or not set');
     }
   } catch (e) {
-    console.warn('[loadTestCharacterIfConfigured] Error:', e);
   }
-  console.log('[loadTestCharacterIfConfigured] Finished');
 }
 
 // Generate a random test character
 function generateTestCharacter() {
-  console.log('[generateTestCharacter] Starting...');
   const sampleNames = ['Alex', 'Riley', 'Mack', 'Nova', 'Harper', 'Jules', 'Casey', 'Rowan', 'Rex', 'Ivy'];
   const genders = ['Male', 'Female'];
   const races = ['Human', 'Ghoul'];
@@ -246,9 +321,7 @@ function generateTestCharacter() {
   
   // Select random race
   const selectedRace = races[randInt(0, races.length - 1)];
-  console.log('[generateTestCharacter] Selected race:', selectedRace);
   const raceLimits = RACIAL_LIMITS[selectedRace];
-  console.log('[generateTestCharacter] raceLimits:', raceLimits);
   
   // Generate attributes respecting racial limits
   const attributes = {
@@ -373,13 +446,11 @@ function saveCharacterData() {
   if (localStorage.getItem('isLevelUpSession') === 'true') {
     localStorage.removeItem('characterData');
     localStorage.removeItem('isLevelUpSession');
-    console.log('[saveCharacterData] Cleared level up session flags');
   }
 }
 
 // Update character summary display
 function updateCharacterSummary() {
-  console.log('updateCharacterSummary called with data:', characterData);
   const name = characterData.name || 'Unknown';
   const race = characterData.race || 'Human';
   const attributes = characterData.attributes || {
@@ -458,7 +529,6 @@ function updateCharacterSummary() {
   if (qs('char-traits')) qs('char-traits').textContent = traitsDisplay;
   if (qs('char-top-skill')) qs('char-top-skill').textContent = topSkill;
   
-  console.log('Character summary updated');
 }
 
 // Update advancement display based on current XP and attributes
@@ -525,7 +595,6 @@ function updateDisplay() {
   // Calculate perks earned based on race, level, and traits
   const race = characterData.race || 'Human';
   const perksEarned = calculatePerksEarned(currentLevel, race, selectedTraits);
-  console.log(`DEBUG: Race="${race}", Level=${currentLevel}, PerksEarned=${perksEarned}`);
   if (qs('perks_earned')) qs('perks_earned').textContent = perksEarned;
   
   // Build character object for perk eligibility checking
@@ -539,9 +608,7 @@ function updateDisplay() {
   };
   
   // Get eligible perks and display them
-  console.log('[updateDisplay] Character object for perk eligibility check:', character);
   const eligiblePerkIds = getEligiblePerks(character);
-  console.log('[updateDisplay] Eligible perk IDs:', eligiblePerkIds);
   renderAvailablePerks(eligiblePerkIds);
   renderSelectedPerks(perksEarned);
   
@@ -595,7 +662,7 @@ function updateDisplay() {
   const downloadBtn = qs('download');
   if (levelUpBtn) {
     // Check if character has reached maximum level
-    const maxLevel = prodConfig.levelsForchargen || 7;
+    const maxLevel = prodConfig.chargenMaxLevel || 4;
     const isMaxLevel = currentLevel >= maxLevel;
     
     // Calculate if there are actually skill points available to spend at this level
@@ -615,17 +682,6 @@ function updateDisplay() {
     const skillsNeedConfirmation = hasSkillsToConfirm && !skillsConfirmed;
     const perksNeedConfirmation = hasPerksToConfirm && !perksConfirmed;
     
-    console.log('=== LEVEL UP BUTTON DEBUG ===');
-    console.log('currentLevel:', currentLevel);
-    console.log('maxLevel:', maxLevel);
-    console.log('isMaxLevel:', isMaxLevel);
-    console.log('hasSkillsToConfirm:', hasSkillsToConfirm);
-    console.log('skillsConfirmed:', skillsConfirmed);
-    console.log('hasPerksToConfirm:', hasPerksToConfirm);
-    console.log('perksConfirmed:', perksConfirmed);
-    console.log('skillsNeedConfirmation:', skillsNeedConfirmation);
-    console.log('perksNeedConfirmation:', perksNeedConfirmation);
-    console.log('button should be visible?', !(skillsNeedConfirmation || perksNeedConfirmation) && !isMaxLevel);
     
     // Calculate if all confirmations are done (no pending confirmations)
     const allConfirmed = !skillsNeedConfirmation && !perksNeedConfirmation;
@@ -640,23 +696,16 @@ function updateDisplay() {
     const showEquipmentBtn = window.showEquipmentButton === true;
     const showDownloadBtn = window.showEquipmentButton === false;
     
-    console.log('[updateUI] window.showEquipmentButton:', window.showEquipmentButton, 'showEquipmentBtn:', showEquipmentBtn, 'showDownloadBtn:', showDownloadBtn);
-    console.log('[updateUI] equipmentBtn element:', equipmentBtn, 'downloadBtn element:', downloadBtn);
-    console.log('[updateUI] isMaxLevel:', isMaxLevel, 'allConfirmed:', allConfirmed);
-    console.log('[updateUI] Equipment visibility calc:', isMaxLevel && allConfirmed && showEquipmentBtn);
-    console.log('[updateUI] Download visibility calc:', isMaxLevel && allConfirmed && showDownloadBtn);
     
     // Download button: visible ONLY if character was loaded from file (not from chargen) AND max level reached AND confirmed
     if (downloadBtn) {
       const shouldShowDownload = isMaxLevel && allConfirmed && showDownloadBtn;
-      console.log('[updateUI] Setting downloadBtn display to:', shouldShowDownload ? '' : 'none');
       downloadBtn.style.display = shouldShowDownload ? '' : 'none';
     }
     
     // Equipment button: visible ONLY if coming from chargen AND max level reached AND confirmed
     if (equipmentBtn) {
       const shouldShowEquipment = isMaxLevel && allConfirmed && showEquipmentBtn;
-      console.log('[updateUI] Setting equipmentBtn display to:', shouldShowEquipment ? '' : 'none');
       equipmentBtn.style.display = shouldShowEquipment ? '' : 'none';
     }
   }
@@ -664,15 +713,26 @@ function updateDisplay() {
 
 // Level up function
 function levelUp() {
+  console.log('%c[LEVEL UP BUTTON CLICKED]', 'color: #4CAF50; font-weight: bold;');
+  
   const currentLevel = getLevelFromXP(characterData.totalXP || 0);
-  console.log('levelUp called, currentLevel:', currentLevel);
+  const maxLevel = prodConfig.chargenMaxLevel || 4;
+  
+  console.log('  currentLevel:', currentLevel);
+  console.log('  maxLevel:', maxLevel);
+  console.log('  currentLevel >= maxLevel?', currentLevel >= maxLevel);
+  console.log('  prodConfig.chargenMaxLevel:', prodConfig.chargenMaxLevel);
+  console.log('  characterData.totalXP:', characterData.totalXP);
   
   // Check if character has reached the maximum allowed level
-  const maxLevel = prodConfig.levelsForchargen || 7;
+  // chargenMaxLevel represents the maximum level the character can reach
   if (currentLevel >= maxLevel) {
+    console.log('  ✗ BLOCKED: Cannot level up beyond', maxLevel);
     alert(`Character has reached the maximum level of ${maxLevel}!`);
     return;
   }
+  
+  console.log('  ✓ Passed max level check, continuing level up...');
   
   // Ensure attributes exist and are valid
   let attributes = characterData.attributes || {};
@@ -709,7 +769,6 @@ function levelUp() {
   
   // Check if perks are available and if player has selected enough
   const perksEarned = calculatePerksEarned(currentLevel, characterData.race || 'Human', characterData.selectedTraits || []);
-  console.log('perksEarned:', perksEarned);
   
   // Calculate how many perk ranks are actually available to spend at this level
   const selectedPerks = characterData.selectedPerks || [];
@@ -724,10 +783,11 @@ function levelUp() {
     return;
   }
   
-  console.log('Proceeding with level up');
   const nextLevelXP = getXPForLevel(currentLevel + 1);
-  console.log('nextLevelXP:', nextLevelXP);
   characterData.totalXP = nextLevelXP;
+  
+  console.log('  XP for next level:', nextLevelXP);
+  console.log('  Updated totalXP:', characterData.totalXP);
   
   // Lock in currently selected perks at this level (they become locked for future level-ups)
   selectedPerks.forEach(perk => {
@@ -784,7 +844,6 @@ function levelUp() {
         }
         
         if (skillKey === 'barter') {
-          console.log(`[levelUp BARTER] baseSkillValue=${baseSkillValue}, accumulatedIncrease=${accumulatedIncrease}, points=${points}, percentGain=${percentGain}`);
         }
       } else {
         // Non-tagged skills: each SP gives 1% gain, but cost per SP varies
@@ -809,7 +868,6 @@ function levelUp() {
       
       const newIncrease = (characterData.skillIncreases[skillKey] || 0) + percentGain;
       if (skillKey === 'barter') {
-        console.log(`[levelUp BARTER] percentGain=${percentGain}, old=${characterData.skillIncreases[skillKey] || 0}, new=${newIncrease}`);
       }
       characterData.skillIncreases[skillKey] = newIncrease;
       // NOTE: Do NOT cap at 100% here - skills can exceed 100% through skill point spending
@@ -828,13 +886,35 @@ function levelUp() {
   // Auto-confirm perks if there are no perks to confirm at this level
   // Note: perksEarned, selectedPerks, lockedRanks, and newAvailableRanks already calculated above
   // If no perk ranks are available to spend, auto-confirm
-  console.log('[levelUp] newAvailableRanks:', newAvailableRanks, 'perksEarned:', perksEarned, 'lockedRanks:', lockedRanks);
   if (newAvailableRanks === 0) {
     characterData.perksConfirmed = true;
-    console.log('[levelUp] Auto-confirmed perks because no ranks available (newAvailableRanks === 0)');
   } else {
-    console.log('[levelUp] NOT auto-confirming perks because newAvailableRanks =', newAvailableRanks);
   }
+  
+  // After leveling up during chargen, clear the fromChargen flag so next page load
+  // treats this as a normal session (character can only level up 1 more time if loaded from levelup.html)
+  const fromChargen = localStorage.getItem('fromChargen') === 'true';
+  console.log('  fromChargen flag before cleanup:', fromChargen);
+  
+  const newLevel = getLevelFromXP(characterData.totalXP);
+  console.log('  newLevel (calculated after XP update):', newLevel);
+  console.log('  maxLevel:', maxLevel);
+  console.log('  newLevel >= maxLevel?', newLevel >= maxLevel);
+  
+  if (fromChargen && newLevel < maxLevel) {
+    // Still in chargen phase - keep the flag
+    console.log('  → Keeping fromChargen flag (still leveling up)');
+    localStorage.setItem('fromChargen', 'true');
+  } else if (fromChargen && newLevel >= maxLevel) {
+    // Chargen is complete (reached max level) - clear the flag
+    console.log('  → Clearing fromChargen flag (chargen complete, reached max level)');
+    localStorage.removeItem('fromChargen');
+  }
+  
+  console.log('  Flags after cleanup:', {
+    fromChargen: localStorage.getItem('fromChargen'),
+    isLevelUpSession: localStorage.getItem('isLevelUpSession')
+  });
   
   saveCharacterData();
   updateCharacterSummary();
@@ -849,8 +929,6 @@ function renderAvailablePerks(eligiblePerkIds) {
   const selectedPerks = characterData.selectedPerks || [];
   
   // DEBUG: Check if Gain X perks exist in PERKS object
-  console.log('[renderAvailablePerks] PERKS object keys sample:', Object.keys(PERKS).slice(0, 5), '... gain_strength exists?', 'gain_strength' in PERKS);
-  console.log('[renderAvailablePerks] Eligible perk IDs:', eligiblePerkIds);
   
   // Filter out perks that have reached maximum rank
   const availablePerkIds = eligiblePerkIds.filter(perkId => {
@@ -862,18 +940,10 @@ function renderAvailablePerks(eligiblePerkIds) {
     
     // Always log Gain X perks for debugging
     if (['gain_strength', 'gain_perception', 'gain_endurance', 'gain_charisma', 'gain_intelligence', 'gain_agility', 'gain_luck'].includes(perkId)) {
-      console.log(`[renderAvailablePerks FILTER] ${perkId}:`);
-      console.log(`  - perk object: ${perk ? JSON.stringify(perk) : 'NULL'}`);
-      console.log(`  - selectedPerk: ${selectedPerk ? JSON.stringify(selectedPerk) : 'NOT SELECTED'}`);
-      console.log(`  - currentRank: ${currentRank}, perk.ranks: ${perk?.ranks}`);
-      console.log(`  - currentRank < perk.ranks? ${currentRank} < ${perk?.ranks} = ${currentRank < perk?.ranks}`);
-      console.log(`  - perk && (currentRank < perk.ranks)? ${isAvailable}`);
-      console.log(`  - RESULT: ${isAvailable ? 'INCLUDED' : 'FILTERED OUT'}`);
     }
     return isAvailable;
   });
   
-  console.log('[renderAvailablePerks] Available perk IDs after rank filter:', availablePerkIds);
   
   if (!container) return;
   
@@ -1131,13 +1201,12 @@ function removeRank(perkId) {
 }
 
 function getTimestamp() {
+  // Returns YYYY-MM-DD format for consistency across all screens
   const now = new Date();
   const year = now.getUTCFullYear();
   const month = String(now.getUTCMonth() + 1).padStart(2, '0');
   const day = String(now.getUTCDate()).padStart(2, '0');
-  const hours = String(now.getUTCHours()).padStart(2, '0');
-  const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-  return `${year}${month}${day}${hours}${minutes}`;
+  return `${year}-${month}-${day}`;
 }
 
 function downloadJSON(obj, filename){
@@ -1255,9 +1324,6 @@ function updateSkillRanking() {
   const selectedTraits = characterData.selectedTraits || characterData.traits || [];
   const effectiveAttributes = getEffectiveAttributes(attributes, selectedTraits);
   
-  console.log('=== updateSkillRanking DEBUG ===');
-  console.log('currentLevel:', currentLevel, 'totalXP:', totalXP);
-  console.log('effectiveAttributes.intelligence:', effectiveAttributes.intelligence);
   
   // No skill points at level 1
   if (currentLevel === 1) {
@@ -1285,7 +1351,6 @@ function updateSkillRanking() {
   // Calculate available skill points for THIS LEVEL ONLY (with perk effects)
   const perkEffects = characterData.perkEffects || {};
   const spPerLevel = calculateSkillPointsGainWithPerks(effectiveAttributes.intelligence, perkEffects);
-  console.log('spPerLevel:', spPerLevel, '(formula: 5 + (2 * ' + effectiveAttributes.intelligence + ') + ' + (perkEffects.skillPointsPerLevel || 0) + ' from perks)');
   
   // Initialize skill tracking if needed
   if (!characterData.skillPointsSpent) {
@@ -1299,9 +1364,6 @@ function updateSkillRanking() {
   const baseAttributes = attributes;
   const tagSkills = characterData.tagSkills || {};
   
-  console.log(`[updateSkillRanking] characterData.tagSkills:`, characterData.tagSkills);
-  console.log(`[updateSkillRanking] tagSkills object:`, tagSkills);
-  console.log(`[updateSkillRanking] tagSkills.unarmed:`, tagSkills.unarmed, 'type:', typeof tagSkills.unarmed);
   
   // Calculate actual SP spent THIS LEVEL (not just count of increases)
   // Use perk-adjusted attributes for skill calculations
@@ -1319,7 +1381,6 @@ function updateSkillRanking() {
   }
   
   const availablePoints = spPerLevel - totalSPSpent;
-  console.log('[updateSkillRanking FINAL] totalSPSpent:', totalSPSpent, 'availablePoints:', availablePoints);
   
   // Update display - values are already whole numbers now
   if (qs('skill_points_available')) qs('skill_points_available').textContent = Math.max(0, availablePoints);
@@ -1378,7 +1439,6 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
   
   const availablePoints = spPerLevel - totalSPSpent;
   
-  console.log(`[renderSkillsList DEBUG] totalSPSpent=${totalSPSpent}, availablePoints=${availablePoints}, skillPointsSpent=`, characterData.skillPointsSpent);
   
   // Build header with SP usage info
   const headerHtml = ``;
@@ -1402,8 +1462,6 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
     const backgroundColor = isTag ? '#2a3a2a' : '#333';
     
     if (skillKey === 'barter') {
-      console.log(`[BARTER_BEFORE_CALC]`, {baseSkillValue, accumulatedIncrease, skillPointsSpent, tagSkills_barter: tagSkills['barter']});
-      console.log(`[BARTER_BEFORE_CALC] allSkills[barter]=${allSkills['barter']}, skillIncreases[barter]=${skillIncreases['barter']}, skillPointsSpent['barter']=${characterData.skillPointsSpent['barter']}`);
       // Also log to localStorage for debugging
       localStorage.setItem('barter_debug_before', JSON.stringify({baseSkillValue, accumulatedIncrease, skillPointsSpent, tagSkills_barter: tagSkills['barter']}));
     }
@@ -1439,7 +1497,6 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
       currentSkillValue = simValue;
       
       if (skillKey === 'barter') {
-        console.log(`[BARTER_AFTER_CALC]`, {baseSkillValue, accumulatedIncrease, baseWithAccumulated, skillPointsSpent, currentSkillValue, currentLevelGain, isTag});
         localStorage.setItem('barter_debug_after', JSON.stringify({baseSkillValue, accumulatedIncrease, baseWithAccumulated, skillPointsSpent, currentSkillValue, currentLevelGain, isTag}));
       }
     } else {
@@ -1475,7 +1532,6 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
     
     // DEBUG
     if (skillKey === 'barter') {
-      console.log(`[BARTER DEBUG] skillKey=${skillKey}, baseSkillValue=${baseSkillValue}, currentSkillValue=${currentSkillValue}, isTag=${isTag}, availablePoints=${availablePoints}, displayGain=${displayGain}`);
     }
     
     return `
@@ -1523,9 +1579,7 @@ function renderSkillsList(hasPointsAvailable, baseAttributes, effectiveAttribute
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const skillKey = btn.dataset.skillKey;
-      console.log(`[INCREASE CLICK] Clicked skill-increase-btn for ${skillKey}, disabled=${btn.disabled}`);
       if (skillKey === 'barter') {
-        console.log(`[BARTER CLICK] increaseSkillPoints called for barter`);
       }
       increaseSkillPoints(skillKey);
     });
@@ -1660,12 +1714,10 @@ function decreaseSkillPoints(skillKey) {
  */
 function resetSkillPoints() {
   if (confirm('Are you sure you want to reset all skill point allocations?')) {
-    console.log('[resetSkillPoints] Resetting skill points');
     characterData.skillPointsSpent = {};
     saveCharacterData();
     updateSkillRanking();
     renderSkillsList();
-    console.log('[resetSkillPoints] Reset complete');
   }
 }
 
@@ -1800,15 +1852,51 @@ function confirmPerkSelection() {
   
   if (hereAndNowPerk && !hereAndNowPerk.hasIncreasedMaxLevel) {
     // Increase max level by 1
-    prodConfig.levelsForchargen = (prodConfig.levelsForchargen || 99) + 1;
+    prodConfig.chargenMaxLevel = (prodConfig.chargenMaxLevel || 99) + 1;
     hereAndNowPerk.hasIncreasedMaxLevel = true;
-    console.log('[confirmPerkSelection] Here and Now activated! New max level:', prodConfig.levelsForchargen);
+  }
+  
+  // Get current level for checking which perks need selection
+  const currentLevel = getLevelFromXP(characterData.totalXP || 0);
+  
+  console.log(`%c[CONFIRM PERK SELECTION - ANALYSIS]`, 'color: #4CAF50; font-weight: bold;');
+  console.log(`  currentLevel=${currentLevel}`);
+  console.log(`  selectedPerks count=${selectedPerks.length}`);
+  selectedPerks.forEach((p, idx) => {
+    console.log(`    [${idx}] ${p.id}: rank=${p.rank}, modifiedAtLevel=${p.modifiedAtLevel}`);
+  });
+  
+  // Check if any perks require selections (only those just selected at this level)
+  const perksRequiringSelection = selectedPerks.filter(perk => {
+    const result = requiresPerkSelection(perk, currentLevel);
+    console.log(`    → Filter ${perk.id}: ${result}`);
+    return result;
+  });
+  
+  if (perksRequiringSelection.length > 0) {
+    // Hide the main confirm button while handling modal selections
+    const confirmBtn = qs('confirm-perk-selection-btn');
+    if (confirmBtn) confirmBtn.style.display = 'none';
+    
+    // Show the first perk selection modal
+    handleNextPerkSelection(perksRequiringSelection, 0);
+    return; // Don't proceed with the rest until selections are made
   }
   
   // Apply mechanical effects of selected perks
   applyPerkEffects(characterData);
   
   saveCharacterData();
+  
+  // Finish the perk confirmation process
+  finishPerkConfirmation();
+}
+
+/**
+ * Complete the perk confirmation process and clean up the UI
+ */
+function finishPerkConfirmation() {
+  console.log('[FINISH PERK CONFIRMATION]');
   
   // Hide the entire perks section
   const perksSection = qs('perks-section');
@@ -1834,6 +1922,94 @@ function confirmPerkSelection() {
 }
 
 /**
+ * Check if a perk requires player selection
+ * @param {object} perk - The perk object with id and modifiedAtLevel
+ * @param {number} currentLevel - Current character level
+ * @returns {boolean} Whether the perk requires a selection now
+ */
+function requiresPerkSelection(perk, currentLevel) {
+  const selectablePerkIds = ['tag', 'mutate'];
+  
+  // Only require selection if:
+  // 1. Perk is a selectable type (tag, mutate)
+  // 2. Perk was modified at the current level (just selected)
+  if (!selectablePerkIds.includes(perk.id)) {
+    return false;
+  }
+  
+  // If modifiedAtLevel doesn't exist, this is a legacy perk from before tracking was added
+  // Mark it as -1 (handled but not at any specific level) so we never show modal for it
+  if (!perk.modifiedAtLevel) {
+    console.log(`    [requiresPerkSelection] ${perk.id}: No modifiedAtLevel found (legacy perk), marking as -1`);
+    perk.modifiedAtLevel = -1;  // -1 means "legacy perk, don't show modal"
+    return false;
+  }
+  
+  // Don't show modal for legacy perks (marked with -1)
+  if (perk.modifiedAtLevel === -1) {
+    return false;
+  }
+  
+  // Only require selection if it was modified at this level
+  const result = perk.modifiedAtLevel === currentLevel;
+  console.log(`    [requiresPerkSelection] ${perk.id}: modifiedAtLevel=${perk.modifiedAtLevel}, currentLevel=${currentLevel}, result=${result}`);
+  return result;
+}
+
+/**
+ * Handle perk selection sequentially
+ * @param {array} perksRequiringSelection - Array of perks that need selections
+ * @param {number} index - Current index in the array
+ */
+function handleNextPerkSelection(perksRequiringSelection, index) {
+  if (index >= perksRequiringSelection.length) {
+    // All selections made, complete the confirmation
+    applyPerkEffects(characterData);
+    saveCharacterData();
+    
+    const perksSection = qs('perks-section');
+    if (perksSection) perksSection.style.display = 'none';
+    
+    const confirmBtn = qs('confirm-perk-selection-btn');
+    const unconfirmBtn = qs('unconfirm-perk-selection-btn');
+    if (confirmBtn) confirmBtn.style.display = 'none';
+    if (unconfirmBtn) unconfirmBtn.style.display = '';
+    
+    updateDisplay();
+    updateCharacterSummary();
+    updateSkillRanking();
+    renderOutput(characterData);
+    return;
+  }
+
+  const currentPerk = perksRequiringSelection[index];
+  const perkId = currentPerk.id;
+
+  console.log(`%c[HANDLE NEXT PERK SELECTION]`, 'color: #FF9800; font-weight: bold;', {
+    index,
+    perkId,
+    perkName: currentPerk.name,
+    totalPerks: perksRequiringSelection.length
+  });
+
+  // Show appropriate modal based on perk type
+  if (perkId === 'tag' && typeof showTagSkillModal === 'function') {
+    console.log(`  → Showing Tag! modal (showTagSkillModal)`);
+    showTagSkillModal();
+    // Store callback for after selection
+    window.nextPerkSelectionIndex = index + 1;
+    window.perksRequiringSelection = perksRequiringSelection;
+  } else if (perkId === 'mutate' && typeof showTraitSelectionModal === 'function') {
+    console.log(`  → Showing Mutate! modal (showTraitSelectionModal)`);
+    showTraitSelectionModal();
+    window.nextPerkSelectionIndex = index + 1;
+    window.perksRequiringSelection = perksRequiringSelection;
+  } else {
+    console.log(`  → No modal handler for perk: ${perkId}`);
+  }
+}
+
+/**
  * Unconfirm perk selection
  */
 function unconfirmPerkSelection() {
@@ -1844,8 +2020,7 @@ function unconfirmPerkSelection() {
   const hereAndNowPerk = selectedPerks.find(p => p.id === 'here_and_now');
   if (hereAndNowPerk && hereAndNowPerk.hasIncreasedMaxLevel) {
     hereAndNowPerk.hasIncreasedMaxLevel = false;
-    prodConfig.levelsForchargen = (prodConfig.levelsForchargen || 99) - 1;
-    console.log('[unconfirmPerkSelection] Here and Now bonus reset. Max level:', prodConfig.levelsForchargen);
+    prodConfig.chargenMaxLevel = (prodConfig.chargenMaxLevel || 99) - 1;
   }
   
   // Reset perk effects
