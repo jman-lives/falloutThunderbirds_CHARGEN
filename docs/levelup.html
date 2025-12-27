@@ -134,6 +134,24 @@
   </main>
 
   <script>
+    // Log character data from storage at page load
+    function logCharacterFromStorage() {
+      const character = localStorage.getItem('falloutCharacter');
+      if (character) {
+        try {
+          const charData = JSON.parse(character);
+          console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', charData);
+        } catch (e) {
+          console.warn('Failed to parse character data from localStorage:', e);
+        }
+      } else {
+        console.log('%c[NO CHARACTER IN STORAGE]', 'color: #FF9800; font-weight: bold;');
+      }
+    }
+
+    // Log on page load
+    document.addEventListener('DOMContentLoaded', logCharacterFromStorage);
+    
     document.getElementById('upload-btn').addEventListener('click', () => {
       // Create a hidden file input and trigger it
       const fileInput = document.createElement('input');
@@ -161,7 +179,6 @@
               window.location.href = 'advancement.html';
             } catch (err) {
               alert('Failed to parse character file. Please ensure it\'s a valid JSON file.');
-              console.error(err);
             }
           };
           reader.readAsText(file);

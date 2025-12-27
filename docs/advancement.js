@@ -193,7 +193,6 @@ function getSkillProgressionCost(currentSkillPercent, isTagged = false) {
   })();
   
   if (currentSkillPercent === 104) {
-    console.log(`[getSkillProgressionCost] DEBUG: currentSkillPercent=${currentSkillPercent}, nextSkillPercent=${nextSkillPercent}, isTagged=${isTagged}, result=${result}`);
   }
   
   return result;
@@ -414,7 +413,6 @@ function calculatePerksEarned(level, race, selectedTraits = []) {
   
   if (hasSkilled) {
     perkFrequency += 1; // Increase frequency (delay perk gain) by 1 level
-    console.log(`[calculatePerksEarned] Skilled trait detected - perk frequency increased to ${perkFrequency}`);
   }
   
   // Calculate how many perks have been earned
@@ -422,7 +420,6 @@ function calculatePerksEarned(level, race, selectedTraits = []) {
   // Then another every perkFrequency levels after that
   const perksEarned = Math.floor(level / perkFrequency);
   
-  console.log(`[calculatePerksEarned] race="${race}" normalized="${normalizedRace}" frequency=${perkFrequency} level=${level} result=${perksEarned}`);
   
   return perksEarned;
 }
@@ -1996,10 +1993,6 @@ function checkPerkEligibility(perkId, character, ignoreRaceRestriction = false, 
   // Log Gain Attribute perks for debugging
   const gainAttributePerks = ['gain_strength', 'gain_perception', 'gain_endurance', 'gain_charisma', 'gain_intelligence', 'gain_agility', 'gain_luck'];
   if (gainAttributePerks.includes(perkId)) {
-    console.log(`[checkPerkEligibility] Checking ${perkId}:`);
-    console.log(`  - Level: ${character.level} >= ${perk.requirements.level} ? ${character.level >= perk.requirements.level}`);
-    console.log(`  - Attributes:`, character.attributes);
-    console.log(`  - Attribute requirements:`, perk.requirements.attributes);
   }
   
   // Robots never gain perks
@@ -2037,11 +2030,9 @@ function checkPerkEligibility(perkId, character, ignoreRaceRestriction = false, 
           // Check if below racial maximum (can still gain the attribute)
           const racialMax = RACIAL_LIMITS[character.race]?.[attr]?.max || 10;
           if (gainAttributePerks.includes(perkId)) {
-            console.log(`  - Checking max for ${attr}: charAttr=${charAttr}, racialMax=${racialMax}`);
           }
           if (charAttr >= racialMax) {
             if (gainAttributePerks.includes(perkId)) {
-              console.log(`  - INELIGIBLE: ${attr} at max (${charAttr} >= ${racialMax})`);
             }
             return { 
               eligible: false, 
@@ -2134,7 +2125,6 @@ function checkPerkEligibility(perkId, character, ignoreRaceRestriction = false, 
   }
   
   if (gainAttributePerks.includes(perkId)) {
-    console.log(`  - ELIGIBLE for ${perkId}`);
   }
   
   if (gainAttributePerks.includes(perkId)) {
@@ -2157,7 +2147,6 @@ function getEligiblePerks(character) {
     const check = checkPerkEligibility(perkId, character);
     
     if (gainAttributePerks.includes(perkId)) {
-      console.log(`[getEligiblePerks] ${perkId}: eligible=${check.eligible}, reason="${check.reason}"`);
     }
     
     if (check.eligible) {
@@ -2165,7 +2154,6 @@ function getEligiblePerks(character) {
     }
   }
   
-  console.log('[getEligiblePerks] Final eligible perks:', eligible);
   return eligible;
 }
 
@@ -2521,9 +2509,6 @@ function recalculateSkillsWithNewAttributes(characterData) {
     }
   }
   
-  console.log('[recalculateSkillsWithNewAttributes] Skills recalculated');
-  console.log('Base skill differences:', baseDifferences);
-  console.log('New skill increases:', characterData.skillIncreases);
 }
 
 /**

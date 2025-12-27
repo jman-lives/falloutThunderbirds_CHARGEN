@@ -1,5 +1,35 @@
 function qs(id){return document.getElementById(id)}
 
+// Log character data from localStorage at page load
+function logCharacterFromStorage() {
+  const character = localStorage.getItem('falloutCharacter');
+  if (character) {
+    try {
+      const charData = JSON.parse(character);
+      console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', charData);
+    } catch (e) {
+      console.warn('Failed to parse character data from localStorage:', e);
+    }
+  } else {
+    console.log('%c[NO CHARACTER IN STORAGE]', 'color: #FF9800; font-weight: bold;');
+  }
+}
+
+// Log chargen start and set the flag
+function logChargenStart() {
+  console.log('%c[CHARGEN START - NAVIGATION TO ADVANCEMENT]', 'color: #FF9800; font-weight: bold;');
+  console.log('  Setting fromChargen = true');
+  localStorage.setItem('fromChargen', 'true');
+  console.log('  Clearing isLevelUpSession flag');
+  localStorage.removeItem('isLevelUpSession');
+  console.log('  Flags set:', {
+    fromChargen: localStorage.getItem('fromChargen'),
+    isLevelUpSession: localStorage.getItem('isLevelUpSession')
+  });
+  // Navigate to advancement page
+  window.location.href = 'advancement.html';
+}
+
 // RACIAL_LIMITS is defined in advancement.js
 const BASE_ATTRIBUTE_VALUE = 5;
 const CHARACTER_POINTS_POOL = 5;
@@ -179,6 +209,7 @@ function updateTraitSelectionDisplay() {
   updateAttributeDisplay();
   updateSkillDisplay();
   updateSecondaryStats();
+  renderAttributeButtons();
   renderOutput(getFormData());
 }
 
@@ -232,16 +263,70 @@ function updateAttributeDisplay() {
 }
 
 /**
+ * Check if adding a trait would violate racial attribute maximums
+ * @param {string} traitId - The trait ID to check
+ * @returns {boolean} True if trait can be safely added, false if it violates limits
+ */
+function canAddTraitWithoutViolatingLimits(traitId) {
+  const race = qs('race')?.value || 'Human';
+  const raceLimits = RACIAL_LIMITS[race] || RACIAL_LIMITS.Human;
+  
+  // Get current selected traits and add the new one
+  const selectedTraits = getSelectedTraits();
+  if (!selectedTraits.includes(traitId)) {
+    selectedTraits.push(traitId);
+  }
+  
+  // Get trait modifiers with the new trait included
+  const traitMods = calculateTraitAttributeModifiers(selectedTraits);
+  
+  // Check each attribute against racial limits
+  const attributes = ['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'];
+  for (const attr of attributes) {
+    const baseValue = Number(qs(attr)?.value) || BASE_ATTRIBUTE_VALUE;
+    const effectiveValue = baseValue + (traitMods[attr] || 0);
+    const limits = raceLimits[attr];
+    
+    // If effective value exceeds racial maximum, trait cannot be added
+    if (effectiveValue > limits.max) {
+      return false;
+    }
+  }
+  
+  return true;
+}
+
+/**
  * Handle trait checkbox change
  */
 function handleTraitChange(traitId) {
   const selectedTraits = getSelectedTraits();
+  const checkbox = document.querySelector(`input[data-trait="${traitId}"]`);
   
   // If trying to select more than MAX_TRAITS, prevent it
   if (selectedTraits.length > MAX_TRAITS) {
-    const checkbox = document.querySelector(`input[data-trait="${traitId}"]`);
     if (checkbox) {
       checkbox.checked = false;
+    }
+    return;
+  }
+  
+  // If checkbox is being checked, validate that traits won't exceed racial limits
+  if (checkbox && checkbox.checked) {
+    if (!canAddTraitWithoutViolatingLimits(traitId)) {
+      checkbox.checked = false;
+      const warningEl = qs('traits-warning');
+      if (warningEl) {
+        warningEl.textContent = '⚠️ This trait would push attributes beyond racial maximums';
+        warningEl.style.display = 'block';
+        // Auto-hide the warning after 4 seconds
+        setTimeout(() => {
+          if (warningEl.style.display === 'block') {
+            warningEl.style.display = 'none';
+          }
+        }, 4000);
+      }
+      return;
     }
   }
   
@@ -1422,13 +1507,12 @@ function randomizeCharacter(){
 }
 
 function getTimestamp() {
+  // Returns YYYY-MM-DD format for consistency across all screens
   const now = new Date();
   const year = now.getUTCFullYear();
   const month = String(now.getUTCMonth() + 1).padStart(2, '0');
   const day = String(now.getUTCDate()).padStart(2, '0');
-  const hours = String(now.getUTCHours()).padStart(2, '0');
-  const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-  return `${year}${month}${day}${hours}${minutes}`;
+  return `${year}-${month}-${day}`;
 }
 
 function downloadJSON(obj, filename){
@@ -1465,6 +1549,9 @@ function handleFileLoad(file){
 
 document.addEventListener('DOMContentLoaded', ()=>{
   try {
+    // Log character data from storage at page load
+    logCharacterFromStorage();
+    
     console.log('DOMContentLoaded fired, setting up event listeners');
     
     // Skip character creation UI setup if we're on the game page

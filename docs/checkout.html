@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Equipment Checkout</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .checkout-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 24px;
+      background: linear-gradient(180deg, #071026 0%, #08131a 100%);
+    }
+
+    .checkout-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .checkout-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0 0 8px 0;
+    }
+
+    .checkout-subtitle {
+      color: var(--muted);
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    .checkout-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .checkout-section {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #a78bfa;
+      margin: 0 0 16px 0;
+      border-bottom: 1px solid rgba(96, 165, 250, 0.3);
+      padding-bottom: 12px;
+    }
+
+    .items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .checkout-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      border-radius: 6px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-name {
+      font-weight: 600;
+      color: #a78bfa;
+      margin: 0 0 4px 0;
+    }
+
+    .item-details {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .item-quantity {
+      color: #60a5fa;
+      font-weight: 600;
+      margin: 0 12px;
+    }
+
+    .item-cost {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fbbf24;
+      font-family: 'Courier New', monospace;
+      white-space: nowrap;
+    }
+
+    .summary-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .summary-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .summary-label {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .summary-value {
+      font-weight: 600;
+      color: #a78bfa;
+      font-family: 'Courier New', monospace;
+    }
+
+    .summary-value.total {
+      font-size: 1.3rem;
+      color: #fbbf24;
+    }
+
+    .summary-value.remaining {
+      color: #34d399;
+    }
+
+    .summary-value.warning {
+      color: #ff7b7b;
+    }
+
+    .checkout-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .checkout-btn {
+      flex: 1;
+      min-width: 150px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .checkout-btn-confirm {
+      background: linear-gradient(135deg, #34d399, #6ee7b7);
+      color: #071026;
+      box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4);
+    }
+
+    .checkout-btn-confirm:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(52, 211, 153, 0.6);
+    }
+
+    .checkout-btn-back {
+      background: transparent;
+      color: #60a5fa;
+      border: 1px solid #60a5fa;
+    }
+
+    .checkout-btn-back:hover {
+      background: rgba(96, 165, 250, 0.1);
+    }
+
+    .checkout-msg {
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .checkout-msg-error {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid #ff7b7b;
+      color: #ff9999;
+    }
+
+    .checkout-msg-warning {
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid #fbbf24;
+      color: #fcd34d;
+    }
+
+    .empty-cart {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .empty-cart h2 {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .checkout-content {
+        grid-template-columns: 1fr;
+      }
+
+      .checkout-title {
+        font-size: 1.8rem;
+      }
+
+      .items-list {
+        max-height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="checkout-container">
+    <div class="checkout-header">
+      <h1 class="checkout-title">Equipment Checkout</h1>
+      <p class="checkout-subtitle">Review and confirm your equipment purchase</p>
+    </div>
+
+    <div id="message" class="checkout-msg" style="display: none;"></div>
+
+    <div class="checkout-content" id="checkout-content">
+      <div class="checkout-section">
+        <h2 class="section-title">Selected Equipment</h2>
+        <div class="items-list" id="items-list"></div>
+      </div>
+
+      <div class="checkout-section">
+        <h2 class="section-title">Order Summary</h2>
+        <div id="summary-content"></div>
+        <div class="checkout-actions">
+          <button class="checkout-btn checkout-btn-back" onclick="goBackToStore()">
+            ← Modify Selection
+          </button>
+          <button class="checkout-btn checkout-btn-confirm" onclick="confirmCheckout()">
+            Confirm Purchase
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let checkoutData = {
+      cart: {},
+      items: [],
+      budget: 1700,
+      character: null
+    };
+
+    async function loadCheckoutData() {
+      try {
+        // Load character data from localStorage
+        const characterJSON = localStorage.getItem('falloutCharacter');
+        if (characterJSON) {
+          try {
+            checkoutData.character = JSON.parse(characterJSON);
+          } catch (e) {
+            console.warn('Failed to parse character data from localStorage:', e);
+          }
+        }
+
+        // Get cart from session storage
+        const cartJSON = sessionStorage.getItem('storeCart');
+        if (!cartJSON) {
+          showMessage('No items in cart', 'error');
+          setTimeout(() => window.location.href = 'store.html', 2000);
+          return;
+        }
+
+        const cartData = JSON.parse(cartJSON);
+        checkoutData.cart = cartData.items;
+        checkoutData.budget = cartData.budgetUsed ? (cartData.budgetUsed + cartData.budgetRemaining) : 80000;
+
+        // Load store data to get full item details
+        const configRes = await fetch('prod-config.json');
+        const config = await configRes.json();
+        checkoutData.budget = config.storeCredit || checkoutData.budget;
+
+        // Load all equipment files to rebuild item list
+        const equipmentFiles = [
+          'equipment.md',
+          'armors.md',
+          'assault_rifles.md',
+          'machine_guns.md',
+          'melee_skill_weapons.md',
+          'pistols.md',
+          'primitive_missile_weapons.md',
+          'rifles.md',
+          'shotguns.md',
+          'submachine_guns.md',
+          'unarmed_skill_weapons.md'
+        ];
+
+        for (const file of equipmentFiles) {
+          try {
+            const equipRes = await fetch(`./equipment-instructions/${file}`);
+            if (equipRes.ok) {
+              const equipText = await equipRes.text();
+              parseEquipmentMarkdown(equipText);
+            }
+          } catch (error) {
+          }
+        }
+
+        renderCheckout();
+      } catch (error) {
+        showMessage('Error loading checkout data', 'error');
+      }
+    }
+
+    function parseEquipmentMarkdown(markdown) {
+      const lines = markdown.split('\n');
+      let currentItem = null;
+      let inCodeBlock = false;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        if (line.trim().startsWith('```')) {
+          inCodeBlock = !inCodeBlock;
+          continue;
+        }
+
+        const itemMatch = line.match(/^#{2,3}\s+(.+)$/);
+        if (itemMatch) {
+          if (currentItem && currentItem.name) {
+            checkoutData.items.push(currentItem);
+          }
+          currentItem = {
+            name: itemMatch[1].trim(),
+            value: 0,
+            weight: 0
+          };
+          continue;
+        }
+
+        if (currentItem && line.includes('Value:')) {
+          const valueMatch = line.match(/Value:\s*(\d+)/);
+          if (valueMatch) {
+            currentItem.value = parseInt(valueMatch[1]);
+          }
+          continue;
+        }
+
+        if (currentItem && (line.includes('Weight:') || line.includes('W:'))) {
+          const weightMatch = line.match(/(?:Weight|W):\s*([\d.]+)\s*lbs?\.?/);
+          if (weightMatch) {
+            currentItem.weight = parseFloat(weightMatch[1]);
+          }
+          continue;
+        }
+      }
+
+      if (currentItem && currentItem.name) {
+        checkoutData.items.push(currentItem);
+      }
+    }
+
+    function renderCheckout() {
+      const itemsList = document.getElementById('items-list');
+      const summaryContent = document.getElementById('summary-content');
+
+      if (Object.keys(checkoutData.cart).length === 0) {
+        document.getElementById('checkout-content').innerHTML = `
+          <div class="empty-cart">
+            <h2>Your cart is empty</h2>
+            <p>No equipment has been selected.</p>
+            <button class="checkout-btn checkout-btn-back" onclick="goBackToStore()">
+              Return to Store
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      let totalCost = 0;
+      let totalWeight = 0;
+
+      // Render items
+      itemsList.innerHTML = '';
+      Object.entries(checkoutData.cart).forEach(([itemName, quantity]) => {
+        const item = checkoutData.items.find(i => i.name === itemName);
+        if (item) {
+          const itemCost = item.value * quantity;
+          const itemWeight = item.weight * quantity;
+          totalCost += itemCost;
+          totalWeight += itemWeight;
+
+          const itemEl = document.createElement('div');
+          itemEl.className = 'checkout-item';
+          itemEl.innerHTML = `
+            <div class="item-info">
+              <p class="item-name">${item.name}</p>
+              <p class="item-details">${item.weight} lbs × ${quantity} = ${itemWeight.toFixed(1)} lbs</p>
+            </div>
+            <div class="item-quantity">×${quantity}</div>
+            <div class="item-cost">${itemCost.toLocaleString()}</div>
+          `;
+          itemsList.appendChild(itemEl);
+        }
+      });
+
+      // Render summary
+      const budgetRemaining = checkoutData.budget - totalCost;
+      const budgetWarning = budgetRemaining < 0 ? 'warning' : budgetRemaining < 5000 ? 'warning' : 'remaining';
+
+      summaryContent.innerHTML = `
+        <div class="summary-card">
+          <div class="summary-row">
+            <span class="summary-label">Items Count:</span>
+            <span class="summary-value">${Object.keys(checkoutData.cart).length}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Total Weight:</span>
+            <span class="summary-value">${totalWeight.toFixed(1)} lbs</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Total Cost:</span>
+            <span class="summary-value total">${totalCost.toLocaleString()}</span>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-row">
+            <span class="summary-label">Available Budget:</span>
+            <span class="summary-value">${checkoutData.budget.toLocaleString()}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Budget Used:</span>
+            <span class="summary-value">${totalCost.toLocaleString()}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Budget Remaining:</span>
+            <span class="summary-value ${budgetWarning}">${budgetRemaining.toLocaleString()}</span>
+          </div>
+        </div>
+
+        ${budgetRemaining < 0 ? `
+          <div class="checkout-msg checkout-msg-error">
+            Budget exceeded by ${Math.abs(budgetRemaining).toLocaleString()} credits
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function goBackToStore() {
+      window.location.href = 'store.html';
+    }
+
+    function confirmCheckout() {
+      // Calculate equipment data
+      const totalCost = Object.entries(checkoutData.cart).reduce((total, [itemName, qty]) => {
+        const item = checkoutData.items.find(i => i.name === itemName);
+        return total + (item ? item.value * qty : 0);
+      }, 0);
+
+      const totalWeight = Object.entries(checkoutData.cart).reduce((total, [itemName, qty]) => {
+        const item = checkoutData.items.find(i => i.name === itemName);
+        return total + (item ? item.weight * qty : 0);
+      }, 0);
+
+      const equipment = {
+        items: checkoutData.cart,
+        totalCost: totalCost,
+        totalWeight: totalWeight,
+        timestamp: new Date().toISOString()
+      };
+
+      // Ensure we have character data - load from localStorage if needed
+      let character = checkoutData.character;
+      if (!character) {
+        const storedChar = localStorage.getItem('falloutCharacter');
+        if (storedChar) {
+          character = JSON.parse(storedChar);
+          checkoutData.character = character;
+        }
+      }
+
+      // Update character with equipment and deduct cost
+      if (character) {
+        // Add equipment to character
+        character.equipment = equipment;
+        
+        // Initialize money field if it doesn't exist (default: 80,000 caps)
+        if (character.money === undefined) {
+          character.money = 0;
+        }
+        
+        // Deduct equipment cost from character's money
+        character.money -= totalCost;
+        
+        // Save updated character back to localStorage
+        localStorage.setItem('falloutCharacter', JSON.stringify(character));
+        
+        console.log('%c[CHECKOUT COMPLETE]', 'color: #4CAF50; font-weight: bold;', {
+          character: character,
+          equipment: equipment,
+          totalCost: totalCost
+        });
+      } else {
+        console.warn('%c[WARNING: No character data found]', 'color: #ff9800; font-weight: bold;');
+      }
+
+      // Store equipment selection in session storage for review page
+      sessionStorage.setItem('equipmentSelection', JSON.stringify(equipment));
+      
+      // Store character data in session storage for review page
+      if (character) {
+        sessionStorage.setItem('character', JSON.stringify(character));
+      }
+      
+      showMessage('Equipment purchased successfully!', 'success');
+      setTimeout(() => {
+        window.location.href = 'review.html';
+      }, 1500);
+    }
+
+    function showMessage(text, type) {
+      const msgEl = document.getElementById('message');
+      msgEl.textContent = text;
+      msgEl.className = `checkout-msg checkout-msg-${type}`;
+      msgEl.style.display = 'block';
+
+      if (type !== 'error') {
+        setTimeout(() => {
+          msgEl.style.display = 'none';
+        }, 4000);
+      }
+    }
+
+    // Load data on page load
+    window.addEventListener('load', loadCheckoutData);
+  </script>
+</body>
+</html>
