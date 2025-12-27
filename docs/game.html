@@ -2103,7 +2103,10 @@
             draggable="true" 
             ondragstart="handleDragStart(event, ${item.id})"
             ondragend="handleDragEnd(event)"
-            style="padding: 12px; background-color: #333; color: #FFD700; border: 1px solid #666; border-radius: 4px; cursor: move; font-weight: bold; transition: all 0.2s ease; user-select: none;"
+            ontouchstart="handleTouchStart(event, ${item.id})"
+            ontouchend="handleTouchEnd(event)"
+            ontouchmove="handleTouchMove(event)"
+            style="padding: 12px; background-color: #333; color: #FFD700; border: 1px solid #666; border-radius: 4px; cursor: move; font-weight: bold; transition: all 0.2s ease; user-select: none; touch-action: none;"
             onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#FF9800';"
             onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#666';"
           >
@@ -2159,6 +2162,80 @@
         armorDisplay.style.color = '#999';
         armorRemove.style.display = 'none';
       }
+    }
+
+    let touchItem = null;
+    let touchStartElement = null;
+
+    function handleTouchStart(event, itemIndex) {
+      const item = allAvailableItems.find(i => i.id === itemIndex);
+      if (item) {
+        touchItem = item;
+        touchStartElement = event.target;
+        event.target.style.opacity = '0.5';
+        event.target.style.backgroundColor = '#555';
+      }
+    }
+
+    function handleTouchMove(event) {
+      // Prevent default scrolling while dragging
+      event.preventDefault();
+    }
+
+    function handleTouchEnd(event) {
+      if (!touchItem || !touchStartElement) return;
+      
+      touchStartElement.style.opacity = '1';
+      touchStartElement.style.backgroundColor = '#333';
+      
+      // Get the touch end position
+      const touch = event.changedTouches[0];
+      const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+      const dropZone = elementBelow?.closest('[id^="drop-zone-"]');
+      
+      if (dropZone) {
+        // Determine which slot this is
+        const slotMap = {
+          'drop-zone-1': 0,
+          'drop-zone-2': 1,
+          'drop-zone-armor': 2
+        };
+        const slotIndex = slotMap[dropZone.id];
+        
+        if (slotIndex !== undefined) {
+          // Check armor slot restriction
+          if (slotIndex === 2) {
+            const itemStats = ITEM_STATS[touchItem.name];
+            if (!itemStats || itemStats.type !== 'Armor') {
+              alert('Only armor items can go in the armor slot.');
+              touchItem = null;
+              touchStartElement = null;
+              return;
+            }
+          }
+          
+          // Check if item is already in another slot
+          for (let i = 0; i < tempSelectedItems.length; i++) {
+            if (i !== slotIndex && tempSelectedItems[i] && tempSelectedItems[i].id === touchItem.id) {
+              touchItem = null;
+              touchStartElement = null;
+              return;
+            }
+          }
+          
+          // Assign item to slot
+          tempSelectedItems[slotIndex] = touchItem;
+          populateAvailableItems();
+          updateDropZoneDisplays();
+          
+          // Reset drop zone styling
+          dropZone.style.backgroundColor = '#2a2a2a';
+          dropZone.style.borderColor = slotIndex === 2 ? '#9C27B0' : '#FF9800';
+        }
+      }
+      
+      touchItem = null;
+      touchStartElement = null;
     }
 
     function handleDragStart(event, itemIndex) {
