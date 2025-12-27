@@ -436,33 +436,65 @@
     // Equipment data structure
     let storeData = {
       items: [],
-      budget: 80000,
+      budget: 1700,
       cart: {},
-      selectedType: null
+      selectedType: null,
+      character: null
     };
+
+    // Load character data from localStorage
+    function loadCharacter() {
+      const stored = localStorage.getItem('falloutCharacter');
+      if (stored) {
+        try {
+          const character = JSON.parse(stored);
+          console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', character);
+          console.log('%c[CHAR NAME: ' + (character.name || 'UNKNOWN') + ']', 'color: #4CAF50;');
+          storeData.character = character;
+          return character;
+        } catch (e) {
+          console.error('%c[ERROR PARSING CHARACTER DATA]', 'color: #ff0000; font-weight: bold;', e);
+          return null;
+        }
+      }
+      console.warn('%c[NO CHARACTER DATA IN STORAGE]', 'color: #ff9800; font-weight: bold;');
+      return null;
+    }
 
     // Map files to types and categories
     const fileTypeMap = {
-      'equipment.md': { primary: 'Equipment', secondary: null, category: null },
-      'armors.md': { primary: 'Armor', secondary: null, category: null },
-      'assault_rifles.md': { primary: 'Assault Rifle', secondary: 'Guns', category: 'Rifles' },
-      'machine_guns.md': { primary: 'Machine Gun', secondary: 'Guns', category: 'Guns' },
-      'melee_skill_weapons.md': { primary: 'Melee Weapon', secondary: null, category: null },
-      'pistols.md': { primary: 'Pistol', secondary: 'Guns', category: 'Pistols' },
-      'primitive_missile_weapons.md': { primary: 'Missile Weapon', secondary: null, category: null },
-      'rifles.md': { primary: 'Rifle', secondary: 'Guns', category: 'Rifles' },
-      'shotguns.md': { primary: 'Shotgun', secondary: 'Guns', category: 'Shotguns' },
-      'submachine_guns.md': { primary: 'Submachine Gun', secondary: 'Guns', category: 'Submachine Guns' },
-      'unarmed_skill_weapons.md': { primary: 'Unarmed Weapon', secondary: null, category: null }
+      'equipment.md': { primary: 'Equipment', tags: [] },
+      'armors.md': { primary: 'Armor', tags: [] },
+      'assault_rifles.md': { primary: 'Assault Rifle', tags: ['Weapon', 'Guns', 'Rifle'] },
+      'machine_guns.md': { primary: 'Machine Gun', tags: ['Weapon', 'Guns'] },
+      'melee_skill_weapons.md': { primary: 'Melee Weapon', tags: ['Weapon', 'Melee'] },
+      'pistols.md': { primary: 'Pistol', tags: ['Weapon', 'Guns', 'Pistol'] },
+      'primitive_missile_weapons.md': { primary: 'Missile Weapon', tags: ['Weapon', 'Missile'] },
+      'rifles.md': { primary: 'Rifle', tags: ['Weapon', 'Guns', 'Rifle'] },
+      'shotguns.md': { primary: 'Shotgun', tags: ['Weapon', 'Guns', 'Shotgun'] },
+      'submachine_guns.md': { primary: 'Submachine Gun', tags: ['Weapon', 'Guns'] },
+      'unarmed_skill_weapons.md': { primary: 'Unarmed Weapon', tags: ['Weapon', 'Unarmed'] }
     };
 
     // Load configuration and equipment data
     async function loadStoreData() {
       try {
+        // Load character first
+        const character = loadCharacter();
+        if (character) {
+          console.log('%c[CHARACTER LOADED IN STORE]', 'color: #00ff00; font-weight: bold;');
+          console.log('  Name:', character.name);
+          console.log('  Level:', character.level);
+          console.log('  Experience:', character.experience);
+        } else {
+          console.warn('%c[WARNING: NO CHARACTER DATA]', 'color: #ff6600; font-weight: bold;');
+        }
+
         // Load config
         const configRes = await fetch('prod-config.json');
         const config = await configRes.json();
         storeData.budget = config.storeCredit || 80000;
+        console.log('%c[STORE BUDGET LOADED: ' + storeData.budget + ']', 'color: #ffd700;');
         updateBudgetDisplay();
 
         // Load all equipment markdown files
@@ -482,21 +514,19 @@
 
         for (const file of equipmentFiles) {
           try {
-            const equipRes = await fetch(`../equipment%20instructions/${file}`);
+            const equipRes = await fetch(`./equipment-instructions/${file}`);
             if (equipRes.ok) {
               const equipText = await equipRes.text();
               const typeInfo = fileTypeMap[file];
               parseEquipmentMarkdown(equipText, typeInfo);
             }
           } catch (error) {
-            console.warn(`Failed to load ${file}:`, error);
           }
         }
 
         initializeTypeFilters();
         renderStore();
       } catch (error) {
-        console.error('Error loading store data:', error);
         showMessage('Failed to load store data', 'error');
       }
     }
@@ -504,12 +534,24 @@
     function parseEquipmentMarkdown(markdown, typeInfo) {
       const lines = markdown.split('\n');
       let currentItem = null;
+      let inCodeBlock = false;
 
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
 
-        // Match item header (### Item Name)
-        const itemMatch = line.match(/^###\s+(.+)$/);
+        // Track code block boundaries
+        if (line.trim().startsWith('```')) {
+          inCodeBlock = !inCodeBlock;
+          continue;
+        }
+
+        // Skip content outside code blocks for weapon data
+        if (!inCodeBlock && line.match(/^```/)) {
+          continue;
+        }
+
+        // Match item header (## or ### Item Name)
+        const itemMatch = line.match(/^#{2,3}\s+(.+)$/);
         if (itemMatch) {
           if (currentItem && currentItem.name) {
             storeData.items.push(currentItem);
@@ -520,14 +562,8 @@
             weight: 0,
             description: '',
             type: typeInfo.primary,
-            tags: []
+            tags: typeInfo.tags ? [...typeInfo.tags] : []
           };
-          if (typeInfo.secondary) {
-            currentItem.tags.push(typeInfo.secondary);
-          }
-          if (typeInfo.category) {
-            currentItem.tags.push(typeInfo.category);
-          }
           continue;
         }
 
@@ -540,23 +576,25 @@
           continue;
         }
 
-        // Match weight
-        if (currentItem && line.match(/^W:\s*(\d+)/)) {
-          const weightMatch = line.match(/W:\s*([\d.]+)\s*lbs?/);
+        // Match weight (handles both "Weight: X lbs" and "W: X lbs.")
+        if (currentItem && (line.includes('Weight:') || line.includes('W:'))) {
+          const weightMatch = line.match(/(?:Weight|W):\s*([\d.]+)\s*lbs?\.?/);
           if (weightMatch) {
             currentItem.weight = parseFloat(weightMatch[1]);
           }
           continue;
         }
 
-        // Collect description (non-empty lines that don't start with ###, Value:, or W:)
+        // Collect description (non-empty lines that don't start with headers, Value:, Weight:, W:, or contain special markers)
         if (
           currentItem &&
           line.trim() &&
           !line.match(/^#+/) &&
           !line.includes('Value:') &&
-          !line.match(/^W:/) &&
-          !line.match(/^.*\*\*/)
+          !line.includes('Weight:') &&
+          !line.match(/^W:\s/) &&
+          !line.match(/^.*\*\*/) &&
+          !line.trim().startsWith('```')
         ) {
           currentItem.description += (currentItem.description ? ' ' : '') + line.trim();
         }
@@ -785,9 +823,9 @@
       sessionStorage.setItem('storeCart', JSON.stringify(cartSummary));
       showMessage('Proceeding to checkout...', 'success');
 
-      // Navigate to next page (can be customized based on your flow)
+      // Navigate to checkout page
       setTimeout(() => {
-        window.location.href = 'index.html'; // Change this to the appropriate next page
+        window.location.href = 'checkout.html';
       }, 1000);
     });
 

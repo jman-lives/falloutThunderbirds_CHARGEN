@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Character Review</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .review-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 24px;
+      background: linear-gradient(180deg, #071026 0%, #08131a 100%);
+    }
+
+    .review-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .review-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0 0 8px 0;
+    }
+
+    .review-subtitle {
+      color: var(--muted);
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    .review-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      flex: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      overflow-y: auto;
+      padding-bottom: 20px;
+    }
+
+    .review-section {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #a78bfa;
+      margin: 0 0 16px 0;
+      border-bottom: 1px solid rgba(96, 165, 250, 0.3);
+      padding-bottom: 12px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: #a78bfa;
+      font-family: 'Courier New', monospace;
+    }
+
+    .stat-value.highlight {
+      color: #fbbf24;
+      font-size: 1.1rem;
+    }
+
+    .items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .item-entry {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      color: #a78bfa;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .item-name {
+      flex: 1;
+    }
+
+    .item-qty {
+      color: #60a5fa;
+      margin-left: 12px;
+      font-weight: 600;
+    }
+
+    .review-footer {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .review-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      min-width: 180px;
+    }
+
+    .review-btn-save {
+      background: linear-gradient(135deg, #34d399, #6ee7b7);
+      color: #071026;
+      box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4);
+    }
+
+    .review-btn-save:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(52, 211, 153, 0.6);
+    }
+
+    .review-btn-restart {
+      background: transparent;
+      color: #60a5fa;
+      border: 1px solid #60a5fa;
+    }
+
+    .review-btn-restart:hover {
+      background: rgba(96, 165, 250, 0.1);
+    }
+
+    .review-msg {
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .review-msg-success {
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid #34d399;
+      color: #6ee7b7;
+    }
+
+    .review-msg-info {
+      background: rgba(96, 165, 250, 0.1);
+      border: 1px solid #60a5fa;
+      color: #93c5fd;
+    }
+
+    @media (max-width: 768px) {
+      .review-title {
+        font-size: 1.8rem;
+      }
+
+      .review-content {
+        grid-template-columns: 1fr;
+      }
+
+      .review-btn {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="review-container">
+    <div class="review-header">
+      <h1 class="review-title">Character Review</h1>
+      <p class="review-subtitle">Review your character before saving</p>
+    </div>
+
+    <div id="message" class="review-msg" style="display: none;"></div>
+
+    <div class="review-content" id="review-content"></div>
+
+    <div class="review-footer">
+      <button class="review-btn review-btn-save" onclick="saveCharacter()">
+        💾 Save Character
+      </button>
+      <button class="review-btn review-btn-restart" onclick="startOver()">
+        🔄 Start Over
+      </button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="advancement.js"></script>
+  <script>
+    let characterData = {};
+
+    async function loadCharacterData() {
+      try {
+        // IMPORTANT: Load from localStorage FIRST (has the most recent advancement data)
+        // Only fall back to sessionStorage if localStorage is completely empty
+        let charJSON = localStorage.getItem('falloutCharacter');
+        let source = 'localStorage (advancement data)';
+        
+        // Only use sessionStorage as last resort
+        if (!charJSON) {
+          charJSON = sessionStorage.getItem('character');
+          source = 'sessionStorage (chargen data)';
+        }
+
+        if (!charJSON) {
+          showMessage('No character data found. Please create a character first.', 'info');
+          return;
+        }
+
+        characterData = JSON.parse(charJSON);
+        console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', { source, data: characterData });
+
+        // Get equipment if it exists (from sessionStorage or from character object)
+        let equipmentJSON = sessionStorage.getItem('equipmentSelection');
+        if (!equipmentJSON && characterData.equipment) {
+          equipmentJSON = JSON.stringify(characterData.equipment);
+        }
+        
+        if (equipmentJSON) {
+          characterData.equipment = JSON.parse(equipmentJSON);
+        }
+
+        console.log('%c[BEFORE RECALCULATE]', 'color: #FF9800; font-weight: bold;', { 
+          level: characterData.level,
+          totalXP: characterData.totalXP
+        });
+
+        // Recalculate stats based on current character data
+        recalculateStats();
+
+        console.log('%c[AFTER RECALCULATE]', 'color: #FF9800; font-weight: bold;', { 
+          level: characterData.level,
+          totalXP: characterData.totalXP
+        });
+
+        renderCharacterReview();
+      } catch (error) {
+        console.error('%c[ERROR LOADING CHARACTER]', 'color: #ff0000; font-weight: bold;', error);
+        showMessage('Error loading character data: ' + error.message, 'error');
+      }
+    }
+
+    /**
+     * Recalculate all stats/skills the same way advancement.js does
+     */
+    function recalculateStats() {
+      if (!characterData.attributes) return;
+
+      const race = characterData.race || 'Human';
+      const selectedTraits = characterData.selectedTraits || [];
+      const perkEffects = characterData.perkEffects || {};
+      
+      // CRITICAL: Calculate level from totalXP, don't use the stored level
+      // The stored level might be stale, but XP is the source of truth
+      const totalXP = characterData.totalXP || 0;
+      const xpProgress = getXPProgress(totalXP);
+      const level = xpProgress.level;
+      
+      // Update characterData with the correct calculated level
+      characterData.level = level;
+
+      // Get base attributes
+      let attributes = {
+        strength: characterData.attributes.strength || 5,
+        perception: characterData.attributes.perception || 5,
+        endurance: characterData.attributes.endurance || 5,
+        charisma: characterData.attributes.charisma || 5,
+        intelligence: characterData.attributes.intelligence || 5,
+        agility: characterData.attributes.agility || 5,
+        luck: characterData.attributes.luck || 5
+      };
+
+      // Apply trait modifiers - exactly like advancement.js does
+      const effectiveAttributes = getEffectiveAttributes(attributes, selectedTraits);
+
+      // Apply perk bonuses - exactly like advancement.js does
+      const attributesWithPerks = getAttributesWithPerkBonuses(effectiveAttributes, perkEffects);
+
+      // Calculate secondary stats using effective attributes
+      const calculatedStats = calculateSecondaryStats(attributesWithPerks, race, selectedTraits);
+
+      // Update HP based on level - use advancement.js function if available
+      if (typeof calculateTotalHP === 'function') {
+        calculatedStats.Hit_Points = calculateTotalHP(level, attributesWithPerks);
+      } else {
+        // Fallback calculation
+        const str = attributesWithPerks.strength || 5;
+        const end = attributesWithPerks.endurance || 5;
+        calculatedStats.Hit_Points = calculateTotalHP(level, { strength: str, endurance: end });
+      }
+
+      // Clamp resistances to 0-100%
+      ['Poison_Resist', 'Radiation_Resist', 'Gas_Resist', 'Electricity_Resist'].forEach(resist => {
+        if (calculatedStats[resist] !== undefined) {
+          calculatedStats[resist] = Math.max(0, Math.min(100, calculatedStats[resist]));
+        }
+      });
+
+      // Recalculate skills with all increases
+      const tagSkills = characterData.tagSkills || {};
+      const skillIncreases = characterData.skillIncreases || {};
+      const finalSkills = calculateFinalSkills(attributesWithPerks, tagSkills, selectedTraits);
+      
+      // Add skill increases from leveling
+      const skillsWithIncreases = { ...finalSkills };
+      Object.entries(skillIncreases).forEach(([skill, increase]) => {
+        if (skillsWithIncreases[skill] !== undefined) {
+          skillsWithIncreases[skill] += increase;
+        }
+      });
+
+      // Update character data
+      characterData.stats = calculatedStats;
+      characterData.skills = skillsWithIncreases;
+      characterData.attributes = attributes;
+      // IMPORTANT: Preserve the original level - don't lose it during recalculation
+      // The level comes from XP and should not be recalculated here
+      // characterData.level is already set from localStorage and should stay intact
+
+      console.log('%c[STATS RECALCULATED]', 'color: #4CAF50; font-weight: bold;', {
+        effectiveAttributes,
+        attributesWithPerks,
+        stats: calculatedStats,
+        skills: skillsWithIncreases,
+        level: characterData.level
+      });
+    }
+
+    /**
+     * Calculate total HP at a given level
+     */
+    function calculateTotalHP(currentLevel, attributes) {
+      const baseHP = 15;
+      const endurance = attributes.endurance || 5;
+      
+      let totalHP = baseHP;
+      for (let i = 2; i <= currentLevel; i++) {
+        totalHP += calculateHPGain(endurance);
+      }
+      
+      return totalHP;
+    }
+
+    /**
+     * Calculate HP gain per level based on endurance
+     */
+    function calculateHPGain(end) {
+      const base = 2;
+      const bonus = Math.floor((end - 1) / 2);
+      return base + bonus;
+    }
+
+    function renderCharacterReview() {
+      const reviewContent = document.getElementById('review-content');
+      reviewContent.innerHTML = '';
+
+      // Basic Info
+      const basicInfo = document.createElement('div');
+      basicInfo.className = 'review-section';
+      basicInfo.innerHTML = `
+        <h2 class="section-title">Character Information</h2>
+        <div class="stat-row">
+          <span class="stat-label">Name:</span>
+          <span class="stat-value highlight">${characterData.name || 'N/A'}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Player:</span>
+          <span class="stat-value">${characterData.player || 'N/A'}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Race:</span>
+          <span class="stat-value">${characterData.race || 'N/A'}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Gender:</span>
+          <span class="stat-value">${characterData.gender || 'N/A'}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Age:</span>
+          <span class="stat-value">${characterData.age || 'N/A'}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Level:</span>
+          <span class="stat-value highlight">${characterData.level || 1}</span>
+        </div>
+      `;
+      reviewContent.appendChild(basicInfo);
+
+      // Attributes
+      if (characterData.attributes) {
+        const attributesSection = document.createElement('div');
+        attributesSection.className = 'review-section';
+        attributesSection.innerHTML = `<h2 class="section-title">Attributes</h2>`;
+        const statsList = document.createElement('div');
+        Object.entries(characterData.attributes).forEach(([attr, value]) => {
+          const row = document.createElement('div');
+          row.className = 'stat-row';
+          row.innerHTML = `
+            <span class="stat-label">${attr.charAt(0).toUpperCase() + attr.slice(1)}</span>
+            <span class="stat-value">${value}</span>
+          `;
+          statsList.appendChild(row);
+        });
+        attributesSection.appendChild(statsList);
+        reviewContent.appendChild(attributesSection);
+      }
+
+      // Skills with level-up increases
+      if (characterData.skills) {
+        const skillsSection = document.createElement('div');
+        skillsSection.className = 'review-section';
+        skillsSection.innerHTML = `<h2 class="section-title">Skills</h2>`;
+        const skillsList = document.createElement('div');
+        const tagSkills = characterData.tagSkills || {};
+        const skillIncreases = characterData.skillIncreases || {};
+        
+        Object.entries(characterData.skills).forEach(([skill, value]) => {
+          const isTag = tagSkills[skill] ? ' ★' : '';
+          const increase = skillIncreases[skill] || 0;
+          const skillLabel = skill.replace(/_/g, ' ').charAt(0).toUpperCase() + skill.replace(/_/g, ' ').slice(1);
+          
+          const row = document.createElement('div');
+          row.className = 'stat-row';
+          let html = `
+            <span class="stat-label">${skillLabel}${isTag}</span>
+            <span class="stat-value">${Math.round(value)}`;
+          
+          // Show skill increase notation if there are increases
+          if (increase > 0) {
+            html += ` <span style="color: #6ee7b7; font-size: 0.85em;">(+${increase})</span>`;
+          }
+          
+          html += `</span>`;
+          row.innerHTML = html;
+          skillsList.appendChild(row);
+        });
+        skillsSection.appendChild(skillsList);
+        reviewContent.appendChild(skillsSection);
+      }
+
+      // Stats
+      if (characterData.stats) {
+        const statsSection = document.createElement('div');
+        statsSection.className = 'review-section';
+        statsSection.innerHTML = `<h2 class="section-title">Stats</h2>`;
+        const statsList = document.createElement('div');
+        Object.entries(characterData.stats).forEach(([stat, value]) => {
+          if (typeof value === 'object') {
+            const subRow = document.createElement('div');
+            subRow.className = 'stat-row';
+            subRow.innerHTML = `<span class="stat-label" style="font-weight: 600;">${stat}</span>`;
+            statsList.appendChild(subRow);
+            Object.entries(value).forEach(([subStat, subValue]) => {
+              const subStatRow = document.createElement('div');
+              subStatRow.className = 'stat-row';
+              subStatRow.style.paddingLeft = '16px';
+              subStatRow.innerHTML = `
+                <span class="stat-label">${subStat}</span>
+                <span class="stat-value">${subValue}</span>
+              `;
+              statsList.appendChild(subStatRow);
+            });
+          } else {
+            const row = document.createElement('div');
+            row.className = 'stat-row';
+            row.innerHTML = `
+              <span class="stat-label">${stat.replace(/_/g, ' ')}</span>
+              <span class="stat-value">${value}</span>
+            `;
+            statsList.appendChild(row);
+          }
+        });
+        statsSection.appendChild(statsList);
+        reviewContent.appendChild(statsSection);
+      }
+
+      // Equipment
+      if (characterData.equipment && Object.keys(characterData.equipment.items).length > 0) {
+        const equipmentSection = document.createElement('div');
+        equipmentSection.className = 'review-section';
+        equipmentSection.innerHTML = `
+          <h2 class="section-title">Equipment</h2>
+          <div class="items-list" id="equipment-list"></div>
+          <div class="stat-row" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+            <span class="stat-label">Total Cost:</span>
+            <span class="stat-value highlight">${characterData.equipment.totalCost.toLocaleString()}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Total Weight:</span>
+            <span class="stat-value">${characterData.equipment.totalWeight.toFixed(1)} lbs</span>
+          </div>
+        `;
+        reviewContent.appendChild(equipmentSection);
+
+        const equipmentList = equipmentSection.querySelector('#equipment-list');
+        Object.entries(characterData.equipment.items).forEach(([itemName, qty]) => {
+          const item = document.createElement('div');
+          item.className = 'item-entry';
+          item.innerHTML = `
+            <span class="item-name">${itemName}</span>
+            <span class="item-qty">×${qty}</span>
+          `;
+          equipmentList.appendChild(item);
+        });
+      }
+
+      // Perks
+      if (characterData.selectedPerks && characterData.selectedPerks.length > 0) {
+        const perksSection = document.createElement('div');
+        perksSection.className = 'review-section';
+        perksSection.innerHTML = `<h2 class="section-title">Perks</h2>`;
+        const perksList = document.createElement('div');
+        characterData.selectedPerks.forEach(perk => {
+          const perkItem = document.createElement('div');
+          perkItem.className = 'item-entry';
+          perkItem.innerHTML = `
+            <span class="item-name">${perk.id.replace(/_/g, ' ').charAt(0).toUpperCase() + perk.id.replace(/_/g, ' ').slice(1)}</span>
+            <span class="item-qty">Rank ${perk.rank}</span>
+          `;
+          perksList.appendChild(perkItem);
+        });
+        perksSection.appendChild(perksList);
+        reviewContent.appendChild(perksSection);
+      }
+
+      // Traits
+      if (characterData.selectedTraits && characterData.selectedTraits.length > 0) {
+        const traitsSection = document.createElement('div');
+        traitsSection.className = 'review-section';
+        traitsSection.innerHTML = `<h2 class="section-title">Traits</h2>`;
+        const traitsList = document.createElement('div');
+        characterData.selectedTraits.forEach(trait => {
+          const traitItem = document.createElement('div');
+          traitItem.className = 'item-entry';
+          traitItem.innerHTML = `<span class="item-name">${trait.replace(/_/g, ' ').charAt(0).toUpperCase() + trait.replace(/_/g, ' ').slice(1)}</span>`;
+          traitsList.appendChild(traitItem);
+        });
+        traitsSection.appendChild(traitsList);
+        reviewContent.appendChild(traitsSection);
+      }
+    }
+
+    function saveCharacter() {
+      try {
+        // Create a complete character sheet JSON with all data
+        const characterSheet = {
+          // Include all character data
+          player: characterData.player || '',
+          name: characterData.name || '',
+          race: characterData.race || '',
+          age: characterData.age || '',
+          gender: characterData.gender || '',
+          attributes: characterData.attributes || {},
+          tagSkills: characterData.tagSkills || {},
+          skills: characterData.skills || {},
+          level: characterData.level || 1,
+          totalXP: characterData.totalXP || 0,
+          selectedPerks: characterData.selectedPerks || [],
+          stats: characterData.stats || {},
+          notes: characterData.notes || null,
+          selectedTraits: characterData.selectedTraits || [],
+          createdAt: characterData.createdAt || new Date().toISOString(),
+          equipment: characterData.equipment || null,
+          money: characterData.money !== undefined ? characterData.money : 80000,
+          skillIncreases: characterData.skillIncreases || {},
+          skillPointsSpent: characterData.skillPointsSpent || {},
+          skillsConfirmed: characterData.skillsConfirmed || false,
+          perksConfirmed: characterData.perksConfirmed || false,
+          perkEffects: characterData.perkEffects || {},
+          // Add metadata
+          savedAt: new Date().toISOString(),
+          version: '1.0'
+        };
+
+        console.log('%c[SAVING CHARACTER]', 'color: #4CAF50; font-weight: bold;', characterSheet);
+
+        // Generate filename - same format as advancement page for consistency
+        const charName = characterData.name || 'character';
+        const dateStamp = new Date().toISOString().split('T')[0];
+        const filename = `${charName.toLowerCase().replace(/\s+/g, '_')}_${dateStamp}.json`;
+
+        // Create blob and download
+        const blob = new Blob([JSON.stringify(characterSheet, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        showMessage(`Character saved as ${filename}`, 'success');
+      } catch (error) {
+        console.error('%c[ERROR SAVING CHARACTER]', 'color: #ff0000; font-weight: bold;', error);
+        showMessage('Error saving character: ' + error.message, 'error');
+      }
+    }
+
+    function startOver() {
+      if (confirm('Are you sure you want to start over? All progress will be lost.')) {
+        sessionStorage.clear();
+        window.location.href = 'index.html';
+      }
+    }
+
+    function showMessage(text, type) {
+      const msgEl = document.getElementById('message');
+      msgEl.textContent = text;
+      msgEl.className = `review-msg review-msg-${type}`;
+      msgEl.style.display = 'block';
+
+      if (type === 'success') {
+        setTimeout(() => {
+          msgEl.style.display = 'none';
+        }, 4000);
+      }
+    }
+
+    // Load data on page load
+    window.addEventListener('load', loadCharacterData);
+  </script>
+</body>
+</html>

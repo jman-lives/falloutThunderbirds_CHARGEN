@@ -94,6 +94,130 @@
       text-decoration: underline;
     }
 
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      border: 2px solid #8b5cf6;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+      padding-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: #a78bfa;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+
+    .modal-close:hover {
+      color: #8b5cf6;
+    }
+
+    .package-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .package-item {
+      padding: 16px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .package-item:hover {
+      background: rgba(139, 92, 246, 0.2);
+      border-color: #8b5cf6;
+      transform: translateX(4px);
+    }
+
+    .package-name {
+      font-weight: 600;
+      color: #a78bfa;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    .package-description {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
     @media (max-width: 640px) {
       .equipment-title {
         font-size: 2rem;
@@ -122,9 +246,9 @@
         <button type="button" id="select-package-btn" class="equipment-btn equipment-btn-primary">
           📦 Select Package
         </button>
-        <!-- <button type="button" id="go-store-btn" class="equipment-btn equipment-btn-secondary">
+        <button type="button" id="go-store-btn" class="equipment-btn equipment-btn-secondary">
           🏪 Go To Store
-        </button> -->
+        </button>
       </div>
 
       <div class="equipment-footer">
@@ -133,11 +257,89 @@
     </div>
   </main>
 
+  <!-- Package Selection Modal -->
+  <div id="package-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Select Equipment Package</h2>
+        <button type="button" class="modal-close" id="close-modal">&times;</button>
+      </div>
+      <div class="package-list" id="package-list">
+        <div class="package-item" data-package="survivor">
+          <div class="package-name">🛡️ Survivor Package</div>
+          <div class="package-description">Basic armor, a 10mm pistol, and essential supplies for survival.</div>
+        </div>
+        <div class="package-item" data-package="soldier">
+          <div class="package-name">⚔️ Soldier Package</div>
+          <div class="package-description">Combat armor, rifle, and ammo for the experienced fighter.</div>
+        </div>
+        <div class="package-item" data-package="scavenger">
+          <div class="package-name">🎒 Scavenger Package</div>
+          <div class="package-description">Light armor, diverse weapons, and tools for exploration.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // Load character data from localStorage
+    function loadCharacter() {
+      const stored = localStorage.getItem('falloutCharacter');
+      if (stored) {
+        try {
+          const character = JSON.parse(stored);
+          console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', character);
+          return character;
+        } catch (e) {
+          return null;
+        }
+      } else {
+        console.log('%c[NO CHARACTER IN STORAGE]', 'color: #FF9800; font-weight: bold;');
+      }
+      return null;
+    }
+
+    // Initialize page
+    window.addEventListener('load', () => {
+      const character = loadCharacter();
+      if (!character) {
+        alert('No character data found. Please create a character first.');
+        window.location.href = 'chargen.html';
+        return;
+      }
+      // Character is loaded and available for equipment selection
+    });
+
+    // Modal functionality
+    const modal = document.getElementById('package-modal');
+    const closeBtn = document.getElementById('close-modal');
+    const packageItems = document.querySelectorAll('.package-item');
+
     document.getElementById('select-package-btn').addEventListener('click', () => {
-      // TODO: Implement select package functionality
-      console.log('Select Package clicked');
-      // This could navigate to a package selection page or show a modal
+      modal.classList.add('active');
+    });
+
+    closeBtn.addEventListener('click', () => {
+      modal.classList.remove('active');
+    });
+
+    // Close modal when clicking outside of it
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        modal.classList.remove('active');
+      }
+    });
+
+    // Handle package selection
+    packageItems.forEach((item) => {
+      item.addEventListener('click', () => {
+        const packageType = item.getAttribute('data-package');
+        console.log('%c[PACKAGE SELECTED]', 'color: #4CAF50; font-weight: bold;', packageType);
+        
+        // TODO: Apply the selected package to character
+        // For now, just close the modal
+        modal.classList.remove('active');
+      });
     });
 
     document.getElementById('go-store-btn').addEventListener('click', () => {

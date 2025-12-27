@@ -1,5 +1,5 @@
 {
-    "levelsForchargen": 7,
-    "levelsForLevelUp": 1,
-    "storeCredit": 80000
+    "chargenMaxLevel": 4,
+    "levelupMaxLevelIncrement": 1,
+    "storeCredit": 1700
 }
