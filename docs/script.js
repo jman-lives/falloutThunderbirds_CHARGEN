@@ -607,7 +607,7 @@ function getFormData(){
   const effectiveAttributes = getEffectiveAttributes(attributes, selectedTraits);
 
   return {
-    player: qs('player').value||null,
+    player: (qs('player').value && qs('player').value.trim()) || '',
     name: qs('name').value||null,
     race: qs('race').value||null,
     age: parseInt(qs('age').value)||null,
