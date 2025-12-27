@@ -11,7 +11,7 @@
     <div class="controls" style="margin-bottom: 16px; display: flex; gap: 8px; width: 100%;">
       <a href="index.html" style="flex: 1; padding: 6px 12px; background-color: #2196F3; color: white; border: none; border-radius: 4px; text-decoration: none; cursor: pointer; font-weight: bold; text-align: center;">← Back to Home</a>
       <button type="button" id="randomize" style="flex: 1; padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Generate Random</button>
-      <button type="button" id="go-advancement" style="flex: 1; padding: 6px 12px; background-color: #FF9800; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;" onclick="logChargenStart();">Advancement & Perks →</button>
+      <button type="button" id="go-advancement" disabled style="flex: 1; padding: 6px 12px; background-color: #FF9800; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; opacity: 0.5;">Advancement & Perks →</button>
     </div>
     <h1>Character Generator</h1>
 
@@ -21,6 +21,41 @@
           <input type="text" id="player" name="player" />
         </label>
       </section>
+
+    <!-- INLINE VALIDATION - Runs immediately, before any cached scripts -->
+    <script>
+      (function() {
+        function validateAdvancementButton() {
+          const btn = document.getElementById('go-advancement');
+          const playerField = document.getElementById('player');
+          const nameField = document.getElementById('name');
+          
+          if (!btn) return;
+          
+          const playerValid = playerField && playerField.value.trim().length > 0;
+          const nameValid = nameField && nameField.value.trim().length > 0;
+          const canAdvance = playerValid && nameValid;
+          
+          btn.disabled = !canAdvance;
+          btn.style.opacity = canAdvance ? '1' : '0.5';
+          btn.style.cursor = canAdvance ? 'pointer' : 'not-allowed';
+        }
+        
+        // Run on page load
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', validateAdvancementButton);
+        } else {
+          validateAdvancementButton();
+        }
+        
+        // Listen for field changes
+        document.addEventListener('input', function(e) {
+          if (e.target.id === 'player' || e.target.id === 'name') {
+            validateAdvancementButton();
+          }
+        }, true);
+      })();
+    </script>
       <section class="row">
         <label>Character Name
           <input type="text" id="name" name="name" />
@@ -236,10 +271,10 @@
       </section>
     </form>
 
-    <pre id="output" aria-live="polite"></pre>
+    <!-- <pre id="output" aria-live="polite"></pre> -->
   </main>
 
   <script src="advancement.js?v=2"></script>
-  <script src="script.js?v=2"></script>
+  <script src="script.js?v=4"></script>
 </body>
 </html>
