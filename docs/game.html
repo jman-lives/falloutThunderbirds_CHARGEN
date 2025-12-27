@@ -270,6 +270,17 @@
           </div>
         </div>
 
+        <div class="character-header" style="margin-top: 12px;">
+          <div class="stat-block">
+            <div class="stat-label">Equipped Armor</div>
+            <div class="stat-value" id="char-equipped-armor" style="color: #a78bfa;">—</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">Melee Damage</div>
+            <div class="stat-value" id="char-melee-damage" style="color: #ef4444;">—</div>
+          </div>
+        </div>
+
         <h3 style="margin-bottom: 8px;">Attributes</h3>
         <div class="attributes-grid">
           <div class="attribute">
@@ -326,13 +337,13 @@
         <div id="perks-container" style="display: none; margin-top: 8px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;"></div>
       </div>
 
-    <div id="tools-section" class="character-sheet" style="grid-column: 1/-1;">
+    <!-- <div id="tools-section" class="character-sheet" style="grid-column: 1/-1;">
         <button id="tools-toggle" onclick="toggleToolsAccordion()" style="width: 100%; padding: 12px; background-color: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s; font-size: 1.1rem;">
           ▼ Show Selected Tools
         </button>
         <p style="color: var(--muted); margin: 12px 0 16px 0; font-size: 0.95rem; display: none;" id="tools-desc">Your selected tools and their effects.</p>
         <div id="tools-container" style="display: none; margin-top: 12px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;"></div>
-      </div>
+      </div> -->
     </div>
 
       <div class="button-group">
@@ -553,19 +564,19 @@
       }
     }
 
-    function toggleToolsAccordion() {
-      const container = qs('tools-container');
-      const toggle = qs('tools-toggle');
-      const isVisible = container.style.display !== 'none';
+    // function toggleToolsAccordion() {
+    //   const container = qs('tools-container');
+    //   const toggle = qs('tools-toggle');
+    //   const isVisible = container.style.display !== 'none';
       
-      if (isVisible) {
-        container.style.display = 'none';
-        toggle.textContent = '▶ Show Tools';
-      } else {
-        container.style.display = 'grid';
-        toggle.textContent = '▼ Hide Tools';
-      }
-    }
+    //   if (isVisible) {
+    //     container.style.display = 'none';
+    //     toggle.textContent = '▶ Show Tools';
+    //   } else {
+    //     container.style.display = 'grid';
+    //     toggle.textContent = '▼ Hide Tools';
+    //   }
+    // }
 
     function toggleConditionalPerksAccordion() {
       const container = qs('conditional-perks-container');
@@ -814,47 +825,7 @@
       `).join('');
     }
 
-    function renderTools(characterData) {
-      const container = qs('tools-container');
-      
-      if (!characterData) {
-        container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No tools available.</p>';
-        return;
-      }
-
-      const tools = [
-        {
-          name: 'Take Drug',
-          category: 'Consumable',
-          effect: '',
-          color: '#10b981'
-        },
-        {
-          name: 'Poisoin',
-          category: 'Effect',
-          effect: '',
-          color: '#10b981'
-        },
-        {
-          name: 'Radiation',
-          category: 'Effect',
-          effect: '',
-          color: '#10b981'
-        }
-      ];
-
-      const toolsHTML = tools.map(tool => `
-        <div style="padding: 16px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 4px solid ${tool.color};">
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-            <div style="font-weight: bold; color: #fff; font-size: 1.05rem;">${tool.name}</div>
-            <div style="font-size: 0.75rem; color: #fff; background-color: ${tool.color}; padding: 4px 8px; border-radius: 12px; opacity: 0.8;">${tool.category}</div>
-          </div>
-          <div style="font-size: 0.9rem; color: var(--muted); line-height: 1.4;">${tool.effect}</div>
-        </div>
-      `).join('');
-
-      container.innerHTML = toolsHTML;
-    }
+    // Tools section removed
 
     function displayPerks(perkEffects) {
       const container = qs('perks-container');
@@ -1735,8 +1706,76 @@
         qs('attr-agi').textContent = agility || '—';
         qs('attr-lck').textContent = luck || '—';
         
+        // Update equipped armor display
+        updateEquippedArmorDisplay();
+        
+        // Update melee damage display
+        updateMeleeDamageDisplay(strength);
+        
         renderSkills(characterData.skills || {}, characterData);
       } catch (err) {
+      }
+    }
+
+    function updateEquippedArmorDisplay() {
+      const armorDisplay = qs('char-equipped-armor');
+      const savedSelection = localStorage.getItem('equipmentItemSelection');
+      
+      try {
+        if (savedSelection) {
+          const selection = JSON.parse(savedSelection);
+          if (selection && selection[2] && selection[2].name) {
+            armorDisplay.textContent = selection[2].name;
+            return;
+          }
+        }
+      } catch (e) {
+        console.log('Could not parse equipment selection');
+      }
+      
+      armorDisplay.textContent = 'None';
+    }
+
+    function updateMeleeDamageDisplay(strength) {
+      const damageDisplay = qs('char-melee-damage');
+      const stored = localStorage.getItem('characterData');
+      
+      if (!stored) {
+        damageDisplay.textContent = '—';
+        return;
+      }
+      
+      try {
+        const characterData = JSON.parse(stored);
+        const selectedTraits = characterData.selectedTraits || [];
+        const selectedPerks = characterData.selectedPerks || [];
+        
+        // Base melee damage = (Strength - 5) / 2, minimum 1
+        let baseMeleeDamage = Math.max(1, Math.floor((strength - 5) / 2));
+        let totalBonus = 0;
+        
+        // Heavy Handed trait: +4 melee damage
+        if (selectedTraits.includes('heavy_handed')) {
+          totalBonus += 4;
+        }
+        
+        // Bonus HtH Damage perk: +2 melee damage per rank
+        if (Array.isArray(selectedPerks)) {
+          const bonusHthDamage = selectedPerks.find(p => p && p.id === 'bonus_hth_damage');
+          if (bonusHthDamage) {
+            const ranks = bonusHthDamage.ranks || 1;
+            totalBonus += 2 * ranks;
+          }
+        }
+        
+        const totalMeleeDamage = baseMeleeDamage + totalBonus;
+        const displayText = totalBonus > 0 
+          ? `${baseMeleeDamage}+${totalBonus}=${totalMeleeDamage}`
+          : `${totalMeleeDamage}`;
+        
+        damageDisplay.textContent = displayText;
+      } catch (e) {
+        damageDisplay.textContent = '—';
       }
     }
 
@@ -1827,9 +1866,6 @@
 
         // Display skills with conditional bonuses
         renderSkills(characterData.skills || {}, characterData);
-
-        // Display tools
-        renderTools(characterData);
 
       } catch (err) {
         alert('Error loading character data.');
@@ -2381,6 +2417,7 @@
       // Close modal and update display
       closeEquipmentModal();
       updateActiveItemDisplay();
+      updateEquippedArmorDisplay();
     }
 
     function closeEquipmentModal() {
