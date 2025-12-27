@@ -337,6 +337,14 @@
         <div id="perks-container" style="display: none; margin-top: 8px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;"></div>
       </div>
 
+      <div id="effects-section" class="character-sheet">
+        <button id="effects-toggle" onclick="toggleEffectsAccordion()" style="width: 100%; padding: 10px; background-color: #ec4899; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s;">
+          ▼ Show Status Effects
+        </button>
+        <p style="color: var(--muted); margin: 8px 0 12px 0; font-size: 0.9rem; display: none;" id="effects-desc">Active status effects affecting your character.</p>
+        <div id="effects-container" style="display: none; margin-top: 8px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;"></div>
+      </div>
+
     <!-- <div id="tools-section" class="character-sheet" style="grid-column: 1/-1;">
         <button id="tools-toggle" onclick="toggleToolsAccordion()" style="width: 100%; padding: 12px; background-color: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s; font-size: 1.1rem;">
           ▼ Show Selected Tools
@@ -561,6 +569,20 @@
       } else {
         container.style.display = 'grid';
         toggle.textContent = '▼ Hide Perks';
+      }
+    }
+
+    function toggleEffectsAccordion() {
+      const container = qs('effects-container');
+      const toggle = qs('effects-toggle');
+      const isVisible = container.style.display !== 'none';
+      
+      if (isVisible) {
+        container.style.display = 'none';
+        toggle.textContent = '▶ Show Status Effects';
+      } else {
+        container.style.display = 'grid';
+        toggle.textContent = '▼ Hide Status Effects';
       }
     }
 
@@ -826,6 +848,105 @@
     }
 
     // Tools section removed
+
+    const AVAILABLE_EFFECTS = [
+      {
+        id: 'radiated',
+        name: 'Radiated',
+        description: 'Exposed to radiation. Slowly losing HP.',
+        color: '#4ade80'
+      },
+      {
+        id: 'poisoned',
+        name: 'Poisoned',
+        description: 'Toxin in your system. Damage over time.',
+        color: '#a855f7'
+      },
+      {
+        id: 'dazed',
+        name: 'Dazed',
+        description: 'Disoriented. Reduced perception and accuracy.',
+        color: '#fbbf24'
+      },
+      {
+        id: 'confused',
+        name: 'Confused',
+        description: 'Mind is unclear. May act unpredictably.',
+        color: '#f97316'
+      },
+      {
+        id: 'crippled',
+        name: 'Crippled',
+        description: 'Limb is damaged. Movement severely reduced.',
+        color: '#ef4444'
+      },
+      {
+        id: 'bleeding',
+        name: 'Bleeding',
+        description: 'Wound is open and bleeding. Lose HP each turn.',
+        color: '#dc2626'
+      },
+      {
+        id: 'on_fire',
+        name: 'On Fire',
+        description: 'Burning! Take fire damage each turn.',
+        color: '#ff6b35'
+      },
+      {
+        id: 'electrified',
+        name: 'Electrified',
+        description: 'Charged with electricity. Shocking to the touch.',
+        color: '#3b82f6'
+      },
+      {
+        id: 'blinded',
+        name: 'Blinded',
+        description: 'Cannot see. Massive accuracy penalty.',
+        color: '#1f2937'
+      },
+      {
+        id: 'deafened',
+        name: 'Deafened',
+        description: 'Cannot hear. Reduced situational awareness.',
+        color: '#6b7280'
+      }
+    ];
+
+    function displayStatusEffects() {
+      const container = qs('effects-container');
+      
+      const effectsHTML = AVAILABLE_EFFECTS.map(effect => {
+        const isActive = localStorage.getItem(`effect_active_${effect.id}`) === 'true';
+        
+        return `
+          <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid ${effect.color};">
+            <button 
+              type="button"
+              onclick="toggleEffect('${effect.id}')"
+              style="width: 100%; padding: 8px; color: white; border: 2px solid ${isActive ? effect.color : '#666'}; background-color: ${isActive ? effect.color : '#666'}; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s;"
+              title="Toggle ${effect.name}"
+            >
+              ${isActive ? '● ' : '○ '}${effect.name}
+            </button>
+            <div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px; line-height: 1.4;">${effect.description}</div>
+          </div>
+        `;
+      }).join('');
+      
+      container.innerHTML = effectsHTML;
+    }
+
+    function toggleEffect(effectId) {
+      const isActive = localStorage.getItem(`effect_active_${effectId}`) === 'true';
+      const newActive = !isActive;
+      localStorage.setItem(`effect_active_${effectId}`, newActive);
+      
+      // Re-render effects to update button states
+      displayStatusEffects();
+      
+      // Re-calculate attributes and skills if needed
+      updateGameAttributeDisplay();
+    }
 
     function displayPerks(perkEffects) {
       const container = qs('perks-container');
@@ -1866,6 +1987,9 @@
 
         // Display skills with conditional bonuses
         renderSkills(characterData.skills || {}, characterData);
+
+        // Display status effects
+        displayStatusEffects();
 
       } catch (err) {
         alert('Error loading character data.');
