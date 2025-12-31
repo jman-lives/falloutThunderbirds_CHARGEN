@@ -64,6 +64,7 @@ test_gain_perks_comprehensive.html
 test_gain_perks.html
 test_retroactive_skills.html
 verify_retroactive.js
+docs/admin.html
 
 # Documentation & Implementation notes (local reference)
 ADVANCEMENT_GUIDE.md
@@ -104,3 +105,4 @@ id_ed25519*
 local.json
 config.local.json
 dev-config.json
+
