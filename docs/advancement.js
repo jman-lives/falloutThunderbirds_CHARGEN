@@ -399,10 +399,10 @@ function calculatePerksEarned(level, race, selectedTraits = []) {
   const normalizedRace = (race || 'Human').trim();
   
   // Determine perk frequency based on race
-  let perkFrequency = 3; // Default for Human
+  let perkFrequency = 3; // Default for Human (perks at levels 3, 6, 9, 12, ...)
   
   if (normalizedRace === 'Ghoul') {
-    perkFrequency = 4;
+    perkFrequency = 4; // Ghouls get perks at levels 4, 8, 12, 16, ...
   }
   // Other races can be added here with their own frequencies
   
@@ -415,14 +415,26 @@ function calculatePerksEarned(level, race, selectedTraits = []) {
     perkFrequency += 1; // Increase frequency (delay perk gain) by 1 level
   }
   
-  // Calculate how many perks have been earned
-  // A character gets their first perk at level equal to perkFrequency
-  // Then another every perkFrequency levels after that
-  const perksEarned = Math.floor(level / perkFrequency);
+  // Calculate if a perk is earned THIS LEVEL
+  // Perks are earned ONLY at levels that are exact multiples of perkFrequency
+  // Example: Human (freq 3) earns at level 3, 6, 9, 12, etc.
+  // Ghoul (freq 4) earns at level 4, 8, 12, 16, etc.
+  const earnsPerkThisLevel = (level % perkFrequency === 0) ? 1 : 0;
   
+  console.log(`%c[CALC PERKS EARNED]`, 'color: #FF9800; font-weight: bold;', {
+    level,
+    race: normalizedRace,
+    hasSkilled,
+    perkFrequency,
+    modulo: `${level} % ${perkFrequency} = ${level % perkFrequency}`,
+    result: earnsPerkThisLevel
+  });
   
-  return perksEarned;
+  return earnsPerkThisLevel;
 }
+
+// Make it globally accessible
+window.calculatePerksEarned = calculatePerksEarned;
 
 // #endregion
 
@@ -2142,8 +2154,26 @@ function checkPerkEligibility(perkId, character, ignoreRaceRestriction = false, 
 function getEligiblePerks(character) {
   const eligible = [];
   const gainAttributePerks = ['gain_strength', 'gain_perception', 'gain_endurance', 'gain_charisma', 'gain_intelligence', 'gain_agility', 'gain_luck'];
+  const selectedPerks = character.selectedPerks || [];
   
+  // First, add perks that can be ranked up (already selected and not at max rank)
+  for (const selectedPerk of selectedPerks) {
+    const perk = PERKS[selectedPerk.id];
+    if (perk && selectedPerk.rank < perk.ranks) {
+      // Perk can be ranked up
+      if (!eligible.includes(selectedPerk.id)) {
+        eligible.push(selectedPerk.id);
+      }
+    }
+  }
+  
+  // Then, add new perks that are eligible
   for (const perkId in PERKS) {
+    // Skip if already added (for rank-up)
+    if (eligible.includes(perkId)) {
+      continue;
+    }
+    
     const check = checkPerkEligibility(perkId, character);
     
     if (gainAttributePerks.includes(perkId)) {
@@ -2447,6 +2477,11 @@ function applyPerkEffects(characterData) {
   const attributeBonus = characterData.perkEffects.attributeBonus || {};
   if (Object.keys(attributeBonus).length > 0) {
     recalculateSkillsWithNewAttributes(characterData);
+  }
+  
+  // Recalculate Sequence to include perk bonuses
+  if (typeof recalculateSequence === 'function') {
+    recalculateSequence(characterData);
   }
 }
 

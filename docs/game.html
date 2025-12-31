@@ -270,6 +270,21 @@
           </div>
         </div>
 
+        <div class="character-header" style="margin-top: 12px;">
+          <div class="stat-block">
+            <div class="stat-label">Equipped Armor</div>
+            <div class="stat-value" id="char-equipped-armor" style="color: #a78bfa;">—</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">Armor Class</div>
+            <div class="stat-value" id="char-armor-class" style="color: #9C27B0;">—</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">Melee Damage</div>
+            <div class="stat-value" id="char-melee-damage" style="color: #ef4444;">—</div>
+          </div>
+        </div>
+
         <h3 style="margin-bottom: 8px;">Attributes</h3>
         <div class="attributes-grid">
           <div class="attribute">
@@ -326,13 +341,21 @@
         <div id="perks-container" style="display: none; margin-top: 8px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;"></div>
       </div>
 
-    <div id="tools-section" class="character-sheet" style="grid-column: 1/-1;">
+      <div id="effects-section" class="character-sheet">
+        <button id="effects-toggle" onclick="toggleEffectsAccordion()" style="width: 100%; padding: 10px; background-color: #ec4899; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s;">
+          ▼ Show Status Effects
+        </button>
+        <p style="color: var(--muted); margin: 8px 0 12px 0; font-size: 0.9rem; display: none;" id="effects-desc">Active status effects affecting your character.</p>
+        <div id="effects-container" style="display: none; margin-top: 8px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;"></div>
+      </div>
+
+    <!-- <div id="tools-section" class="character-sheet" style="grid-column: 1/-1;">
         <button id="tools-toggle" onclick="toggleToolsAccordion()" style="width: 100%; padding: 12px; background-color: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s; font-size: 1.1rem;">
           ▼ Show Selected Tools
         </button>
         <p style="color: var(--muted); margin: 12px 0 16px 0; font-size: 0.95rem; display: none;" id="tools-desc">Your selected tools and their effects.</p>
         <div id="tools-container" style="display: none; margin-top: 12px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;"></div>
-      </div>
+      </div> -->
     </div>
 
       <div class="button-group">
@@ -553,19 +576,33 @@
       }
     }
 
-    function toggleToolsAccordion() {
-      const container = qs('tools-container');
-      const toggle = qs('tools-toggle');
+    function toggleEffectsAccordion() {
+      const container = qs('effects-container');
+      const toggle = qs('effects-toggle');
       const isVisible = container.style.display !== 'none';
       
       if (isVisible) {
         container.style.display = 'none';
-        toggle.textContent = '▶ Show Tools';
+        toggle.textContent = '▶ Show Status Effects';
       } else {
         container.style.display = 'grid';
-        toggle.textContent = '▼ Hide Tools';
+        toggle.textContent = '▼ Hide Status Effects';
       }
     }
+
+    // function toggleToolsAccordion() {
+    //   const container = qs('tools-container');
+    //   const toggle = qs('tools-toggle');
+    //   const isVisible = container.style.display !== 'none';
+      
+    //   if (isVisible) {
+    //     container.style.display = 'none';
+    //     toggle.textContent = '▶ Show Tools';
+    //   } else {
+    //     container.style.display = 'grid';
+    //     toggle.textContent = '▼ Hide Tools';
+    //   }
+    // }
 
     function toggleConditionalPerksAccordion() {
       const container = qs('conditional-perks-container');
@@ -814,46 +851,105 @@
       `).join('');
     }
 
-    function renderTools(characterData) {
-      const container = qs('tools-container');
-      
-      if (!characterData) {
-        container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No tools available.</p>';
-        return;
+    // Tools section removed
+
+    const AVAILABLE_EFFECTS = [
+      {
+        id: 'radiated',
+        name: 'Radiated',
+        description: 'Exposed to radiation. Slowly losing HP.',
+        color: '#4ade80'
+      },
+      {
+        id: 'poisoned',
+        name: 'Poisoned',
+        description: 'Toxin in your system. Damage over time.',
+        color: '#a855f7'
+      },
+      {
+        id: 'dazed',
+        name: 'Dazed',
+        description: 'Disoriented. Reduced perception and accuracy.',
+        color: '#fbbf24'
+      },
+      {
+        id: 'confused',
+        name: 'Confused',
+        description: 'Mind is unclear. May act unpredictably.',
+        color: '#f97316'
+      },
+      {
+        id: 'crippled',
+        name: 'Crippled',
+        description: 'Limb is damaged. Movement severely reduced.',
+        color: '#ef4444'
+      },
+      {
+        id: 'bleeding',
+        name: 'Bleeding',
+        description: 'Wound is open and bleeding. Lose HP each turn.',
+        color: '#dc2626'
+      },
+      {
+        id: 'on_fire',
+        name: 'On Fire',
+        description: 'Burning! Take fire damage each turn.',
+        color: '#ff6b35'
+      },
+      {
+        id: 'electrified',
+        name: 'Electrified',
+        description: 'Charged with electricity. Shocking to the touch.',
+        color: '#3b82f6'
+      },
+      {
+        id: 'blinded',
+        name: 'Blinded',
+        description: 'Cannot see. Massive accuracy penalty.',
+        color: '#1f2937'
+      },
+      {
+        id: 'deafened',
+        name: 'Deafened',
+        description: 'Cannot hear. Reduced situational awareness.',
+        color: '#6b7280'
       }
+    ];
 
-      const tools = [
-        {
-          name: 'Take Drug',
-          category: 'Consumable',
-          effect: '',
-          color: '#10b981'
-        },
-        {
-          name: 'Poisoin',
-          category: 'Effect',
-          effect: '',
-          color: '#10b981'
-        },
-        {
-          name: 'Radiation',
-          category: 'Effect',
-          effect: '',
-          color: '#10b981'
-        }
-      ];
-
-      const toolsHTML = tools.map(tool => `
-        <div style="padding: 16px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 4px solid ${tool.color};">
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-            <div style="font-weight: bold; color: #fff; font-size: 1.05rem;">${tool.name}</div>
-            <div style="font-size: 0.75rem; color: #fff; background-color: ${tool.color}; padding: 4px 8px; border-radius: 12px; opacity: 0.8;">${tool.category}</div>
+    function displayStatusEffects() {
+      const container = qs('effects-container');
+      
+      const effectsHTML = AVAILABLE_EFFECTS.map(effect => {
+        const isActive = localStorage.getItem(`effect_active_${effect.id}`) === 'true';
+        
+        return `
+          <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid ${effect.color};">
+            <button 
+              type="button"
+              onclick="toggleEffect('${effect.id}')"
+              style="width: 100%; padding: 8px; color: white; border: 2px solid ${isActive ? effect.color : '#666'}; background-color: ${isActive ? effect.color : '#666'}; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s;"
+              title="Toggle ${effect.name}"
+            >
+              ${isActive ? '● ' : '○ '}${effect.name}
+            </button>
+            <div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px; line-height: 1.4;">${effect.description}</div>
           </div>
-          <div style="font-size: 0.9rem; color: var(--muted); line-height: 1.4;">${tool.effect}</div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+      
+      container.innerHTML = effectsHTML;
+    }
 
-      container.innerHTML = toolsHTML;
+    function toggleEffect(effectId) {
+      const isActive = localStorage.getItem(`effect_active_${effectId}`) === 'true';
+      const newActive = !isActive;
+      localStorage.setItem(`effect_active_${effectId}`, newActive);
+      
+      // Re-render effects to update button states
+      displayStatusEffects();
+      
+      // Re-calculate attributes and skills if needed
+      updateGameAttributeDisplay();
     }
 
     function displayPerks(perkEffects) {
@@ -1735,8 +1831,105 @@
         qs('attr-agi').textContent = agility || '—';
         qs('attr-lck').textContent = luck || '—';
         
+        // Update equipped armor display
+        updateEquippedArmorDisplay();
+        
+        // Update melee damage display
+        updateMeleeDamageDisplay(strength);
+        
         renderSkills(characterData.skills || {}, characterData);
       } catch (err) {
+      }
+    }
+
+    function updateEquippedArmorDisplay() {
+      const armorDisplay = qs('char-equipped-armor');
+      const armorClassDisplay = qs('char-armor-class');
+      const savedSelection = localStorage.getItem('equipmentItemSelection');
+      const stored = localStorage.getItem('characterData');
+      
+      // Get base AC from character stats
+      let baseAC = 0;
+      if (stored) {
+        try {
+          const characterData = JSON.parse(stored);
+          baseAC = parseInt(characterData.stats?.Armor_Class) || 0;
+        } catch (e) {
+          console.log('Could not parse character data for AC');
+        }
+      }
+      
+      try {
+        if (savedSelection) {
+          const selection = JSON.parse(savedSelection);
+          if (selection && selection[2] && selection[2].name) {
+            armorDisplay.textContent = selection[2].name;
+            
+            // Extract armor bonus and calculate total AC
+            const armorStats = ITEM_STATS[selection[2].name];
+            let armorBonus = 0;
+            
+            if (armorStats && armorStats.armor && armorStats.armor !== '—') {
+              // Parse armor bonus from format like "+2 AC"
+              const match = armorStats.armor.match(/([+-]?\d+)/);
+              if (match) {
+                armorBonus = parseInt(match[1]);
+              }
+            }
+            
+            const totalAC = baseAC + armorBonus;
+            armorClassDisplay.textContent = totalAC;
+            return;
+          }
+        }
+      } catch (e) {
+        console.log('Could not parse equipment selection');
+      }
+      
+      armorDisplay.textContent = 'None';
+      armorClassDisplay.textContent = baseAC;
+    }
+
+    function updateMeleeDamageDisplay(strength) {
+      const damageDisplay = qs('char-melee-damage');
+      const stored = localStorage.getItem('characterData');
+      
+      if (!stored) {
+        damageDisplay.textContent = '—';
+        return;
+      }
+      
+      try {
+        const characterData = JSON.parse(stored);
+        const selectedTraits = characterData.selectedTraits || [];
+        const selectedPerks = characterData.selectedPerks || [];
+        
+        // Base melee damage = (Strength - 5) / 2, minimum 1
+        let baseMeleeDamage = Math.max(1, Math.floor((strength - 5) / 2));
+        let totalBonus = 0;
+        
+        // Heavy Handed trait: +4 melee damage
+        if (selectedTraits.includes('heavy_handed')) {
+          totalBonus += 4;
+        }
+        
+        // Bonus HtH Damage perk: +2 melee damage per rank
+        if (Array.isArray(selectedPerks)) {
+          const bonusHthDamage = selectedPerks.find(p => p && p.id === 'bonus_hth_damage');
+          if (bonusHthDamage) {
+            const ranks = bonusHthDamage.ranks || 1;
+            totalBonus += 2 * ranks;
+          }
+        }
+        
+        const totalMeleeDamage = baseMeleeDamage + totalBonus;
+        const displayText = totalBonus > 0 
+          ? `${baseMeleeDamage}+${totalBonus}=${totalMeleeDamage}`
+          : `${totalMeleeDamage}`;
+        
+        damageDisplay.textContent = displayText;
+      } catch (e) {
+        damageDisplay.textContent = '—';
       }
     }
 
@@ -1779,6 +1972,11 @@
         if (characterData.totalXP !== undefined && typeof getLevelFromXP === 'function') {
           const calculatedLevel = getLevelFromXP(characterData.totalXP || 0);
           characterData.level = calculatedLevel;
+        }
+        
+        // Recalculate Sequence to ensure perk/trait bonuses are applied
+        if (typeof recalculateSequence === 'function') {
+          recalculateSequence(characterData);
         }
         
         // Display character info
@@ -1828,8 +2026,8 @@
         // Display skills with conditional bonuses
         renderSkills(characterData.skills || {}, characterData);
 
-        // Display tools
-        renderTools(characterData);
+        // Display status effects
+        displayStatusEffects();
 
       } catch (err) {
         alert('Error loading character data.');
@@ -2000,7 +2198,7 @@
     // Item stats for dice table - maps item names to their stats
     const ITEM_STATS = {
       'Leather Jacket': { flavor: 'A worn leather jacket. Provides basic protection and looks the part.', dice: '—', weight: '10 lbs', armor: '+2 AC', skill: '—', type: 'Armor' },
-      '10mm Pistol': { ammo:'12',ammotype:'10mm',flavor: 'Party Like It\'s 1997', dice: '2d6', weight: '4 lbs', armor: '—', skill: 'Guns', type: 'Weapon' },
+      '10mm Pistol': { reloadap: '2', apCost:"5/6/-", ammo:'12',ammotype:'10mm',flavor: 'Party Like It\'s 1997', dice: '2d6', weight: '4 lbs', armor: '—', skill: 'Guns', type: 'Weapon' },
       'Brass Knuckles': { flavor: 'Brass knuckles. Improves your punch with style and a little extra hurt.', dice: '1d4+1', weight: '1 lb', armor: '—', skill: 'Unarmed', type: 'Weapon' },
       'Lighter': { flavor: 'A worn lighter. Still works, sometimes.', dice: '—', weight: '1 lb', armor: '—', skill: '—', type: 'Tool' },
       'Jet': { flavor: 'A hit of Jet. Warning: highly addictive.', dice: '—', weight: '0.5 lb', armor: '—', skill: '—', type: 'Drug' },
@@ -2022,6 +2220,7 @@
       const stats = ITEM_STATS[itemName] || {
         flavor: 'No description available.',
         dice: '—',
+        apCost: '—',
         weight: '—',
         armor: '—',
         skill: '—',
@@ -2032,10 +2231,11 @@
       flavorElement.textContent = stats.flavor || 'No description available.';
 
       const rows = [
-        { label: 'Type', value: stats.type },
+        { label: 'Dice', value: stats.dice },
+        { label: 'AP (S/T/B)', value: stats.apCost || '2/-/-'},
         { label: 'Ammo Type', value: stats.ammotype || 'N/A' },
         { label: 'Ammo', value: stats.ammo || 'N/A' },
-        { label: 'Dice', value: stats.dice },
+        { label: 'Reload AP', value: stats.reloadap || 'N/A' },
         { label: 'Skill', value: stats.skill }
       ];
 
@@ -2381,6 +2581,7 @@
       // Close modal and update display
       closeEquipmentModal();
       updateActiveItemDisplay();
+      updateEquippedArmorDisplay();
     }
 
     function closeEquipmentModal() {
