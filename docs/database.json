@@ -1,0 +1,4113 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2025-12-31",
+    "description": "Complete equipment, weapons, armor, and item database for Fallout TTRPG"
+  },
+  "ammunition": [
+    {
+      "id": "ammo_22lr",
+      "name": ".22 LR",
+      "category": "ammunition",
+      "type": "ballistic",
+      "value": 1,
+      "weight": 0.1,
+      "description": "Low recoil, low penetration.",
+      "stats": {
+        "damage": "1d6",
+        "armorMod": "+0"
+      },
+      "tags": [
+        "ammo",
+        "ballistic",
+        "pistol"
+      ]
+    },
+    {
+      "id": "ammo_9mm",
+      "name": "9mm",
+      "category": "ammunition",
+      "type": "ballistic",
+      "value": 2,
+      "weight": 0.1,
+      "description": "Common light pistol round.",
+      "stats": {
+        "damage": "1d10",
+        "armorMod": "+0"
+      },
+      "tags": [
+        "ammo",
+        "ballistic",
+        "pistol"
+      ]
+    },
+    {
+      "id": "ammo_10mm",
+      "name": "10mm",
+      "category": "ammunition",
+      "type": "ballistic",
+      "value": 3,
+      "weight": 0.1,
+      "description": "Higher stopping power than 9mm.",
+      "stats": {
+        "damage": "1d12",
+        "armorMod": "+0"
+      },
+      "tags": [
+        "ammo",
+        "ballistic",
+        "pistol"
+      ]
+    },
+    {
+      "id": "ammo_357",
+      "name": ".357 Magnum",
+      "category": "ammunition",
+      "type": "ballistic",
+      "value": 4,
+      "weight": 0.1,
+      "description": "Strong penetration; revolvers only.",
+      "stats": {
+        "damage": "1d12+2",
+        "armorMod": "-1 AP"
+      },
+      "tags": [
+        "ammo",
+        "ballistic",
+        "pistol",
+        "revolver"
+      ]
+    },
+    {
+      "id": "ammo_44",
+      "name": ".44 Magnum",
+      "category": "ammunition",
+      "type": "ballistic",
+      "value": 5,
+      "weight": 0.1,
+      "description": "Excellent armor penetration.",
+      "stats": {
+        "damage": "2d8",
+        "armorMod": "-2 AP"
+      },
+      "tags": [
+        "ammo",
+        "ballistic",
+        "pistol",
+        "revolver"
+      ]
+    },
+    {
+      "id": "ammo_14mm",
+      "name": "14mm",
+      "category": "ammunition",
+      "type": "ballistic",
+      "value": 15,
+      "weight": 0.15,
+      "description": "Very high penetration; rare caliber.",
+      "stats": {
+        "damage": "2d10",
+        "armorMod": "-3 AP"
+      },
+      "tags": [
+        "ammo",
+        "ballistic",
+        "pistol"
+      ]
+    },
+    {
+      "id": "ammo_223",
+      "name": ".223 Remington",
+      "category": "ammunition",
+      "type": "ballistic",
+      "value": 8,
+      "weight": 0.1,
+      "description": "Accurate rifle round; used in carbines and pistols.",
+      "stats": {
+        "damage": "2d8",
+        "armorMod": "-1 AP"
+      },
+      "tags": [
+        "ammo",
+        "ballistic",
+        "rifle"
+      ]
+    },
+    {
+      "id": "ammo_762",
+      "name": "7.62mm NATO",
+      "category": "ammunition",
+      "type": "ballistic",
+      "value": 10,
+      "weight": 0.15,
+      "description": "Common battle-rifle ammunition.",
+      "stats": {
+        "damage": "2d10",
+        "armorMod": "-2 AP"
+      },
+      "tags": [
+        "ammo",
+        "ballistic",
+        "rifle"
+      ]
+    },
+    {
+      "id": "ammo_50bmg",
+      "name": ".50 BMG",
+      "category": "ammunition",
+      "type": "ballistic",
+      "value": 40,
+      "weight": 0.3,
+      "description": "Anti-materiel round with extreme recoil.",
+      "stats": {
+        "damage": "3d10+5",
+        "armorMod": "-6 AP"
+      },
+      "tags": [
+        "ammo",
+        "ballistic",
+        "rifle",
+        "heavy"
+      ]
+    },
+    {
+      "id": "ammo_12gauge_shot",
+      "name": "12-Gauge Shot",
+      "category": "ammunition",
+      "type": "shotgun",
+      "value": 3,
+      "weight": 0.2,
+      "description": "Standard buckshot; weak vs armor.",
+      "stats": {
+        "damage": "1d8 per pellet",
+        "armorMod": "+2 AC vs armor"
+      },
+      "tags": [
+        "ammo",
+        "shotgun",
+        "buckshot"
+      ]
+    },
+    {
+      "id": "ammo_12gauge_slug",
+      "name": "12-Gauge Slug",
+      "category": "ammunition",
+      "type": "shotgun",
+      "value": 4,
+      "weight": 0.2,
+      "description": "Solid projectile; good penetration.",
+      "stats": {
+        "damage": "2d10",
+        "armorMod": "-2 AP"
+      },
+      "tags": [
+        "ammo",
+        "shotgun",
+        "slug"
+      ]
+    },
+    {
+      "id": "ammo_12gauge_flechette",
+      "name": "12-Gauge Flechette",
+      "category": "ammunition",
+      "type": "shotgun",
+      "value": 8,
+      "weight": 0.2,
+      "description": "Lethal to unarmored targets.",
+      "stats": {
+        "damage": "1d6 × pellet count",
+        "armorMod": "+4 AC vs armor"
+      },
+      "tags": [
+        "ammo",
+        "shotgun",
+        "flechette"
+      ]
+    },
+    {
+      "id": "ammo_small_energy_cell",
+      "name": "Small Energy Cell",
+      "category": "ammunition",
+      "type": "energy",
+      "value": 20,
+      "weight": 0.5,
+      "description": "Standard laser cell.",
+      "stats": {
+        "damage": "Varies by weapon",
+        "capacity": 12
+      },
+      "tags": [
+        "ammo",
+        "energy",
+        "laser"
+      ]
+    },
+    {
+      "id": "ammo_microfusion_cell",
+      "name": "Microfusion Cell",
+      "category": "ammunition",
+      "type": "energy",
+      "value": 40,
+      "weight": 0.5,
+      "description": "Plasma and high-power laser ammunition.",
+      "stats": {
+        "damage": "Varies by weapon",
+        "capacity": 24
+      },
+      "tags": [
+        "ammo",
+        "energy",
+        "plasma",
+        "laser"
+      ]
+    },
+    {
+      "id": "ammo_electron_charge_pack",
+      "name": "Electron Charge Pack",
+      "category": "ammunition",
+      "type": "energy",
+      "value": 60,
+      "weight": 1,
+      "description": "Industrial/heavy energy pack.",
+      "stats": {
+        "damage": "Varies",
+        "capacity": 30
+      },
+      "tags": [
+        "ammo",
+        "energy",
+        "heavy"
+      ]
+    },
+    {
+      "id": "ammo_frag_grenade",
+      "name": "Frag Grenade",
+      "category": "ammunition",
+      "type": "explosive",
+      "value": 180,
+      "weight": 1,
+      "description": "Standard fragmentation explosive.",
+      "stats": {
+        "damage": "2d10+10",
+        "radius": "1 hex (primary) + 1 hex (concussion)"
+      },
+      "tags": [
+        "ammo",
+        "explosive",
+        "grenade",
+        "thrown"
+      ]
+    },
+    {
+      "id": "ammo_plasma_grenade",
+      "name": "Plasma Grenade",
+      "category": "ammunition",
+      "type": "explosive",
+      "value": 400,
+      "weight": 1,
+      "description": "Ignores 4 points of armor.",
+      "stats": {
+        "damage": "3d10+10",
+        "radius": "1 hex"
+      },
+      "tags": [
+        "ammo",
+        "explosive",
+        "grenade",
+        "plasma",
+        "thrown"
+      ]
+    },
+    {
+      "id": "ammo_pulse_grenade",
+      "name": "Pulse Grenade",
+      "category": "ammunition",
+      "type": "explosive",
+      "value": 350,
+      "weight": 1,
+      "description": "Electromagnetic; devastating to machines.",
+      "stats": {
+        "damage": "5d10 vs robots / 1d10 vs organics",
+        "radius": "1 hex"
+      },
+      "tags": [
+        "ammo",
+        "explosive",
+        "grenade",
+        "emp",
+        "thrown"
+      ]
+    },
+    {
+      "id": "ammo_dynamite",
+      "name": "Dynamite",
+      "category": "ammunition",
+      "type": "explosive",
+      "value": 50,
+      "weight": 2,
+      "description": "Timed explosive.",
+      "stats": {
+        "damage": "3d10",
+        "radius": "2 hexes"
+      },
+      "tags": [
+        "ammo",
+        "explosive",
+        "thrown"
+      ]
+    },
+    {
+      "id": "ammo_plastic_explosives",
+      "name": "Plastic Explosives",
+      "category": "ammunition",
+      "type": "explosive",
+      "value": 300,
+      "weight": 2,
+      "description": "Moldable; requires detonator.",
+      "stats": {
+        "damage": "5d10",
+        "radius": "2 hexes"
+      },
+      "tags": [
+        "ammo",
+        "explosive"
+      ]
+    },
+    {
+      "id": "ammo_flechette_needle",
+      "name": "Flechette Needle",
+      "category": "ammunition",
+      "type": "special",
+      "value": 5,
+      "weight": 0.05,
+      "description": "Poor armor penetration.",
+      "stats": {
+        "damage": "1d10",
+        "armorMod": "+2 AC vs armor"
+      },
+      "tags": [
+        "ammo",
+        "special",
+        "needle"
+      ]
+    },
+    {
+      "id": "ammo_toxin_needle",
+      "name": "Toxin Needle",
+      "category": "ammunition",
+      "type": "special",
+      "value": 25,
+      "weight": 0.05,
+      "description": "Used in Needler weapons.",
+      "stats": {
+        "damage": "2d6",
+        "special": "Applies poison (severity varies)"
+      },
+      "tags": [
+        "ammo",
+        "special",
+        "needle",
+        "poison"
+      ]
+    },
+    {
+      "id": "ammo_gauss_round",
+      "name": "Gauss Round (2mm EC)",
+      "category": "ammunition",
+      "type": "special",
+      "value": 50,
+      "weight": 0.1,
+      "description": "Electromagnetically accelerated; extreme penetration.",
+      "stats": {
+        "damage": "2d10",
+        "armorMod": "-4 AP"
+      },
+      "tags": [
+        "ammo",
+        "special",
+        "gauss",
+        "electromagnetic"
+      ]
+    }
+  ],
+  "weapons": [
+    {
+      "id": "weap_rock",
+      "name": "Rock",
+      "category": "weapon",
+      "type": "melee",
+      "value": 0,
+      "weight": 1,
+      "description": "Basic improvised melee weapon.",
+      "flavor": "Charlie Brown Special",
+      "tags": [
+        "weapon",
+        "melee",
+        "improvised"
+      ],
+      "stats": {
+        "damage": "1d4 + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_sap",
+      "name": "Sap",
+      "category": "weapon",
+      "type": "melee",
+      "value": 1,
+      "weight": 1,
+      "requirements": "STR 5",
+      "description": "Non-lethal; successful head hit knocks out target for 1d10 rounds.",
+      "flavor": "Weeaboo!",
+      "tags": [
+        "weapon",
+        "melee",
+        "nonlethal"
+      ],
+      "stats": {
+        "damage": "—",
+        "ap": "T 5",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_shiv",
+      "name": "Shiv",
+      "category": "weapon",
+      "type": "melee",
+      "value": 2,
+      "weight": 1,
+      "description": "Small improvised blade; easily concealed.",
+      "flavor": "Where'd you dig this up?",
+      "tags": [
+        "weapon",
+        "melee",
+        "blade",
+        "improvised",
+        "concealable"
+      ],
+      "stats": {
+        "damage": "1d4 + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_wooden_club",
+      "name": "Wooden Club",
+      "category": "weapon",
+      "type": "melee",
+      "value": 5,
+      "weight": 5,
+      "description": "Crude blunt melee weapon.",
+      "flavor": "Meet The Flinstones",
+      "tags": [
+        "weapon",
+        "melee",
+        "blunt",
+        "improvised"
+      ],
+      "stats": {
+        "damage": "1d6 + MD",
+        "ap": "S 4 / T 5",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_knife",
+      "name": "Knife",
+      "category": "weapon",
+      "type": "melee",
+      "value": 10,
+      "weight": 1,
+      "description": "Standard survival knife.",
+      "flavor": "That's not a knife...",
+      "tags": [
+        "weapon",
+        "melee",
+        "blade"
+      ],
+      "stats": {
+        "damage": "1d6 + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_spear",
+      "name": "Spear",
+      "category": "weapons",
+      "type": "melee",
+      "value": 15,
+      "weight": 4,
+      "description": "Basic thrusting weapon.",
+      "flavor": "Much Cruder Than The \"H+H Tool Depot\" spear",
+      "tags": [
+        "weapon",
+        "melee",
+        "pierce"
+      ],
+      "stats": {
+        "damage": "1d8 + MD",
+        "ap": "S 4 / T 5",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_crowbar",
+      "name": "Crowbar",
+      "category": "weapon",
+      "type": "melee",
+      "value": 20,
+      "weight": 4,
+      "description": "Tool and weapon; grants leverage in certain actions.",
+      "flavor": "Copium vs Hopium",
+      "tags": [
+        "weapon",
+        "melee",
+        "blunt",
+        "tool"
+      ],
+      "stats": {
+        "damage": "1d6 + MD",
+        "ap": "S 4 / T 5",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_board",
+      "name": "Board",
+      "category": "weapon",
+      "type": "melee",
+      "value": 20,
+      "weight": 8,
+      "description": "Heavy plank of wood.",
+      "flavor": "Boy, Plank, how the heck did we ever end up here?",
+      "tags": [
+        "weapon",
+        "melee",
+        "blunt",
+        "improvised"
+      ],
+      "stats": {
+        "damage": "1d10 + MD",
+        "ap": "S 4 / T 5",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_sharpened_pole",
+      "name": "Sharpened Pole",
+      "category": "weapon",
+      "type": "melee",
+      "value": 25,
+      "weight": 5,
+      "description": "Crude spear equivalent.",
+      "flavor": "Keepaway!",
+      "tags": [
+        "weapon",
+        "melee",
+        "pierce",
+        "improvised"
+      ],
+      "stats": {
+        "damage": "1d8 + MD",
+        "ap": "S 4 / T 5",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_pipe",
+      "name": "Pipe",
+      "category": "weapon",
+      "type": "melee",
+      "value": 25,
+      "weight": 6,
+      "description": "Metal pipe; common improvised weapon.",
+      "flavor": "Colonel Mustard sends his regards.",
+      "tags": [
+        "weapon",
+        "melee",
+        "blunt",
+        "improvised"
+      ],
+      "stats": {
+        "damage": "1d8 + MD",
+        "ap": "S 4 / T 5",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_combat_knife",
+      "name": "Combat Knife",
+      "category": "weapons",
+      "type": "melee",
+      "value": 30,
+      "weight": 2,
+      "description": "Military-grade knife.",
+      "flavor": "...Now *This* Is A Knife!",
+      "tags": [
+        "weapon",
+        "melee",
+        "blade",
+        "military"
+      ],
+      "stats": {
+        "damage": "1d8 + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_sledgehammer",
+      "name": "Sledgehammer",
+      "category": "weapon",
+      "type": "melee",
+      "value": 80,
+      "weight": 12,
+      "requirements": "STR 6",
+      "description": "Slow but powerful.",
+      "flavor": "Demolition Man",
+      "tags": [
+        "weapon",
+        "melee",
+        "blunt",
+        "heavy",
+        "tool"
+      ],
+      "stats": {
+        "damage": "2d6 + MD",
+        "ap": "S 5 / T 6",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_axe",
+      "name": "Axe",
+      "category": "weapon",
+      "type": "melee",
+      "value": 150,
+      "weight": 8,
+      "description": "Heavy chopping weapon.",
+      "flavor": "Popular at viking raids and hipster bars",
+      "tags": [
+        "weapon",
+        "melee",
+        "blade",
+        "heavy"
+      ],
+      "stats": {
+        "damage": "1d12 + MD",
+        "ap": "S 4 / T 5",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_machete",
+      "name": "Machete",
+      "category": "weapon",
+      "type": "melee",
+      "value": 180,
+      "weight": 3,
+      "description": "Jungle-grade cutting blade.",
+      "flavor": "The Right Arm of the Global South",
+      "tags": [
+        "weapon",
+        "melee",
+        "blade"
+      ],
+      "stats": {
+        "damage": "1d8 + 2 + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_war_club",
+      "name": "War Club",
+      "category": "weapon",
+      "type": "melee",
+      "value": 200,
+      "weight": 10,
+      "requirements": "STR 5",
+      "description": "Tribal heavy club.",
+      "flavor": "Get the medicine man!",
+      "tags": [
+        "weapon",
+        "melee",
+        "blunt",
+        "tribal"
+      ],
+      "stats": {
+        "damage": "2d6 + MD",
+        "ap": "S 4 / T 5",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_war_axe",
+      "name": "War Axe",
+      "category": "weapon",
+      "type": "melee",
+      "value": 300,
+      "weight": 12,
+      "requirements": "STR 6",
+      "description": "Heavy two-handed battle axe.",
+      "flavor": "And my axe!",
+      "tags": [
+        "weapon",
+        "melee",
+        "blade",
+        "heavy",
+        "tribal"
+      ],
+      "stats": {
+        "damage": "2d8 + MD",
+        "ap": "S 4 / T 5",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_brass_knuckles",
+      "name": "Brass Knuckles",
+      "category": "weapons",
+      "type": "unarmed",
+      "value": 40,
+      "weight": 1,
+      "description": "Increases punch force.",
+      "flavor": "Knuckles: Dusted.",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "fist"
+      ],
+      "stats": {
+        "damage": "1d10 + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_tiger_claw",
+      "name": "Tiger Claw",
+      "category": "weapon",
+      "type": "unarmed",
+      "value": 75,
+      "weight": 1,
+      "description": "Often poisoned; low base damage.",
+      "flavor": "",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "claw"
+      ],
+      "stats": {
+        "damage": "1d2 + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_sapper",
+      "name": "Sapper",
+      "category": "weapon",
+      "type": "unarmed",
+      "value": 80,
+      "weight": 4,
+      "requirements": "STR 3",
+      "description": "75% KO chance on head hit.",
+      "flavor": "",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "nonlethal",
+        "fist"
+      ],
+      "stats": {
+        "damage": "1d6 + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_shredders",
+      "name": "Shredders",
+      "category": "weapons",
+      "type": "unarmed",
+      "value": 90,
+      "weight": 2,
+      "description": "Light claw gloves.",
+      "flavor": "Damn You Turtles!",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "claw"
+      ],
+      "stats": {
+        "damage": "1d4 + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_lacerators",
+      "name": "Lacerators",
+      "category": "weapons",
+      "type": "unarmed",
+      "value": 100,
+      "weight": 2,
+      "description": "Razor-blade glove.",
+      "flavor": "Perfect For The Modern Kitchen Or Wasteland Dust-Up",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "claw"
+      ],
+      "stats": {
+        "damage": "(1d8 + 2) + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_mace_glove",
+      "name": "Mace Glove",
+      "category": "weapon",
+      "type": "unarmed",
+      "value": 150,
+      "weight": 5,
+      "requirements": "STR 3",
+      "description": "Heavy crushing glove.",
+      "flavor": "",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "fist",
+        "blunt"
+      ],
+      "stats": {
+        "damage": "1d12 + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_spiked_knuckles",
+      "name": "Spiked Knuckles",
+      "category": "weapons",
+      "type": "unarmed",
+      "value": 250,
+      "weight": 1,
+      "description": "Piercing knuckles.",
+      "flavor": "What The Fuck Is An Echidna?",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "fist",
+        "pierce"
+      ],
+      "stats": {
+        "damage": "(1d10 + 4) + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_boxing_gloves",
+      "name": "Boxing Gloves",
+      "category": "weapons",
+      "type": "unarmed",
+      "value": 250,
+      "weight": 5,
+      "description": "Padded, non-lethal.",
+      "flavor": "Float- Then Sting",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "fist",
+        "nonlethal"
+      ],
+      "stats": {
+        "damage": "1d4 + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_plated_boxing_gloves",
+      "name": "Plated Boxing Gloves",
+      "category": "weapons",
+      "type": "unarmed",
+      "value": 300,
+      "weight": 10,
+      "description": "Reinforced illegal gloves.",
+      "flavor": "The Ref's Not Looking",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "fist"
+      ],
+      "stats": {
+        "damage": "(1d4 + 5) + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_punch_dagger",
+      "name": "Punch Dagger",
+      "category": "weapons",
+      "type": "unarmed",
+      "value": 300,
+      "weight": 4,
+      "description": "Punch-aligned blade.",
+      "flavor": "KnifeFist or FistKnife?",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "blade",
+        "pierce"
+      ],
+      "stats": {
+        "damage": "(1d10 + 2) + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_punch_gun",
+      "name": "Punch Gun",
+      "category": "weapons",
+      "type": "unarmed",
+      "value": 600,
+      "weight": 7,
+      "description": "Cartridge-enhanced punch.",
+      "flavor": "Champagne?",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "fist",
+        "special"
+      ],
+      "requirements": "STR 2",
+      "stats": {
+        "damage": "1d4 + Ammo Damage + MD",
+        "ap": "S 4 / T 5",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_impact_glove",
+      "name": "Impact Glove",
+      "category": "weapons",
+      "type": "unarmed",
+      "value": 900,
+      "weight": 9,
+      "description": "Micro‑piston assisted strikes.",
+      "flavor": "The Kyle Special",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "fist",
+        "tech"
+      ],
+      "stats": {
+        "damage": "(1d10 + 8) + MD",
+        "ap": "S 4 / T 5",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_adamantine_claws",
+      "name": "Adamantine Claws",
+      "category": "weapon",
+      "type": "unarmed",
+      "value": 1000,
+      "weight": 3,
+      "requirements": "STR 2",
+      "description": "Retractable blade claws.",
+      "flavor": "Somethin' don't smell quite right about you, bub.",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "claw",
+        "retractable"
+      ],
+      "stats": {
+        "damage": "(1d10 + 5) + MD",
+        "ap": "S 3 / T 4",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_power_fist",
+      "name": "Power Fist",
+      "category": "weapons",
+      "type": "unarmed",
+      "value": 1800,
+      "weight": 10,
+      "description": "Powered servo punch weapon.",
+      "flavor": "You Should See The Other Guy",
+      "tags": [
+        "weapon",
+        "unarmed",
+        "fist",
+        "tech",
+        "powered"
+      ],
+      "stats": {
+        "damage": "(2d8 + 10) + MD",
+        "ap": "S 4 / T 5",
+        "range": 1
+      }
+    },
+    {
+      "id": "weap_zip_gun",
+      "name": "Zip Gun",
+      "category": "weapon",
+      "type": "pistol",
+      "value": 25,
+      "weight": 3,
+      "description": "Crude improvised firearm.",
+      "flavor": "Aim the barrel and pray",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "improvised"
+      ],
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 5 / T 6",
+        "range": 10,
+        "capacity": 1,
+        "ammoType": ""
+      }
+    },
+    {
+      "id": "weap_derringer",
+      "name": "Derringer",
+      "category": "weapon",
+      "type": "pistol",
+      "value": 60,
+      "weight": 2,
+      "description": "Small concealable double-shot pistol.",
+      "flavor": "Hold your cards close",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "concealable"
+      ],
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 4 / T 5",
+        "range": 10,
+        "capacity": 2,
+        "ammoType": ""
+      }
+    },
+    {
+      "id": "weap_22_pistol",
+      "name": ".22 Pistol",
+      "category": "weapon",
+      "type": "pistol",
+      "value": 100,
+      "weight": 2,
+      "description": "Light recoil, low damage.",
+      "flavor": "Pest Control",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol"
+      ],
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 4 / T 5",
+        "range": 20,
+        "capacity": 10,
+        "ammoType": ""
+      }
+    },
+    {
+      "id": "weap_9mm_pistol",
+      "name": "9mm Pistol",
+      "category": "weapon",
+      "type": "pistol",
+      "value": 200,
+      "weight": 3,
+      "description": "Common semiautomatic sidearm.",
+      "flavor": "How do you solve a problem like Maria?",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol"
+      ],
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 4 / T 5",
+        "range": 25,
+        "capacity": 10,
+        "ammoType": ""
+      }
+    },
+    {
+      "id": "weap_10mm_pistol",
+      "name": "10mm Pistol",
+      "category": "weapon",
+      "type": "pistol",
+      "value": 300,
+      "weight": 4,
+      "description": "High stopping power.",
+      "flavor": "PArty like it's 1997",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol"
+      ],
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 4 / T 5",
+        "range": 30,
+        "capacity": 12,
+        "ammoType": ""
+      }
+    },
+    {
+      "id": "weap_m1911a1",
+      "name": "M1911A1",
+      "category": "weapon",
+      "type": "pistol",
+      "value": 300,
+      "weight": 4,
+      "description": "High stopping power.",
+      "flavor": "Two World Wars!",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "military"
+      ],
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 4 / T 5",
+        "range": 30,
+        "capacity": 12,
+        "ammoType": ""
+      }
+    },
+    {
+      "id": "weap_357_revolver",
+      "name": ".357 Magnum Revolver",
+      "category": "weapon",
+      "type": "pistol",
+      "value": 350,
+      "weight": 4,
+      "description": "Strong penetration; slower reload.",
+      "flavor": "Pick up a wheel gun!",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "revolver"
+      ],
+      "stats": {
+        "damage": "Ammo Damage + 2",
+        "ap": "S 5 / T 6",
+        "range": 25,
+        "capacity": "6 (revolver)",
+        "ammoType": ""
+      }
+    },
+    {
+      "id": "weap_44_revolver",
+      "name": ".44 Magnum Revolver",
+      "category": "weapon",
+      "type": "pistol",
+      "value": 500,
+      "weight": 5,
+      "description": "Powerful high-recoil handgun.",
+      "flavor": "Do you feel lucky, punk?",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "revolver"
+      ],
+      "stats": {
+        "damage": "Ammo Damage + 4",
+        "ap": "S 5 / T 6",
+        "range": 30,
+        "capacity": "6 (revolver)",
+        "ammoType": ""
+      }
+    },
+    {
+      "id": "weap_14mm_pistol",
+      "name": "14mm Pistol",
+      "category": "weapon",
+      "type": "pistol",
+      "value": 1200,
+      "weight": 6,
+      "requirements": "STR 5",
+      "description": "Extremely powerful semiautomatic pistol.",
+      "flavor": "Still safer than the P320",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "heavy"
+      ],
+      "stats": {
+        "damage": "Ammo Damage + 6",
+        "ap": "S 5 / T 6",
+        "range": 40,
+        "capacity": 6,
+        "ammoType": ""
+      }
+    },
+    {
+      "id": "weap_223_pistol",
+      "name": ".223 Pistol",
+      "category": "weapon",
+      "type": "pistol",
+      "value": 1500,
+      "weight": 7,
+      "requirements": "STR 6",
+      "description": "Cut-down rifle action; very high penetration.",
+      "flavor": "Wake up. Time to die!",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "heavy"
+      ],
+      "stats": {
+        "damage": "Ammo Damage + 8",
+        "ap": "S 5 / T 6",
+        "range": 45,
+        "capacity": 5,
+        "ammoType": ""
+      }
+    },
+    {
+      "id": "weap_needler_pistol",
+      "name": "Needler Pistol",
+      "category": "weapon",
+      "type": "pistol",
+      "value": 2000,
+      "weight": 4,
+      "description": "Fires darts; specialized toxin rounds available.",
+      "flavor": "Did you clean those syringes?",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "special"
+      ],
+      "stats": {
+        "damage": "1d10 (flechette) / 2d6 (tox)",
+        "ap": "S 4 / T 5",
+        "range": 25,
+        "capacity": 10,
+        "ammoType": ""
+      }
+    },
+    {
+      "id": "weap_alien_blaster",
+      "name": "Alien Blaster",
+      "category": "weapon",
+      "type": "pistol",
+      "value": 5000,
+      "weight": 2,
+      "description": "Extremely rare, high-damage energy pistol.",
+      "flavor": "I want to believe",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "energy",
+        "alien",
+        "rare"
+      ],
+      "stats": {
+        "damage": "3d10 (energy)",
+        "ap": "S 3 / T 4",
+        "range": 35,
+        "capacity": "6 (energy cell)",
+        "ammoType": ""
+      }
+    },
+    {
+      "id": "weap_throwing_knife",
+      "name": "Throwing Knife",
+      "category": "weapons",
+      "type": "thrown",
+      "value": 25,
+      "weight": 0.5,
+      "description": "Balanced for throwing; can also be used as a knife.",
+      "flavor": "What do you say, Jen? One more time for the sweet souvenir?",
+      "tags": [
+        "weapon",
+        "thrown",
+        "blade",
+        "melee"
+      ],
+      "stats": {
+        "damage": "1d6 + MD (melee) / 1d6 (thrown)",
+        "ap": "S 4 / T 5",
+        "range": 15
+      }
+    },
+    {
+      "id": "weap_throwing_spike",
+      "name": "Throwing Spike",
+      "category": "weapons",
+      "type": "thrown",
+      "value": 35,
+      "weight": 1,
+      "description": "Heavy throwing spike; no melee MD bonus.",
+      "flavor": "Watch Out, Indy!",
+      "tags": [
+        "weapon",
+        "thrown",
+        "pierce"
+      ],
+      "stats": {
+        "damage": "1d8 (thrown)",
+        "ap": "S 4 / T 5",
+        "range": 20
+      }
+    },
+    {
+      "id": "weap_grenade_frag",
+      "name": "Frag Grenade",
+      "category": "weapons",
+      "type": "thrown",
+      "value": 180,
+      "weight": 1,
+      "description": "Damages target hex, adjacent hexes, and deals concussion damage outward.",
+      "flavor": "Please Don't Pull It With Your Teeth",
+      "tags": [
+        "weapon",
+        "thrown",
+        "explosive",
+        "grenade"
+      ],
+      "stats": {
+        "damage": "2d10 + 10 (explosive)",
+        "ap": "S 5",
+        "range": 15
+      }
+    },
+    {
+      "id": "weap_molotov_cocktail",
+      "name": "Molotov Cocktail",
+      "category": "weapons",
+      "type": "thrown",
+      "value": 150,
+      "weight": 1,
+      "description": "Ignites target area; can start spreading fires.",
+      "flavor": "до свидания",
+      "tags": [
+        "weapon",
+        "thrown",
+        "explosive",
+        "fire",
+        "improvised"
+      ],
+      "stats": {
+        "damage": "1d10 fire + burning (1d6 for 1d3 rounds)",
+        "ap": "S 5",
+        "range": 10
+      }
+    },
+    {
+      "id": "weap_javelin",
+      "name": "Javelin",
+      "category": "weapons",
+      "type": "thrown",
+      "value": 75,
+      "weight": 3,
+      "description": "Long-range projectile spear.",
+      "flavor": "You Never Had The Makings Of A Varsity Athlete",
+      "tags": [
+        "weapon",
+        "thrown",
+        "pierce"
+      ],
+      "stats": {
+        "damage": "1d12 (thrown)",
+        "ap": "S 4 / T 5",
+        "range": 25
+      }
+    },
+    {
+      "id": "weap_tribal_javelin",
+      "name": "Tribal Javelin",
+      "category": "weapons",
+      "type": "thrown",
+      "value": 120,
+      "weight": 3,
+      "description": "Reinforced craftsmanship for extra penetration.",
+      "flavor": "ZULU!",
+      "tags": [
+        "weapon",
+        "thrown",
+        "pierce",
+        "tribal"
+      ],
+      "stats": {
+        "damage": "1d12 + 2 (thrown)",
+        "ap": "S 4 / T 5",
+        "range": 25
+      }
+    },
+    {
+      "id": "weap_dart",
+      "name": "Dart",
+      "category": "weapons",
+      "type": "thrown",
+      "value": 10,
+      "weight": 0.1,
+      "description": "Often poisoned; extremely light.",
+      "flavor": "Bullseye",
+      "tags": [
+        "weapon",
+        "thrown",
+        "pierce",
+        "poison"
+      ],
+      "stats": {
+        "damage": "1d3",
+        "ap": "S 3 / T 4",
+        "range": 20
+      }
+    },
+    {
+      "id": "weap_boomerang",
+      "name": "Boomerang",
+      "category": "weapons",
+      "type": "thrown",
+      "value": 40,
+      "weight": 1,
+      "description": "May return to thrower with successful Agility check (GM discretion).",
+      "flavor": "Return To Sender",
+      "tags": [
+        "weapon",
+        "thrown",
+        "blunt",
+        "special"
+      ],
+      "stats": {
+        "damage": "1d6",
+        "ap": "S 4 / T 5",
+        "range": 20
+      }
+    },
+    {
+      "id": "weap_pipe_rifle",
+      "name": "Pipe Rifle",
+      "category": "weapons",
+      "type": "rifle",
+      "value": 50,
+      "weight": 6,
+      "description": "Crude single-shot rifle.",
+      "flavor": "Perfect For Shooting Womp Rats At Toshi Station",
+      "tags": [
+        "weapon",
+        "gun",
+        "rifle",
+        "improvised"
+      ],
+      "requirements": "STR 4",
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 6 / T 7",
+        "range": 25,
+        "capacity": 1
+      }
+    },
+    {
+      "id": "weap_hunting_rifle",
+      "name": "Hunting Rifle",
+      "category": "weapon",
+      "type": "rifle",
+      "value": 350,
+      "weight": 8,
+      "requirements": "STR 5",
+      "description": "Standard bolt-action hunting rifle.",
+      "flavor": "",
+      "tags": [
+        "weapon",
+        "gun",
+        "rifle"
+      ],
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 5 / T 6",
+        "range": 40,
+        "capacity": 5
+      }
+    },
+    {
+      "id": "weap_assault_rifle_semi",
+      "name": "Service Rifle (SA)",
+      "category": "weapons",
+      "type": "rifle",
+      "value": 650,
+      "weight": 10,
+      "description": "Standard military rifle in semiautomatic mode.",
+      "flavor": "It Has A Carrying Handle!",
+      "tags": [
+        "weapon",
+        "gun",
+        "rifle",
+        "military"
+      ],
+      "requirements": "STR 6",
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 5 / T 6",
+        "range": 45,
+        "capacity": 24
+      }
+    },
+    {
+      "id": "weap_sniper_rifle",
+      "name": "Sniper Rifle",
+      "category": "weapons",
+      "type": "rifle",
+      "value": 1800,
+      "weight": 12,
+      "description": "Precision long-range rifle; ideal for targeted shots.",
+      "flavor": "Psalm 144",
+      "tags": [
+        "weapon",
+        "gun",
+        "rifle",
+        "scoped",
+        "precision"
+      ],
+      "requirements": "STR 6",
+      "stats": {
+        "damage": "Ammo Damage + 4",
+        "ap": "S 5 / T 6",
+        "range": 60,
+        "capacity": 6
+      }
+    },
+    {
+      "id": "weap_50cal_rifle",
+      "name": "Anti-Materiel Rifle",
+      "category": "weapons",
+      "type": "rifle",
+      "value": 3000,
+      "weight": 20,
+      "description": "Heavy rifle capable of piercing armor; high recoil.",
+      "flavor": "Isn't This A Little Overkill?",
+      "tags": [
+        "weapon",
+        "gun",
+        "rifle",
+        "heavy",
+        "anti-materiel"
+      ],
+      "requirements": "STR 7",
+      "stats": {
+        "damage": "Ammo Damage + 8",
+        "ap": "S 6 / T 7",
+        "range": 70,
+        "capacity": 5
+      }
+    },
+    {
+      "id": "weap_gauss_rifle",
+      "name": "Gauss Rifle",
+      "category": "weapons",
+      "type": "rifle",
+      "value": 6000,
+      "weight": 12,
+      "description": "Electromagnetic rifle with exceptional penetration.",
+      "flavor": "Fucking Magnets",
+      "tags": [
+        "weapon",
+        "gun",
+        "rifle",
+        "energy",
+        "gauss",
+        "rare"
+      ],
+      "requirements": "STR 6",
+      "stats": {
+        "damage": "3d10 (magnetic accelerator)",
+        "ap": "S 4 / T 5",
+        "range": 65,
+        "capacity": 8
+      }
+    },
+    {
+      "id": "weap_single_barrel_shotgun",
+      "name": "Single Barrel Shotgun",
+      "category": "weapon",
+      "type": "shotgun",
+      "value": 75,
+      "weight": 6,
+      "requirements": "STR 4",
+      "description": "Crude single-shot scattergun.",
+      "flavor": "Lets hunt some geckos",
+      "tags": [
+        "weapon",
+        "gun",
+        "shotgun"
+      ],
+      "stats": {
+        "damage": "Ammo Damage × 6",
+        "ap": "S 6 / T 7",
+        "range": 10,
+        "capacity": 1,
+        "spread": "Wide",
+        "ammoType": "20 Gauge"
+      }
+    },
+    {
+      "id": "weap_sawed_off_shotgun",
+      "name": "Sawed-Off Shotgun",
+      "category": "weapon",
+      "type": "shotgun",
+      "value": 175,
+      "weight": 7,
+      "requirements": "STR 5",
+      "description": "Extremely short-range double-barrel shotgun.",
+      "flavor": "Get off my lawn!",
+      "tags": [
+        "weapon",
+        "gun",
+        "shotgun"
+      ],
+      "stats": {
+        "damage": "Ammo Damage × 6 (per barrel)",
+        "ap": "S 6 / T 7",
+        "range": 10,
+        "capacity": "2 (break action)",
+        "spread": "Very wide",
+        "ammoType": "12 Gauge"
+      }
+    },
+    {
+      "id": "weap_12gauge_hunting_shotgun",
+      "name": "12-Gauge Hunting Shotgun",
+      "category": "weapon",
+      "type": "shotgun",
+      "value": 350,
+      "weight": 9,
+      "requirements": "STR 5",
+      "description": "Accurate hunting shotgun.",
+      "flavor": "This is my boomstick!",
+      "tags": [
+        "weapon",
+        "gun",
+        "shotgun"
+      ],
+      "stats": {
+        "damage": "Ammo Damage × 6",
+        "ap": "S 6 / T 7",
+        "range": 30,
+        "capacity": "2 (break action)",
+        "spread": "Tight",
+        "ammoType": "12 Gauge"
+      }
+    },
+    {
+      "id": "weap_lever_action_shotgun",
+      "name": "Lever-Action Shotgun",
+      "category": "weapon",
+      "type": "shotgun",
+      "value": 550,
+      "weight": 8,
+      "requirements": "STR 5",
+      "description": "Faster cycling than break-action.",
+      "flavor": "I'll be back",
+      "tags": [
+        "weapon",
+        "gun",
+        "shotgun"
+      ],
+      "stats": {
+        "damage": "Ammo Damage × 6",
+        "ap": "S 6 / T 7",
+        "range": 25,
+        "capacity": 5,
+        "spread": "Moderate",
+        "ammoType": "12 Gauge"
+      }
+    },
+    {
+      "id": "weap_combat_shotgun",
+      "name": "Combat Shotgun",
+      "category": "weapon",
+      "type": "shotgun",
+      "value": 450,
+      "weight": 8,
+      "requirements": "STR 5",
+      "description": "Semiautomatic combat shotgun.",
+      "flavor": "They're coming out of the walls!",
+      "tags": [
+        "weapon",
+        "gun",
+        "shotgun",
+        "military"
+      ],
+      "stats": {
+        "damage": "Ammo Damage × 6",
+        "ap": "S 6 / T 7",
+        "range": 20,
+        "capacity": 12,
+        "spread": "Moderate",
+        "ammoType": "12 Gauge"
+      }
+    },
+    {
+      "id": "weap_assault_shotgun",
+      "name": "Assault Shotgun",
+      "category": "weapon",
+      "type": "shotgun",
+      "value": 700,
+      "weight": 10,
+      "requirements": "STR 6",
+      "description": "High-capacity automatic shotgun.",
+      "flavor": "Sweep the streets!",
+      "tags": [
+        "weapon",
+        "gun",
+        "shotgun",
+        "automatic"
+      ],
+      "stats": {
+        "damage": "Ammo Damage × 6",
+        "ap": "S 6 / T 7",
+        "range": 25,
+        "capacity": 20,
+        "spread": "Moderate",
+        "ammoType": "12 Gauge"
+      }
+    },
+    {
+      "id": "weap_pancor_jackhammer",
+      "name": "Pancor Jackhammer",
+      "category": "weapon",
+      "type": "shotgun",
+      "value": 1800,
+      "weight": 14,
+      "requirements": "STR 7",
+      "description": "Fully automatic rotary shotgun.",
+      "flavor": "Fuck the NFA",
+      "tags": [
+        "weapon",
+        "gun",
+        "shotgun",
+        "automatic",
+        "rare"
+      ],
+      "stats": {
+        "damage": "Ammo Damage × 6",
+        "ap": "S 6 / T 7",
+        "range": 30,
+        "capacity": "10 (drum)",
+        "spread": "Tight",
+        "ammoType": "12 Gauge"
+      }
+    },
+    {
+      "id": "weap_zip_smg",
+      "name": "Zip SMG",
+      "category": "weapons",
+      "type": "smg",
+      "value": 150,
+      "weight": 6,
+      "description": "Improvised automatic firearm.",
+      "flavor": "You're Taking THAT?",
+      "tags": [
+        "weapon",
+        "gun",
+        "smg",
+        "improvised",
+        "automatic"
+      ],
+      "requirements": "STR 4",
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 5 / T 6 / B 8",
+        "range": 15,
+        "capacity": 16,
+        "burst": "6 rounds"
+      }
+    },
+    {
+      "id": "weap_9mm_smg",
+      "name": "9mm SMG",
+      "category": "weapons",
+      "type": "smg",
+      "value": 300,
+      "weight": 6,
+      "description": "Common lightweight SMG.",
+      "flavor": "Greased Lightning!",
+      "tags": [
+        "weapon",
+        "gun",
+        "smg",
+        "automatic"
+      ],
+      "requirements": "STR 4",
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 5 / T 6 / B 7",
+        "range": 20,
+        "capacity": 30,
+        "burst": "10 rounds"
+      }
+    },
+    {
+      "id": "weap_10mm_smg",
+      "name": "10mm SMG",
+      "category": "weapons",
+      "type": "smg",
+      "value": 500,
+      "weight": 7,
+      "description": "Strong stopping power with notable recoil.",
+      "flavor": "An Old Friend",
+      "tags": [
+        "weapon",
+        "gun",
+        "smg",
+        "automatic"
+      ],
+      "requirements": "STR 5",
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 5 / T 6 / B 7",
+        "range": 25,
+        "capacity": 30,
+        "burst": "10 rounds"
+      }
+    },
+    {
+      "id": "weap_tommy_gun",
+      "name": "Tommy Gun (.45 SMG)",
+      "category": "weapons",
+      "type": "smg",
+      "value": 650,
+      "weight": 11,
+      "description": "Heavy full-auto SMG with high magazine capacity.",
+      "flavor": "An Offer You Can't Refuse",
+      "tags": [
+        "weapon",
+        "gun",
+        "smg",
+        "automatic"
+      ],
+      "requirements": "STR 6",
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 5 / T 6 / B 7",
+        "range": 30,
+        "capacity": "50 (drum)",
+        "burst": "10 rounds"
+      }
+    },
+    {
+      "id": "weap_hk_p90c",
+      "name": "HK P90c",
+      "category": "weapons",
+      "type": "smg",
+      "value": 1200,
+      "weight": 6,
+      "description": "Compact SMG with strong armor penetration.",
+      "flavor": "Germany Knows A Thing Or Two About Putting Guns In Tanks",
+      "tags": [
+        "weapon",
+        "gun",
+        "smg",
+        "automatic",
+        "military"
+      ],
+      "requirements": "STR 5",
+      "stats": {
+        "damage": "Ammo Damage + 2",
+        "ap": "S 4 / T 5 / B 6",
+        "range": 35,
+        "capacity": 50,
+        "burst": "12 rounds"
+      }
+    },
+    {
+      "id": "weap_hk_mp9",
+      "name": "HK MP9",
+      "category": "weapons",
+      "type": "smg",
+      "value": 1500,
+      "weight": 6,
+      "description": "High-tech SMG with improved ballistics.",
+      "flavor": "Give It a Slap",
+      "tags": [
+        "weapon",
+        "gun",
+        "smg",
+        "automatic",
+        "military"
+      ],
+      "requirements": "STR 5",
+      "stats": {
+        "damage": "Ammo Damage + 3",
+        "ap": "S 4 / T 5 / B 6",
+        "range": 40,
+        "capacity": 32,
+        "burst": "12 rounds"
+      }
+    },
+    {
+      "id": "weap_gauss_smg",
+      "name": "Gauss SMG",
+      "category": "weapon",
+      "type": "smg",
+      "value": 4000,
+      "weight": 8,
+      "requirements": "STR 6",
+      "description": "Electromagnetic SMG with extreme penetration.",
+      "flavor": "",
+      "tags": [
+        "weapon",
+        "gun",
+        "smg",
+        "automatic",
+        "energy",
+        "gauss",
+        "rare"
+      ],
+      "stats": {
+        "damage": "2d10 (magnetic accelerator)",
+        "ap": "S 4 / T 5 / B 6",
+        "range": 50,
+        "capacity": "20 (microfusion)",
+        "burst": "6 rounds"
+      }
+    },
+    {
+      "id": "weap_ak112",
+      "name": "AK-112 Assault Rifle",
+      "category": "weapons",
+      "type": "assault_rifle",
+      "value": 900,
+      "weight": 10,
+      "description": "Rugged Kalashnikov-pattern rifle.",
+      "flavor": "Right Arm Of The People",
+      "tags": [
+        "weapon",
+        "gun",
+        "assault_rifle",
+        "automatic",
+        "military"
+      ],
+      "requirements": "STR 6",
+      "stats": {
+        "damage": "Ammo Damage + 1",
+        "ap": "S 5 / T 6 / B 7",
+        "range": 50,
+        "capacity": 30,
+        "burst": "6 rounds"
+      }
+    },
+    {
+      "id": "weap_r91",
+      "name": "R91 Assault Rifle",
+      "category": "weapons",
+      "type": "assault_rifle",
+      "value": 1200,
+      "weight": 11,
+      "description": "Pre-war US military rifle.",
+      "flavor": "Right Arm Of The Free World",
+      "tags": [
+        "weapon",
+        "gun",
+        "assault_rifle",
+        "automatic",
+        "military"
+      ],
+      "requirements": "STR 6",
+      "stats": {
+        "damage": "Ammo Damage + 2",
+        "ap": "S 5 / T 6 / B 7",
+        "range": 55,
+        "capacity": 30,
+        "burst": "8 rounds"
+      }
+    },
+    {
+      "id": "weap_hk_g11",
+      "name": "H&K G11",
+      "category": "weapons",
+      "type": "assault_rifle",
+      "value": 2500,
+      "weight": 9,
+      "description": "Fires caseless ammo; extremely high burst rate.",
+      "flavor": "You Look Like Captain Cosmos With That Thing",
+      "tags": [
+        "weapon",
+        "gun",
+        "assault_rifle",
+        "automatic",
+        "military",
+        "caseless"
+      ],
+      "requirements": "STR 5",
+      "stats": {
+        "damage": "Ammo Damage + 2",
+        "ap": "S 4 / T 5 / B 6",
+        "range": 60,
+        "capacity": 45,
+        "burst": "15 rounds"
+      }
+    },
+    {
+      "id": "weap_hk_g11e",
+      "name": "H&K G11E",
+      "category": "weapons",
+      "type": "assault_rifle",
+      "value": 3200,
+      "weight": 9,
+      "description": "Improved precision and action.",
+      "flavor": "Space Age Meets Hot Lead",
+      "tags": [
+        "weapon",
+        "gun",
+        "assault_rifle",
+        "automatic",
+        "military",
+        "caseless"
+      ],
+      "requirements": "STR 5",
+      "stats": {
+        "damage": "Ammo Damage + 3",
+        "ap": "S 4 / T 5 / B 6",
+        "range": 65,
+        "capacity": 50,
+        "burst": "15 rounds"
+      }
+    },
+    {
+      "id": "weap_fn_fal",
+      "name": "FN FAL",
+      "category": "weapons",
+      "type": "assault_rifle",
+      "value": 1800,
+      "weight": 13,
+      "description": "Powerful long-range battle rifle.",
+      "flavor": "Belgian Wafflemaker",
+      "tags": [
+        "weapon",
+        "gun",
+        "assault_rifle",
+        "automatic",
+        "military",
+        "battle_rifle"
+      ],
+      "requirements": "STR 7",
+      "stats": {
+        "damage": "Ammo Damage + 3",
+        "ap": "S 5 / T 6 / B 7",
+        "range": 70,
+        "capacity": 20,
+        "burst": "5 rounds"
+      }
+    },
+    {
+      "id": "weap_xl70e3",
+      "name": "XL70E3",
+      "category": "weapons",
+      "type": "assault_rifle",
+      "value": 3500,
+      "weight": 9,
+      "description": "Advanced modular bullpup rifle with high accuracy.",
+      "flavor": "Where Do You Even Get Parts For That?",
+      "tags": [
+        "weapon",
+        "gun",
+        "assault_rifle",
+        "automatic",
+        "military",
+        "bullpup",
+        "prototype"
+      ],
+      "requirements": "STR 5",
+      "stats": {
+        "damage": "Ammo Damage + 2",
+        "ap": "S 4 / T 5 / B 6",
+        "range": 65,
+        "capacity": 30,
+        "burst": "10 rounds"
+      }
+    },
+    {
+      "id": "weap_lmg",
+      "name": "Light Machine Gun",
+      "category": "weapons",
+      "type": "machine_gun",
+      "value": 1500,
+      "weight": 20,
+      "description": "Squad-level light machine gun with strong sustained fire.",
+      "flavor": "MOA: Point. Kill.",
+      "tags": [
+        "weapon",
+        "gun",
+        "machine_gun",
+        "automatic",
+        "heavy",
+        "military"
+      ],
+      "requirements": "STR 7",
+      "stats": {
+        "damage": "Ammo Damage",
+        "ap": "S 6 / T 7 / B 8",
+        "range": 45,
+        "capacity": 50,
+        "burst": "10 rounds"
+      }
+    },
+    {
+      "id": "weap_m60",
+      "name": "M60 Machine Gun",
+      "category": "weapons",
+      "type": "machine_gun",
+      "value": 2200,
+      "weight": 23,
+      "description": "Pre-war military GPMG with high reliability.",
+      "flavor": "Anyone that runs is a Raider. Anyone that stands still is a well disciplined Raider.",
+      "tags": [
+        "weapon",
+        "gun",
+        "machine_gun",
+        "automatic",
+        "heavy",
+        "military"
+      ],
+      "requirements": "STR 8",
+      "stats": {
+        "damage": "Ammo Damage + 1",
+        "ap": "S 6 / T 7 / B 8",
+        "range": 55,
+        "capacity": "100 (belt)",
+        "burst": "12 rounds"
+      }
+    },
+    {
+      "id": "weap_bozar",
+      "name": "Bozar (Hybrid LMG/Sniper Platform)",
+      "category": "weapon",
+      "type": "machine_gun",
+      "value": 5000,
+      "weight": 28,
+      "requirements": "STR 8",
+      "description": "Unique precision machine gun with exceptional accuracy.",
+      "flavor": "",
+      "tags": [
+        "weapon",
+        "gun",
+        "machine_gun",
+        "automatic",
+        "heavy",
+        "precision",
+        "rare"
+      ],
+      "stats": {
+        "damage": "Ammo Damage + 4",
+        "ap": "S 5 / T 6 / B 7",
+        "range": 70,
+        "capacity": 30,
+        "burst": "8 rounds"
+      }
+    },
+    {
+      "id": "weap_vindicator_minigun",
+      "name": "Vindicator Minigun",
+      "category": "weapon",
+      "type": "machine_gun",
+      "value": 8000,
+      "weight": 35,
+      "requirements": "STR 9",
+      "description": "Rotary-barrel minigun with immense suppressive fire.",
+      "flavor": "",
+      "tags": [
+        "weapon",
+        "gun",
+        "machine_gun",
+        "automatic",
+        "heavy",
+        "minigun",
+        "rare"
+      ],
+      "stats": {
+        "damage": "Ammo Damage + 2",
+        "ap": "B 8",
+        "range": 60,
+        "capacity": 500,
+        "burst": "25 rounds"
+      }
+    },
+    {
+      "id": "weap_avenger_minigun",
+      "name": "Avenger Minigun",
+      "category": "weapon",
+      "type": "machine_gun",
+      "value": 9500,
+      "weight": 38,
+      "requirements": "STR 9",
+      "description": "Improved minigun with tighter grouping.",
+      "flavor": "",
+      "tags": [
+        "weapon",
+        "gun",
+        "machine_gun",
+        "automatic",
+        "heavy",
+        "minigun",
+        "rare"
+      ],
+      "stats": {
+        "damage": "Ammo Damage + 3",
+        "ap": "B 8",
+        "range": 65,
+        "capacity": 500,
+        "burst": "30 rounds"
+      }
+    },
+    {
+      "id": "weap_cz53_minigun",
+      "name": "CZ53 Personal Minigun",
+      "category": "weapon",
+      "type": "machine_gun",
+      "value": 11000,
+      "weight": 40,
+      "requirements": "STR 10",
+      "description": "High-end pre-war rotary weapon; top-tier damage output.",
+      "flavor": "",
+      "tags": [
+        "weapon",
+        "gun",
+        "machine_gun",
+        "automatic",
+        "heavy",
+        "minigun",
+        "rare"
+      ],
+      "stats": {
+        "damage": "Ammo Damage + 4",
+        "ap": "B 8",
+        "range": 70,
+        "capacity": 500,
+        "burst": "35 rounds"
+      }
+    }
+  ],
+  "armor": [
+    {
+      "id": "armor_robe",
+      "name": "Robe",
+      "category": "armor",
+      "type": "light",
+      "value": 90,
+      "weight": 10,
+      "description": "Although this garment can be awkward to fight in, it offers some basic protection against some kinds of attacks. More of a fashion statement than an actual effective piece of armor.",
+      "flavor": "Fetch The Slippers, Too",
+      "tags": [
+        "armor",
+        "light",
+        "cloth"
+      ],
+      "stats": {
+        "ac": 5,
+        "dt_dr": {
+          "normal": "0/20",
+          "laser": "0/25",
+          "fire": "0/10",
+          "plasma": "0/10",
+          "explosion": "0/10"
+        }
+      }
+    },
+    {
+      "id": "armor_leather_jacket",
+      "name": "Leather Jacket",
+      "category": "armor",
+      "type": "light",
+      "value": 250,
+      "weight": 5,
+      "description": "The most basic protection you can use. And it looks pretty cool, too. Why? Simple: the Fonz wore a leather jacket. What's the Fonz like? He's cool.",
+      "flavor": "You dress like a punk, Fonzarelli!",
+      "tags": [
+        "armor",
+        "light",
+        "leather"
+      ],
+      "stats": {
+        "ac": 8,
+        "dt_dr": {
+          "normal": "0/20",
+          "laser": "0/20",
+          "fire": "0/10",
+          "plasma": "0/10",
+          "explosion": "0/20"
+        }
+      }
+    },
+    {
+      "id": "armor_leather",
+      "name": "Leather Armor",
+      "category": "armor",
+      "type": "light",
+      "value": 700,
+      "weight": 8,
+      "description": "A shirt made of leather and padded for extra protection.",
+      "flavor": "It's that rat circus out there. I'm beginning to enjoy it.",
+      "tags": [
+        "armor",
+        "light",
+        "leather"
+      ],
+      "stats": {
+        "ac": 15,
+        "dt_dr": {
+          "normal": "2/25",
+          "laser": "0/20",
+          "fire": "0/20",
+          "plasma": "0/10",
+          "explosion": "0/20"
+        }
+      }
+    },
+    {
+      "id": "armor_raider",
+      "name": "Raider Armor",
+      "category": "armor",
+      "type": "medium",
+      "value": 700,
+      "weight": 10,
+      "description": "A collection of leather and metal plates connected with metal wires, forming a loose-fitting banding. Not the best protection available, but it'll do in a pinch, especially when materials are short.",
+      "flavor": "Might Makes Right",
+      "tags": [
+        "armor",
+        "medium",
+        "raider"
+      ],
+      "stats": {
+        "ac": 8,
+        "dt_dr": {
+          "normal": "2/25",
+          "laser": "0/25",
+          "fire": "0/15",
+          "plasma": "0/25",
+          "explosion": "0/20"
+        }
+      }
+    },
+    {
+      "id": "armor_vandal",
+      "name": "Raider Vandal Armor",
+      "category": "armor",
+      "type": "medium",
+      "value": 800,
+      "weight": 25,
+      "description": "An improved version of the raider's hodgepodge banding, vandal armor is thick leather strips reinforced with metal and a little Kevlar.",
+      "flavor": "Mama Tried",
+      "tags": [
+        "armor",
+        "medium"
+      ],
+      "stats": {
+        "ac": 15,
+        "dt_dr": {
+          "normal": "3/25",
+          "laser": "1/30",
+          "fire": "1/17",
+          "plasma": "1/30",
+          "explosion": "1/25"
+        }
+      }
+    },
+    {
+      "id": "armor_brotherhood_leather",
+      "name": "Brotherhood Leather Armor",
+      "category": "armor",
+      "type": "light",
+      "value": 900,
+      "weight": 10,
+      "description": "The standard leather armor issued to members of the Brotherhood of Steel. If a non-member is caught wearing this by a member of the Brotherhood, expect a rigorous questioning.",
+      "tags": [
+        "armor",
+        "light",
+        "leather",
+        "brotherhood",
+        "faction"
+      ],
+      "stats": {
+        "ac": 15,
+        "dt_dr": {
+          "normal": "2/25",
+          "laser": "0/25",
+          "fire": "0/15",
+          "plasma": "0/25",
+          "explosion": "0/20"
+        }
+      }
+    },
+    {
+      "id": "armor_combat_leather_jacket",
+      "name": "Combat Leather Jacket",
+      "category": "armor",
+      "type": "light",
+      "value": 1000,
+      "weight": 7,
+      "description": "This leather jacket has been padded and reinforced for better protection. You just can't find anything more fashionable in the post-nuclear world.",
+      "tags": [
+        "armor",
+        "light",
+        "leather"
+      ],
+      "stats": {
+        "ac": 20,
+        "dt_dr": {
+          "normal": "2/30",
+          "laser": "0/20",
+          "fire": "2/25",
+          "plasma": "0/10",
+          "explosion": "0/20"
+        }
+      }
+    },
+    {
+      "id": "armor_leather_mk2",
+      "name": "Leather Armor MK II",
+      "category": "armor",
+      "type": "light",
+      "value": 1000,
+      "weight": 10,
+      "description": "Reinforced leather armor that covers the arms and groin as well as the torso.",
+      "tags": [
+        "armor",
+        "light",
+        "leather"
+      ],
+      "stats": {
+        "ac": 20,
+        "dt_dr": {
+          "normal": "3/25",
+          "laser": "1/30",
+          "fire": "1/17",
+          "plasma": "1/30",
+          "explosion": "1/25"
+        }
+      }
+    },
+    {
+      "id": "armor_brotherhood_leather_mk2",
+      "name": "Brotherhood Leather Armor MK II",
+      "category": "armor",
+      "type": "light",
+      "value": 1100,
+      "weight": 11,
+      "description": "An improved version of the Brotherhood's Leather Armor.",
+      "tags": [
+        "armor",
+        "light",
+        "leather",
+        "brotherhood",
+        "faction"
+      ],
+      "stats": {
+        "ac": 23,
+        "dt_dr": {
+          "normal": "3/30",
+          "laser": "1/25",
+          "fire": "1/30",
+          "plasma": "1/15",
+          "explosion": "1/30"
+        }
+      }
+    },
+    {
+      "id": "armor_metal",
+      "name": "Metal Armor",
+      "category": "armor",
+      "type": "heavy",
+      "value": 1100,
+      "weight": 35,
+      "description": "A jacket of armor made from pieces of scrap metal welded together. Wearing this armor reduces your sneak skill by 25%.",
+      "flavor": "Jingle Jangle",
+      "tags": [
+        "armor",
+        "heavy",
+        "metal"
+      ],
+      "penalties": {
+        "sneak": -25
+      },
+      "stats": {
+        "ac": 10,
+        "dt_dr": {
+          "normal": "4/30",
+          "laser": "6/75",
+          "fire": "4/10",
+          "plasma": "4/20",
+          "explosion": "4/25"
+        }
+      }
+    },
+    {
+      "id": "armor_reaver_banding",
+      "name": "Reaver Banding",
+      "category": "armor",
+      "type": "medium",
+      "value": 1200,
+      "weight": 10,
+      "description": "Manufactured by the Reavers, this armor is banded together from cloth and metal.",
+      "tags": [
+        "armor",
+        "medium",
+        "faction"
+      ],
+      "stats": {
+        "ac": 20,
+        "dt_dr": {
+          "normal": "4/30",
+          "laser": "3/40",
+          "fire": "1/40",
+          "plasma": "3/20",
+          "explosion": "3/30"
+        }
+      }
+    },
+    {
+      "id": "armor_ghoul",
+      "name": "Ghoul Armor",
+      "category": "armor",
+      "type": "light",
+      "value": 1300,
+      "weight": 10,
+      "requirements": "Ghoul or very small humans only",
+      "description": "A small set of armor designed for and by ghouls. It is light, and provides only the most basic protection.",
+      "tags": [
+        "armor",
+        "light",
+        "ghoul",
+        "special"
+      ],
+      "stats": {
+        "ac": 10,
+        "dt_dr": {
+          "normal": "0/20",
+          "laser": "0/25",
+          "fire": "0/10",
+          "plasma": "0/25",
+          "explosion": "0/25"
+        }
+      }
+    },
+    {
+      "id": "armor_superior_ghoul",
+      "name": "Superior Ghoul Armor",
+      "category": "armor",
+      "type": "light",
+      "value": 1400,
+      "weight": 10,
+      "requirements": "Ghoul or very small humans only",
+      "description": "Leather and metal strips held together by rubber straps. This light armor provides decent protection.",
+      "tags": [
+        "armor",
+        "light",
+        "ghoul",
+        "special"
+      ],
+      "stats": {
+        "ac": 20,
+        "dt_dr": {
+          "normal": "3/25",
+          "laser": "1/25",
+          "fire": "1/15",
+          "plasma": "1/25",
+          "explosion": "1/20"
+        }
+      }
+    },
+    {
+      "id": "armor_brotherhood_metal",
+      "name": "Brotherhood Metal Armor",
+      "category": "armor",
+      "type": "heavy",
+      "value": 1500,
+      "weight": 35,
+      "penalties": {
+        "sneak": -25
+      },
+      "description": "The standard suit of metal armor issued to members of the Brotherhood of Steel. Even more rare than the Brotherhood's leather armor, this finely made suit will keep the wearer safe from many different attacks.",
+      "tags": [
+        "armor",
+        "heavy",
+        "metal",
+        "brotherhood",
+        "faction"
+      ],
+      "stats": {
+        "ac": 15,
+        "dt_dr": {
+          "normal": "4/30",
+          "laser": "3/37",
+          "fire": "4/15",
+          "plasma": "3/37",
+          "explosion": "4/25"
+        }
+      }
+    },
+    {
+      "id": "armor_metal_mk2",
+      "name": "Metal Armor MK II",
+      "category": "armor",
+      "type": "heavy",
+      "value": 1900,
+      "weight": 35,
+      "description": "A truly fine suit of armor, crafted by a skilled metalworker. Usually only found in highly populated areas.",
+      "flavor": "I AM IRON MAN",
+      "tags": [
+        "armor",
+        "heavy",
+        "metal"
+      ],
+      "penalties": {
+        "sneak": -20
+      },
+      "stats": {
+        "ac": 15,
+        "dt_dr": {
+          "normal": "4/35",
+          "laser": "7/80",
+          "fire": "4/15",
+          "plasma": "4/25",
+          "explosion": "4/30"
+        }
+      }
+    },
+    {
+      "id": "armor_brotherhood_metal_mk2",
+      "name": "Brotherhood Metal Armor MK II",
+      "category": "armor",
+      "type": "heavy",
+      "value": 2100,
+      "weight": 35,
+      "penalties": {
+        "sneak": -20
+      },
+      "description": "An advanced version of the Brotherhood of Steel's Metal Armor.",
+      "tags": [
+        "armor",
+        "heavy",
+        "metal",
+        "brotherhood",
+        "faction"
+      ],
+      "stats": {
+        "ac": 15,
+        "dt_dr": {
+          "normal": "4/35",
+          "laser": "4/35",
+          "fire": "4/20",
+          "plasma": "4/45",
+          "explosion": "4/30"
+        }
+      }
+    },
+    {
+      "id": "armor_riot_gear",
+      "name": "Riot Armor",
+      "category": "armor",
+      "type": "medium",
+      "value": 2200,
+      "weight": 18,
+      "description": "Used by Pre-War Law Enforcement and the Marines, this excellent body armor is made of metal and Kevlar encased in carbon fiber and leather. Economical and sturdy, it is some of the finest armor money can buy in the wastes.",
+      "tags": [
+        "armor",
+        "medium",
+        "faction"
+      ],
+      "penalties": {
+        "sneak": -15
+      },
+      "stats": {
+        "ac": 25,
+        "dt_dr": {
+          "normal": "5/50",
+          "laser": "2/40",
+          "fire": "4/30",
+          "plasma": "3/30",
+          "explosion": "5/60"
+        }
+      }
+    },
+    {
+      "id": "armor_mutant_plate",
+      "name": "Mutant Plate Armor",
+      "category": "armor",
+      "type": "heavy",
+      "value": 3000,
+      "weight": 40,
+      "requirements": "Mutants only",
+      "description": "One of the few suits of armor a mutant can wear, this 'suit' consists mostly of strips of leather and metal that form a crude protective covering.",
+      "tags": [
+        "armor",
+        "heavy",
+        "mutant",
+        "special"
+      ],
+      "stats": {
+        "ac": 10,
+        "dt_dr": {
+          "normal": "4/30",
+          "laser": "3/37",
+          "fire": "4/15",
+          "plasma": "3/37",
+          "explosion": "4/25"
+        }
+      }
+    },
+    {
+      "id": "armor_spiked_mutant_plate",
+      "name": "Spiked Mutant Plate Armor",
+      "category": "armor",
+      "type": "heavy",
+      "value": 4200,
+      "weight": 50,
+      "requirements": "Mutants only",
+      "description": "An improvement on normal mutant plate armor, this suit offers better protection, better craftsmanship, and weights a lot more.",
+      "tags": [
+        "armor",
+        "heavy",
+        "mutant",
+        "special"
+      ],
+      "stats": {
+        "ac": 15,
+        "dt_dr": {
+          "normal": "4/35",
+          "laser": "4/45",
+          "fire": "4/20",
+          "plasma": "4/45",
+          "explosion": "4/30"
+        }
+      }
+    },
+    {
+      "id": "armor_tesla",
+      "name": "Tesla Armor",
+      "category": "armor",
+      "type": "heavy",
+      "value": 4500,
+      "weight": 35,
+      "description": "This metal suit of armor is enhanced with electromagnetic coils to aid in protection against energy attacks. Usually found only in high-tech areas.",
+      "flavor": "Feel The Lightning",
+      "tags": [
+        "armor",
+        "heavy",
+        "metal",
+        "energy",
+        "rare"
+      ],
+      "penalties": {
+        "sneak": -20
+      },
+      "stats": {
+        "ac": 15,
+        "dt_dr": {
+          "normal": "4/20",
+          "laser": "19/90",
+          "fire": "4/10",
+          "plasma": "10/80",
+          "explosion": "4/20"
+        }
+      }
+    },
+    {
+      "id": "armor_brotherhood_tesla",
+      "name": "Brotherhood Tesla Armor",
+      "category": "armor",
+      "type": "heavy",
+      "value": 4800,
+      "weight": 35,
+      "penalties": {
+        "sneak": -20
+      },
+      "description": "The Brotherhood of Steel manufactured this improved version of the Tesla Armor. It is usually only worn by Brotherhood technicians.",
+      "tags": [
+        "armor",
+        "heavy",
+        "metal",
+        "energy",
+        "brotherhood",
+        "faction"
+      ],
+      "stats": {
+        "ac": 15,
+        "dt_dr": {
+          "normal": "4/20",
+          "laser": "15/85",
+          "fire": "7/45",
+          "plasma": "15/85",
+          "explosion": "4/20"
+        }
+      }
+    },
+    {
+      "id": "armor_brotherhood_combat",
+      "name": "Brotherhood Combat Armor",
+      "category": "armor",
+      "type": "heavy",
+      "value": 4800,
+      "weight": 25,
+      "bonuses": {
+        "radiation_resistance": 20
+      },
+      "description": "This combat armor is standard-issue for combat-members in the Brotherhood of Steel. This is an advanced version of the Combat Armor, and can occasionally be found for sale in large cities. This suit of armor already has a helmet.",
+      "tags": [
+        "armor",
+        "heavy",
+        "combat",
+        "brotherhood",
+        "faction",
+        "military"
+      ],
+      "stats": {
+        "ac": 20,
+        "dt_dr": {
+          "normal": "8/40",
+          "laser": "8/70",
+          "fire": "7/50",
+          "plasma": "7/60",
+          "explosion": "8/40"
+        },
+        "hasHelmet": true
+      }
+    },
+    {
+      "id": "armor_radiation_suit",
+      "name": "Radiation Suit",
+      "category": "armor",
+      "type": "special",
+      "value": 5000,
+      "weight": 20,
+      "description": "A radiation suit is necessary if someone is going to do any prolonged activity in an irradiated area. While wearing a radiation suit, a person is protected from all the harmful effects of radioactivity and radioactive materials. You cannot wear a helmet with a radiation suit.",
+      "flavor": "Are You Sure This Place Is Safe?",
+      "tags": [
+        "armor",
+        "special",
+        "hazmat",
+        "radiation"
+      ],
+      "bonuses": {
+        "radiation_resistance": 100,
+        "gas_resistance": "100/100"
+      },
+      "penalties": {
+        "sneak": -30
+      },
+      "stats": {
+        "ac": 15,
+        "dt_dr": {
+          "normal": "4/30",
+          "laser": "0/30",
+          "fire": "10/60",
+          "plasma": "0/20",
+          "explosion": "4/40"
+        },
+        "noHelmet": true
+      }
+    },
+    {
+      "id": "armor_combat",
+      "name": "Combat Armor",
+      "category": "armor",
+      "type": "heavy",
+      "value": 6500,
+      "weight": 20,
+      "description": "The standard military-issue armor for ground troops before the war, there are still quite a few suits of combat armor lying around. Most are used by police forces in large cities, or by gangsters with lots of money. This suit of armor already has a helmet.",
+      "flavor": "Better Than Going Commando",
+      "tags": [
+        "armor",
+        "heavy",
+        "combat",
+        "military"
+      ],
+      "bonuses": {
+        "radiation_resistance": 20
+      },
+      "stats": {
+        "ac": 20,
+        "dt_dr": {
+          "normal": "5/40",
+          "laser": "8/60",
+          "fire": "4/30",
+          "plasma": "4/50",
+          "explosion": "6/40"
+        },
+        "hasHelmet": true
+      }
+    },
+    {
+      "id": "armor_combat_mk2",
+      "name": "Combat Armor MK II",
+      "category": "armor",
+      "type": "heavy",
+      "value": 8000,
+      "weight": 20,
+      "description": "An advanced version of the Combat Armor, this offers far better protection. Originally issued to soldiers in the advanced stages of the war. This suit of armor already has a helmet.",
+      "flavor": "Hoo-Rah",
+      "tags": [
+        "armor",
+        "heavy",
+        "combat",
+        "military"
+      ],
+      "bonuses": {
+        "radiation_resistance": 20
+      },
+      "stats": {
+        "ac": 25,
+        "dt_dr": {
+          "normal": "6/40",
+          "laser": "6/65",
+          "fire": "5/35",
+          "plasma": "5/50",
+          "explosion": "9/45"
+        },
+        "hasHelmet": true
+      }
+    },
+    {
+      "id": "armor_advanced_radiation",
+      "name": "Advanced Radiation Suit",
+      "category": "armor",
+      "type": "special",
+      "value": 9000,
+      "weight": 30,
+      "description": "The EPA developed this advanced Hostile Environment suit for operatives in special situations. Combining the protection of a radiation suit with the gas-filtration system of power armors, this armor also offers the user some protection against attacks.",
+      "flavor": "Pretty Flowers Need The Sun",
+      "tags": [
+        "armor",
+        "special",
+        "hazmat"
+      ],
+      "bonuses": {
+        "radiation_resistance": 60,
+        "gas_resistance": "100/100",
+        "poison_resistance": 50
+      },
+      "penalties": {
+        "sneak": -50,
+        "doctor": -10,
+        "lockpick": -10,
+        "steal": -10,
+        "repair": -10,
+        "first_aid": -5,
+        "science": -5
+      },
+      "stats": {
+        "ac": 18,
+        "dt_dr": {
+          "normal": "5/40",
+          "laser": "5/55",
+          "fire": "4/40",
+          "plasma": "5/55",
+          "explosion": "6/40"
+        },
+        "hasHelmet": true
+      }
+    },
+    {
+      "id": "armor_brotherhood_environmental_mk2",
+      "name": "Brotherhood Environmental Armor MK II",
+      "category": "armor",
+      "type": "special",
+      "value": 10000,
+      "weight": 35,
+      "bonuses": {
+        "radiation_resistance": 90,
+        "gas_resistance": "100/100",
+        "poison_resistance": 75
+      },
+      "penalties": {
+        "perception": -1,
+        "sneak": -50,
+        "doctor": -11,
+        "lockpick": -11,
+        "steal": -10,
+        "repair": -10,
+        "first_aid": -7,
+        "science": -5,
+        "pilot": -2
+      },
+      "description": "An advanced version of the Brotherhood's Environmental Armor. Such is the price of decent protection. Needless to say, only the highest ranking officers in the Brotherhood have access to this kind of armor.",
+      "tags": [
+        "armor",
+        "special",
+        "hazmat",
+        "brotherhood",
+        "faction",
+        "rare"
+      ],
+      "stats": {
+        "ac": 20,
+        "dt_dr": {
+          "normal": "6/40",
+          "laser": "6/60",
+          "fire": "5/42",
+          "plasma": "6/60",
+          "explosion": "9/45"
+        },
+        "hasHelmet": true
+      }
+    },
+    {
+      "id": "armor_pseudo_chitin",
+      "name": "Pseudo-Chitin Armor",
+      "category": "armor",
+      "type": "special",
+      "value": 10000,
+      "weight": 20,
+      "description": "This experimental armor was made using genetic engineering. Basically, this armor affords its wearer a complete biological exoskeleton, protecting against a good deal of normal attacks. You cannot wear a helmet with this strange suit of armor.",
+      "flavor": "Stand up... There you go. You were dreaming.",
+      "tags": [
+        "armor",
+        "special",
+        "biological",
+        "experimental",
+        "rare"
+      ],
+      "bonuses": {
+        "radiation_resistance": 20
+      },
+      "stats": {
+        "ac": 30,
+        "dt_dr": {
+          "normal": "10/50",
+          "laser": "4/20",
+          "fire": "10/60",
+          "plasma": "4/20",
+          "explosion": "5/50"
+        },
+        "noHelmet": true
+      }
+    },
+    {
+      "id": "armor_power_t45d",
+      "name": "T45d Power Armor",
+      "category": "armor",
+      "type": "power",
+      "value": 12500,
+      "weight": 35,
+      "description": "This is a metal suit of body armor enhanced with various powered features. Power armor is often the final word in personal protection in the wastes, and is usually only worn by organizations with access to prewar tech.",
+      "flavor": "In Shining Armor",
+      "tags": [
+        "armor",
+        "power",
+        "heavy",
+        "powered",
+        "rare"
+      ],
+      "bonuses": {
+        "strength": 3,
+        "radiation_resistance": 30,
+        "gas_resistance": "100/100",
+        "poison_resistance": 15
+      },
+      "penalties": {
+        "sneak": -75,
+        "first_aid": -10,
+        "doctor": -10,
+        "lockpick": -10,
+        "steal": -10,
+        "science": -10,
+        "repair": -10
+      },
+      "stats": {
+        "ac": 25,
+        "dt_dr": {
+          "normal": "12/40",
+          "laser": "18/80",
+          "fire": "12/60",
+          "plasma": "10/40",
+          "explosion": "20/50"
+        },
+        "hasHelmet": true
+      }
+    },
+    {
+      "id": "armor_power_t45d_hardened",
+      "name": "Hardened Power Armor",
+      "category": "armor",
+      "type": "power",
+      "value": 15000,
+      "weight": 50,
+      "description": "There is a chemical process that makes normal T45d Power Armor harder and better, and this is the result of that process. Like the normal T45d Power Armor, this suit enhances the Strength of the wearer by 3 points.",
+      "flavor": "Smitty Special",
+      "tags": [
+        "armor",
+        "power",
+        "heavy",
+        "powered",
+        "rare"
+      ],
+      "bonuses": {
+        "strength": 3,
+        "radiation_resistance": 30,
+        "gas_resistance": "100/100",
+        "poison_resistance": 15
+      },
+      "penalties": {
+        "sneak": -75,
+        "first_aid": -10,
+        "doctor": -10,
+        "lockpick": -10,
+        "steal": -10,
+        "science": -10,
+        "repair": -10
+      },
+      "stats": {
+        "ac": 25,
+        "dt_dr": {
+          "normal": "13/50",
+          "laser": "19/90",
+          "fire": "14/70",
+          "plasma": "13/50",
+          "explosion": "20/60"
+        },
+        "hasHelmet": true
+      }
+    },
+    {
+      "id": "armor_power_t51b",
+      "name": "T51b Power Armor",
+      "category": "armor",
+      "type": "power",
+      "value": 17000,
+      "weight": 42,
+      "description": "This suit of power armor was manufactured by the Brotherhood of Steel for its Paladins after the War. It is amazingly resilient, and fairly stylish, too.",
+      "flavor": "You Could March This From Anchorage to Nanjing",
+      "tags": [
+        "armor",
+        "power",
+        "heavy",
+        "powered",
+        "brotherhood",
+        "faction",
+        "rare"
+      ],
+      "bonuses": {
+        "strength": 3,
+        "radiation_resistance": 30,
+        "gas_resistance": "100/100",
+        "poison_resistance": 15
+      },
+      "penalties": {
+        "perception": -1,
+        "sneak": -75,
+        "first_aid": -10,
+        "doctor": -10,
+        "lockpick": -10,
+        "steal": -10,
+        "science": -10,
+        "repair": -10
+      },
+      "stats": {
+        "ac": 28,
+        "dt_dr": {
+          "normal": "13/50",
+          "laser": "16/70",
+          "fire": "13/60",
+          "plasma": "16/70",
+          "explosion": "20/60"
+        },
+        "hasHelmet": true
+      }
+    },
+    {
+      "id": "armor_power_t60a",
+      "name": "T60a Power Armor",
+      "category": "armor",
+      "type": "power",
+      "value": 20000,
+      "weight": 50,
+      "description": "An advanced form of power armor. This armor gives a 60% Radiation Resist bonus and a 100/100 Gas Resist bonus with a 20% Poison Resist bonus.",
+      "flavor": "Your move, creep.",
+      "tags": [
+        "armor",
+        "power",
+        "heavy",
+        "powered",
+        "rare"
+      ],
+      "bonuses": {
+        "strength": 4,
+        "radiation_resistance": 60,
+        "gas_resistance": "100/100",
+        "poison_resistance": 20
+      },
+      "penalties": {
+        "perception": -2,
+        "sneak": -75,
+        "first_aid": -10,
+        "doctor": -10,
+        "lockpick": -10,
+        "steal": -10,
+        "science": -10,
+        "repair": -10
+      },
+      "stats": {
+        "ac": 35,
+        "dt_dr": {
+          "normal": "18/55",
+          "laser": "17/75",
+          "fire": "15/65",
+          "plasma": "17/75",
+          "explosion": "20/65"
+        },
+        "hasHelmet": true
+      }
+    },
+    {
+      "id": "armor_advanced_power",
+      "name": "Advanced Power Armor",
+      "category": "armor",
+      "type": "power",
+      "value": 20000,
+      "weight": 30,
+      "description": "Advanced Power Armor is an improvement on normal Power Armor, made mostly by technicians after the war. It is extremely rare and can only be found in organizations that can trace their roots back to the American Armed Services, such as the Enclave. This armor has a built-in night vision system.",
+      "flavor": "Duty. Honor.",
+      "tags": [
+        "armor",
+        "power",
+        "heavy",
+        "powered",
+        "enclave",
+        "rare"
+      ],
+      "bonuses": {
+        "strength": 4,
+        "radiation_resistance": 60,
+        "gas_resistance": "100/100",
+        "poison_resistance": 20
+      },
+      "penalties": {
+        "sneak": -75,
+        "first_aid": -10,
+        "doctor": -10,
+        "lockpick": -10,
+        "steal": -10,
+        "science": -10,
+        "repair": -10
+      },
+      "stats": {
+        "ac": 30,
+        "dt_dr": {
+          "normal": "15/55",
+          "laser": "19/90",
+          "fire": "16/70",
+          "plasma": "15/60",
+          "explosion": "20/65"
+        },
+        "hasHelmet": true,
+        "nightVision": true
+      }
+    },
+    {
+      "id": "armor_advanced_power_mk2",
+      "name": "Advanced Power Armor MK II",
+      "category": "armor",
+      "type": "power",
+      "value": 35000,
+      "weight": 50,
+      "description": "An improved version of the Advanced Power Armor, the MK II model offers slightly better protection in addition to the 100/100 gas filtration and +4 Strength enhancements. The only group known to have this armor is the Enclave. This suit also has a built-in night vision system.",
+      "flavor": "Semper Fi.",
+      "tags": [
+        "armor",
+        "power",
+        "heavy",
+        "powered",
+        "enclave",
+        "rare"
+      ],
+      "bonuses": {
+        "strength": 4,
+        "radiation_resistance": 75,
+        "gas_resistance": "100/100",
+        "poison_resistance": 40
+      },
+      "penalties": {
+        "sneak": -75,
+        "first_aid": -10,
+        "doctor": -10,
+        "lockpick": -10,
+        "steal": -10,
+        "science": -10,
+        "repair": -10
+      },
+      "stats": {
+        "ac": 35,
+        "dt_dr": {
+          "normal": "18/60",
+          "laser": "19/90",
+          "fire": "16/70",
+          "plasma": "18/60",
+          "explosion": "20/70"
+        },
+        "hasHelmet": true,
+        "nightVision": true
+      }
+    }
+  ],
+  "equipment": [
+    {
+      "id": "equip_flare",
+      "name": "Flare",
+      "category": "equipment",
+      "type": "light",
+      "value": 10,
+      "weight": 1,
+      "description": "A chemical-packed stick that, when ignited, will provide light for about an hour.",
+      "flavor": "Do Not Eat",
+      "tags": [
+        "equipment",
+        "light",
+        "consumable",
+        "throwable"
+      ]
+    },
+    {
+      "id": "equip_lighter",
+      "name": "Lighter",
+      "category": "equipment",
+      "type": "tool",
+      "value": 10,
+      "weight": 1,
+      "description": "When you need to get that molotov cocktail going, or burn that particular bridge.",
+      "flavor": "Pretty Girls Don't Light Their Own Cigarettes",
+      "tags": [
+        "equipment",
+        "tool",
+        "fire"
+      ]
+    },
+    {
+      "id": "equip_flashlight",
+      "name": "Flashlight",
+      "category": "equipment",
+      "type": "light",
+      "value": 15,
+      "weight": 1,
+      "description": "A small flashlight (torch) that runs off of a special energy cell. Usually provides about 30 hours of light before going out.",
+      "flavor": "Who Bought Batteries?",
+      "tags": [
+        "equipment",
+        "light",
+        "energy"
+      ]
+    },
+    {
+      "id": "equip_rope",
+      "name": "Rope",
+      "category": "equipment",
+      "type": "tool",
+      "value": 25,
+      "weight": 10,
+      "description": "What role playing game would be complete without a rope? Perhaps one of the most useful items in the world. Consider this to be about 10 meters long.",
+      "flavor": "Hey, this is only enough to... oh",
+      "tags": [
+        "equipment",
+        "tool",
+        "utility"
+      ]
+    },
+    {
+      "id": "equip_shovel",
+      "name": "Shovel",
+      "category": "equipment",
+      "type": "tool",
+      "value": 30,
+      "weight": 15,
+      "description": "A simple shovel for digging and other manual tasks.",
+      "flavor": "Can you dig this, daddy-o?",
+      "tags": [
+        "equipment",
+        "tool"
+      ]
+    },
+    {
+      "id": "equip_claw_hammer",
+      "name": "Claw Hammer",
+      "category": "equipment",
+      "type": "tool",
+      "value": 40,
+      "weight": 4,
+      "description": "A useful implement, the claw hammer can pound nails into things, or remove nails from things. Use it to hang all those velvet Elvis' you find in the wastes.",
+      "flavor": "I Drive",
+      "tags": [
+        "equipment",
+        "tool"
+      ]
+    },
+    {
+      "id": "equip_lockpick",
+      "name": "Bobby Pin",
+      "category": "equipment",
+      "type": "tool",
+      "value": 40,
+      "weight": 1,
+      "description": "Gives the user a +50% bonus to Lockpick ability for the purposes of picking basic locks. Some locks require one of these (or a key) to open.",
+      "flavor": "Perfect For Your Girlfriend And Her Box",
+      "tags": [
+        "equipment",
+        "tool",
+        "lockpick"
+      ],
+      "bonuses": {
+        "lockpick": 50
+      }
+    },
+    {
+      "id": "equip_tool_set",
+      "name": "Tool Set",
+      "category": "equipment",
+      "type": "tool",
+      "value": 50,
+      "weight": 15,
+      "description": "A set of basic tools, such as small wrenches, pliers, some screwdrivers, and a hammer. For basic repairs.",
+      "flavor": "Now Where'd I Put The Socket Wrench...",
+      "tags": [
+        "equipment",
+        "tool",
+        "repair"
+      ]
+    },
+    {
+      "id": "equip_boots",
+      "name": "Boots",
+      "category": "equipment",
+      "type": "clothing",
+      "value": 80,
+      "weight": 5,
+      "description": "A set of reinforced rubber and Kevlar boots. They will protect the wearer from harsh chemicals for a short time, although they tend to wear out easily.",
+      "flavor": "Made For Walking",
+      "tags": [
+        "equipment",
+        "clothing",
+        "protection"
+      ]
+    },
+    {
+      "id": "equip_scalpel",
+      "name": "Scalpel",
+      "category": "equipment",
+      "type": "tool",
+      "value": 140,
+      "weight": 1,
+      "description": "The standard instrument for performing surgeries, this surgical-stainless steel knife is small but incredibly sharp. Not the best tool for a melee fight, but it will do in a pinch. If a character has a scalpel, it adds +10% to his Doctor skill.",
+      "flavor": "The Doctor is in!",
+      "tags": [
+        "equipment",
+        "tool",
+        "medical"
+      ],
+      "bonuses": {
+        "doctor": 10
+      }
+    },
+    {
+      "id": "equip_gas_mask",
+      "name": "Gas Mask",
+      "category": "equipment",
+      "type": "protection",
+      "value": 150,
+      "weight": 3,
+      "description": "This mask protects against harmful gas by conferring a 100/0 Gas Resistance bonus to the wearer. Useful when someone lobs a mustard gas shell at the party. Note that it does not block radiation.",
+      "flavor": "Is It Sealed?",
+      "tags": [
+        "equipment",
+        "protection",
+        "gas"
+      ],
+      "bonuses": {
+        "gas_resistance": "100/0"
+      }
+    },
+    {
+      "id": "equip_expanded_lockpick_set",
+      "name": "Expanded Lockpick Set",
+      "category": "equipment",
+      "type": "tool",
+      "value": 150,
+      "weight": 1,
+      "description": "This little kit contains everything the aspiring thief needs to break into just about anything protected by a traditional lock. Gives a +70% bonus to the Lockpicking skill when used.",
+      "flavor": "Under Litigation From MasterLock",
+      "tags": [
+        "equipment",
+        "tool",
+        "lockpick"
+      ],
+      "bonuses": {
+        "lockpick": 70
+      }
+    },
+    {
+      "id": "equip_safecracking_kit",
+      "name": "Safecracking Kit",
+      "category": "equipment",
+      "type": "tool",
+      "value": 200,
+      "weight": 5,
+      "description": "The use of this kit is required to open most safes, and gives the user a +20% bonus to their Lockpicking skill when trying to open a safe.",
+      "flavor": "Click... Click... Thunk",
+      "tags": [
+        "equipment",
+        "tool",
+        "lockpick"
+      ],
+      "bonuses": {
+        "lockpick": 20
+      }
+    },
+    {
+      "id": "equip_electronic_lockpick",
+      "name": "Electronic Lockpick",
+      "category": "equipment",
+      "type": "tool",
+      "value": 250,
+      "weight": 3,
+      "description": "This valuable device is required to open electronic locks. It is crafted to overload or override the computer security on electronic doors.",
+      "flavor": "Perfect for Fort Knox or a Nerd on a Panty Raid",
+      "tags": [
+        "equipment",
+        "tool",
+        "lockpick",
+        "electronic"
+      ]
+    },
+    {
+      "id": "equip_dynamite_kit",
+      "name": "Dynamite",
+      "category": "equipment",
+      "type": "explosive",
+      "value": 275,
+      "weight": 5,
+      "description": "An explosive device consisting of several sticks of dynamite, a detonator, and a timer to set it off. Setting dynamite takes a successful roll against the Traps skill. Dynamite does 1d20+30 points of damage to anything in its hex and all adjacent hexes when it goes off, and 1d6 points of concussion damage to anything within 4 hexes of the explosion.",
+      "flavor": "A Nobel Prize",
+      "tags": [
+        "equipment",
+        "explosive"
+      ],
+      "stats": {
+        "damage": "1d20+30 (primary) + 1d6 concussion (4 hex radius)"
+      }
+    },
+    {
+      "id": "equip_medical_kit",
+      "name": "Medical Kit",
+      "category": "equipment",
+      "type": "medical",
+      "value": 300,
+      "weight": 4,
+      "description": "A first-aid kit that, when used, acts like one successful use of the First Aid skill, healing 1d10 points of damage in 1d10 minutes. Can only be used once.",
+      "flavor": "This one has \"Jangles the Moon Monkey\" bandages!",
+      "tags": [
+        "equipment",
+        "medical",
+        "consumable",
+        "healing"
+      ],
+      "stats": {
+        "healing": "1d10",
+        "time": "1d10 minutes"
+      }
+    },
+    {
+      "id": "equip_geiger_counter",
+      "name": "Geiger Counter",
+      "category": "equipment",
+      "type": "tool",
+      "value": 300,
+      "weight": 5,
+      "description": "This useful little device not only detects how much radiation is in a person, it can detect harmful radiation in the surrounding area. Useful when you are wondering if that big glowing crater in the ground is dangerous.",
+      "flavor": "Is it supposed to do that?",
+      "tags": [
+        "equipment",
+        "tool",
+        "radiation",
+        "detection"
+      ]
+    },
+    {
+      "id": "equip_plastique",
+      "name": "Plastique (C-14 Plastic Explosive)",
+      "category": "equipment",
+      "type": "explosive",
+      "value": 400,
+      "weight": 2,
+      "description": "C-14 is an improved version of the classic C-4 plastic explosive. A gummy-like substance that can be rigged to detonate, plastique is useful because it can be molded to any shape. Setting it takes a successful roll against Traps. Plastique does 2d20+30 damage to anything within the hex in which it detonates, half damage to everything in adjacent hexes, and 1d6 concussion damage to anything within 4 hexes of the explosion. C-14 can be compounded on itself to make bigger bombs, too.",
+      "flavor": "The Last Playdough You'll Ever Use",
+      "tags": [
+        "equipment",
+        "explosive"
+      ],
+      "stats": {
+        "damage": "2d20+30 (primary), half in adjacent hexes, 1d6 concussion (4 hex radius)"
+      }
+    },
+    {
+      "id": "equip_doctors_bag",
+      "name": "Doctor's Bag",
+      "category": "equipment",
+      "type": "medical",
+      "value": 450,
+      "weight": 10,
+      "description": "The Doctor's Bag contains various sawbones instruments for diagnosing and treating various maladies. If a character has a Doctor's Bag, it effectively raises the Doctor skill by 15% for the purposes of treating crippled limbs and blindness only.",
+      "flavor": "Apple Not Included",
+      "tags": [
+        "equipment",
+        "medical",
+        "tool"
+      ],
+      "bonuses": {
+        "doctor": 15
+      }
+    },
+    {
+      "id": "equip_electronic_lockpick_mk2",
+      "name": "Electronic Lockpick Mark II",
+      "category": "equipment",
+      "type": "tool",
+      "value": 500,
+      "weight": 5,
+      "description": "An improved Electronic Lockpick, used by phreakers, hackers, criminals, and CIA operatives before the War. With this tool, not only can a character open any electronic lock, but it contains a variety of interfaces for other electronic devices like mainframe computers, ATMs, and pocket calculators.",
+      "flavor": "If Lost, Return To Jimmy Bond",
+      "tags": [
+        "equipment",
+        "tool",
+        "lockpick",
+        "electronic",
+        "hacking"
+      ]
+    }
+  ],
+  "chems": [
+    {
+      "id": "chem_jet",
+      "name": "Jet",
+      "category": "chems",
+      "type": "stimulant",
+      "value": 25,
+      "weight": 0.5,
+      "description": "Jet is the new street drug of the post-nuclear world. Jet comes in an inhaler, much like asthma medicine. After inhalation, the user gains +2 Action Points (up to 13), +1 Strength, and +1 Perception for 1d10 hours. After this time, the character loses two Action Points, 3 Strength, and 3 Perception. Jet is 80% addictive.",
+      "flavor": "Fly Higher",
+      "tags": [
+        "chem",
+        "drug",
+        "stimulant",
+        "addictive"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2,
+          "strength": 1,
+          "perception": 1,
+          "duration": "1d10 hours"
+        },
+        "negative": {
+          "action_points": -2,
+          "strength": -3,
+          "perception": -3,
+          "duration": "After positive effects"
+        }
+      },
+      "addiction": 80
+    },
+    {
+      "id": "chem_healing_powder",
+      "name": "Healing Powder",
+      "category": "chems",
+      "type": "healing",
+      "value": 50,
+      "weight": 0.5,
+      "description": "This is a simple healing powder that, when ingested, helps ease pain from minor wounds. It heals 1d10+5 HP when eaten, and causes the user to lose 1 Perception for 1 hour after consumption. Not addictive. The negative effects of this powder are cumulative.",
+      "flavor": "Don't Forget To Pray To The Healing Spirit",
+      "tags": [
+        "chem",
+        "healing",
+        "tribal"
+      ],
+      "effects": {
+        "positive": {
+          "healing": "1d10+5"
+        },
+        "negative": {
+          "perception": -1,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 0
+    },
+    {
+      "id": "chem_voodoo",
+      "name": "Voodoo",
+      "category": "chems",
+      "type": "enhancement",
+      "value": 50,
+      "weight": 0.5,
+      "description": "A tribal concoction made from parts of dead critters (yummy!) Eating this powder makes someone feel invincible. For 30 minutes, Voodoo confers a +2 bonus to Agility, a +3 bonus to Luck, and a 20% bonus to Damage Resistance for Normal attacks only. After a half-hour, the user feels depressed and loses 2 Agility, 3 Luck, and all Damage Resistance from Normal attacks. Voodoo is 20% addictive.",
+      "flavor": "Do You Trust The Medicine Man?",
+      "tags": [
+        "chem",
+        "drug",
+        "enhancement",
+        "tribal",
+        "addictive"
+      ],
+      "effects": {
+        "positive": {
+          "agility": 2,
+          "luck": 3,
+          "damage_resistance_normal": 20,
+          "duration": "30 minutes"
+        },
+        "negative": {
+          "agility": -2,
+          "luck": -3,
+          "damage_resistance_normal": "lose all",
+          "duration": "After positive effects"
+        }
+      },
+      "addiction": 20
+    },
+    {
+      "id": "chem_stimpak",
+      "name": "Stimpak",
+      "category": "chems",
+      "type": "healing",
+      "value": 150,
+      "weight": 0.5,
+      "description": "Stimpaks are small syringes with healing chems that ease pain and encourage cellular mitosis, helping cells restore themselves at an increased rate. Quite common before the war, they can be found, in one form or another, almost everywhere. When injected, the stimpak heals 1d10+10 HP. Not addictive.",
+      "flavor": "That Feels Better",
+      "tags": [
+        "chem",
+        "healing",
+        "medical"
+      ],
+      "effects": {
+        "positive": {
+          "healing": "1d10+10"
+        }
+      },
+      "addiction": 0
+    },
+    {
+      "id": "chem_antidote",
+      "name": "Antidote",
+      "category": "chems",
+      "type": "cure",
+      "value": 150,
+      "weight": 0.5,
+      "description": "Made from a variety of distilled poisons and antibodies, each dose of Antidote removes one level of poisoning. Antidote tastes and looks like cough syrup, and comes in little bottles. There is no official Antidote company in the wastes, and it is often something that country doctors and traveling quacks will sell for far more than it's worth. Not addictive.",
+      "flavor": "Hope You're Not Afraid Of Needles",
+      "tags": [
+        "chem",
+        "cure",
+        "medical",
+        "poison"
+      ],
+      "effects": {
+        "positive": {
+          "cure": "Removes one level of poisoning"
+        }
+      },
+      "addiction": 0
+    },
+    {
+      "id": "chem_buffout",
+      "name": "Buffout",
+      "category": "chems",
+      "type": "steroid",
+      "value": 200,
+      "weight": 0.5,
+      "description": "Buffout is a kind of temporary steroid, increasing mitochondrial activity in muscles for a brief period of time. Unfortunately, these same chemicals also impair brain function. When swallowed, Buffout increases the user's Strength by 2, Agility by 2, and Endurance by 3. The effects last one-half (round down) of 1d10 hours. After the effects wear off, the user loses 3 Strength, 3 Agility, and 2 Endurance for 1d10 hours. Buffout carries a 30% chance of addiction.",
+      "flavor": "As Seen On InfoWars",
+      "tags": [
+        "chem",
+        "drug",
+        "steroid",
+        "addictive"
+      ],
+      "effects": {
+        "positive": {
+          "strength": 2,
+          "agility": 2,
+          "endurance": 3,
+          "duration": "Half of 1d10 hours (round down)"
+        },
+        "negative": {
+          "strength": -3,
+          "agility": -3,
+          "endurance": -2,
+          "duration": "1d10 hours"
+        }
+      },
+      "addiction": 30
+    },
+    {
+      "id": "chem_mentats",
+      "name": "Mentats",
+      "category": "chems",
+      "type": "psycho",
+      "value": 280,
+      "weight": 0.5,
+      "description": "Mentats increase the user's awareness for a short period of time, but are dangerous because of the intense aftereffects and high addiction rate. When Mentats are swallowed, the user's Perception increases by 2, Intelligence increases by 2, and Charisma increases by 1. The effects last 1 hour, after which time the user's Perception and Intelligence are decreased by 4 and Charisma is decreased by 3 for 1d10 hours. Mentats have a 60% chance of addiction.",
+      "flavor": "Just repeating a statement often and with great vehemence does not make it a fact, and no amount of repetition can make a rational person believe it.",
+      "tags": [
+        "chem",
+        "drug",
+        "psycho",
+        "addictive"
+      ],
+      "effects": {
+        "positive": {
+          "perception": 2,
+          "intelligence": 2,
+          "charisma": 1,
+          "duration": "1 hour"
+        },
+        "negative": {
+          "perception": -4,
+          "intelligence": -4,
+          "charisma": -3,
+          "duration": "1d10 hours"
+        }
+      },
+      "addiction": 60
+    },
+    {
+      "id": "chem_afterburner_gum",
+      "name": "After Burner Gum",
+      "category": "chems",
+      "type": "stimulant",
+      "value": 350,
+      "weight": 0.5,
+      "description": "After Burner was an attempt to legalize a 'safe' form of meth in the early 21st century. Tiny methamphetamine crystals were mixed in with chewing gum. Chewing After Burner gives the user a +1 bonus to Strength and Perception, and raises the user's Action Points by 2, for 1d10 minutes. After that time, the user loses 1 point of Strength and 2 points of Perception for 1 hour. After Burner is 30% addictive.",
+      "flavor": "Baby Blue Flavor",
+      "tags": [
+        "chem",
+        "drug",
+        "stimulant",
+        "addictive"
+      ],
+      "effects": {
+        "positive": {
+          "strength": 1,
+          "perception": 1,
+          "action_points": 2,
+          "duration": "1d10 minutes"
+        },
+        "negative": {
+          "strength": -1,
+          "perception": -2,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 30
+    },
+    {
+      "id": "chem_psycho",
+      "name": "Psycho",
+      "category": "chems",
+      "type": "psycho",
+      "value": 400,
+      "weight": 0.5,
+      "description": "Psycho is a drug that is much like a combination between Mentats and speed. This chemical cocktail is highly addictive and has horrible side effects, but the high it produces is worth it to many users. After injecting Psycho, the user's Agility increases by 3, and their Intelligence is reduced by 3. The effects of Psycho last 1d10 hours, after which time the user loses 3 points to ALL Stats except Luck for 1d10 hours. Psycho is 50% addictive.",
+      "flavor": "Perfect For Storming A Shanghai Bunker",
+      "tags": [
+        "chem",
+        "drug",
+        "psycho",
+        "addictive"
+      ],
+      "effects": {
+        "positive": {
+          "agility": 3,
+          "intelligence": -3,
+          "duration": "1d10 hours"
+        },
+        "negative": {
+          "all_stats_except_luck": -3,
+          "duration": "1d10 hours"
+        }
+      },
+      "addiction": 50
+    },
+    {
+      "id": "chem_super_stimpak",
+      "name": "Super Stimpak",
+      "category": "chems",
+      "type": "healing",
+      "value": 500,
+      "weight": 0.5,
+      "description": "This is an incredible melange of healing chems designed to aid wounded soldiers on the battlefield in crucial moments of combat. Super stimpaks come in a large clamp that fit around the arm and inject the chemicals into the user at various times, maximizing the effects of the chemicals. Super stimpaks heal 5d10+50 HP, but the user loses 1d10 HP after an hour from the aftershock. Not addictive.",
+      "flavor": "Now With Extra Stem Cells",
+      "tags": [
+        "chem",
+        "healing",
+        "medical",
+        "military"
+      ],
+      "effects": {
+        "positive": {
+          "healing": "5d10+50"
+        },
+        "negative": {
+          "damage": "1d10",
+          "delay": "1 hour"
+        }
+      },
+      "addiction": 0
+    },
+    {
+      "id": "chem_military_trauma_pack",
+      "name": "MilitaryTrauma Pack",
+      "category": "chems",
+      "type": "healing",
+      "value": 600,
+      "weight": 0.5,
+      "description": "A chemical concoction made by the USA for use in battle, Trauma Packs send the cellular reproduction process into overdrive, healing 6d10+60 hit points instantly, but causing 2d10+30 points of damage after 1 hour. Not addictive.",
+      "flavor": "What does IFAK even stand for?",
+      "tags": [
+        "chem",
+        "healing",
+        "medical"
+      ],
+      "effects": {
+        "positive": {
+          "healing": "6d10+60"
+        },
+        "negative": {
+          "damage": "2d10+30",
+          "delay": "1 hour"
+        }
+      },
+      "addiction": 0
+    },
+    {
+      "id": "chem_mutie",
+      "name": "Mutie",
+      "category": "chems",
+      "type": "mutagen",
+      "value": 700,
+      "weight": 0.5,
+      "description": "Mutie is a chemical that reproduces the effects of the Forced Evolutionary Virus for a short time. After injecting this drug, the user gains +4 to Strength, +4 to Perception, -4 to Charisma, and -4 to Intelligence for 1d10 hours. After that time, the user must make a successful roll against Endurance; if the roll fails, they take 4d10 points of damage. Note that super-mutants will experience no effects from taking Mutie. Mutie is 20% addictive.",
+      "flavor": "I AM THE LIVER KING",
+      "tags": [
+        "chem",
+        "drug",
+        "mutagen",
+        "addictive",
+        "dangerous"
+      ],
+      "effects": {
+        "positive": {
+          "strength": 4,
+          "perception": 4,
+          "charisma": -4,
+          "intelligence": -4,
+          "duration": "1d10 hours"
+        },
+        "negative": {
+          "damage": "4d10 (if Endurance roll fails)",
+          "delay": "After positive effects"
+        }
+      },
+      "addiction": 20
+    },
+    {
+      "id": "chem_ultra_stimpak",
+      "name": "Ultra Stimpack",
+      "category": "chems",
+      "type": "healing",
+      "value": 1000,
+      "weight": 0.5,
+      "description": "The most powerful healing substance on the planet, Ultra Stimpacks turn cellular reproduction into a frenzy of activity, healing 10d10+50 HP immediately upon injection. In 1d10 hours, the user must make a roll against Endurance. If that roll fails, they lose every hit point the Ultra Stimpack healed; if the roll succeeds, the user loses half of those hit points. Ultra Stimpacks are only available in technology-rich organizations like the Brotherhood of Steel or the Enclave.",
+      "flavor": "My Toe Grew Back!",
+      "tags": [
+        "chem",
+        "healing",
+        "medical",
+        "rare",
+        "dangerous"
+      ],
+      "effects": {
+        "positive": {
+          "healing": "10d10+50"
+        },
+        "negative": {
+          "damage": "All healed HP (Endurance roll fails) or half (succeeds)",
+          "delay": "1d10 hours"
+        }
+      },
+      "addiction": 0
+    },
+    {
+      "id": "chem_radaway",
+      "name": "Radaway",
+      "category": "chems",
+      "type": "radiation",
+      "value": 1500,
+      "weight": 1,
+      "description": "Radaway, an obscure drug from prewar times, became one of the most useful after the bombs went off. It comes in an IV bag and must be taken through a drip IV over the period of about an hour. The Radaway works in the user's system to bond with radioactive particles and wash them out. 1 day after use, the user loses 25 rads. 2 days after use, the user loses another 25 rads. Radaway, unfortunately, has an addiction rate of 20%.",
+      "flavor": "I Feel Like My Teeth Are Still Glowing",
+      "tags": [
+        "chem",
+        "radiation",
+        "medical",
+        "addictive"
+      ],
+      "effects": {
+        "positive": {
+          "radiation_reduction": "25 rads (1 day later), 25 rads (2 days later)"
+        }
+      },
+      "addiction": 20
+    },
+    {
+      "id": "chem_radx",
+      "name": "Rad-X",
+      "category": "chems",
+      "type": "radiation",
+      "value": 2000,
+      "weight": 0.5,
+      "description": "An ounce of prevention is worth a pound of cure, and that was the idea behind these drugs. Rad-X is a pill that increases the user's Radiation Resistance by 50% for 1d10 hours after ingestion by creating a kind of radiation 'anti-body' in the user. Not addictive.",
+      "flavor": "Let's Go Sunning",
+      "tags": [
+        "chem",
+        "radiation",
+        "medical",
+        "preventative"
+      ],
+      "effects": {
+        "positive": {
+          "radiation_resistance": 50,
+          "duration": "1d10 hours"
+        }
+      },
+      "addiction": 0
+    }
+  ]
+}

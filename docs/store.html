@@ -461,22 +461,7 @@
       return null;
     }
 
-    // Map files to types and categories
-    const fileTypeMap = {
-      'equipment.md': { primary: 'Equipment', tags: [] },
-      'armors.md': { primary: 'Armor', tags: [] },
-      'assault_rifles.md': { primary: 'Assault Rifle', tags: ['Weapon', 'Guns', 'Rifle'] },
-      'machine_guns.md': { primary: 'Machine Gun', tags: ['Weapon', 'Guns'] },
-      'melee_skill_weapons.md': { primary: 'Melee Weapon', tags: ['Weapon', 'Melee'] },
-      'pistols.md': { primary: 'Pistol', tags: ['Weapon', 'Guns', 'Pistol'] },
-      'primitive_missile_weapons.md': { primary: 'Missile Weapon', tags: ['Weapon', 'Missile'] },
-      'rifles.md': { primary: 'Rifle', tags: ['Weapon', 'Guns', 'Rifle'] },
-      'shotguns.md': { primary: 'Shotgun', tags: ['Weapon', 'Guns', 'Shotgun'] },
-      'submachine_guns.md': { primary: 'Submachine Gun', tags: ['Weapon', 'Guns'] },
-      'unarmed_skill_weapons.md': { primary: 'Unarmed Weapon', tags: ['Weapon', 'Unarmed'] }
-    };
-
-    // Load configuration and equipment data
+    // Load configuration and equipment data from database
     async function loadStoreData() {
       try {
         // Load character first
@@ -497,120 +482,54 @@
         console.log('%c[STORE BUDGET LOADED: ' + storeData.budget + ']', 'color: #ffd700;');
         updateBudgetDisplay();
 
-        // Load all equipment markdown files
-        const equipmentFiles = [
-          'equipment.md',
-          'armors.md',
-          'assault_rifles.md',
-          'machine_guns.md',
-          'melee_skill_weapons.md',
-          'pistols.md',
-          'primitive_missile_weapons.md',
-          'rifles.md',
-          'shotguns.md',
-          'submachine_guns.md',
-          'unarmed_skill_weapons.md'
-        ];
-
-        for (const file of equipmentFiles) {
-          try {
-            const equipRes = await fetch(`./equipment-instructions/${file}`);
-            if (equipRes.ok) {
-              const equipText = await equipRes.text();
-              const typeInfo = fileTypeMap[file];
-              parseEquipmentMarkdown(equipText, typeInfo);
-            }
-          } catch (error) {
-          }
+        // Load database.json
+        const dbRes = await fetch('database.json');
+        if (!dbRes.ok) {
+          throw new Error('Failed to load database.json');
         }
+        const database = await dbRes.json();
+        console.log('%c[DATABASE LOADED]', 'color: #00ff00; font-weight: bold;', database.metadata);
+
+        // Flatten all items from database into storeData.items
+        storeData.items = [];
+        
+        // Add ammunition
+        if (database.ammunition) {
+          storeData.items.push(...database.ammunition);
+        }
+        
+        // Add weapons
+        if (database.weapons) {
+          storeData.items.push(...database.weapons);
+        }
+        
+        // Add armor
+        if (database.armor) {
+          storeData.items.push(...database.armor);
+        }
+        
+        // Add equipment
+        if (database.equipment) {
+          storeData.items.push(...database.equipment);
+        }
+        
+        // Add chems
+        if (database.chems) {
+          storeData.items.push(...database.chems);
+        }
+
+        console.log('%c[TOTAL ITEMS LOADED: ' + storeData.items.length + ']', 'color: #4CAF50; font-weight: bold;');
 
         initializeTypeFilters();
         renderStore();
       } catch (error) {
+        console.error('%c[ERROR LOADING STORE DATA]', 'color: #ff0000; font-weight: bold;', error);
         showMessage('Failed to load store data', 'error');
       }
     }
 
-    function parseEquipmentMarkdown(markdown, typeInfo) {
-      const lines = markdown.split('\n');
-      let currentItem = null;
-      let inCodeBlock = false;
-
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-
-        // Track code block boundaries
-        if (line.trim().startsWith('```')) {
-          inCodeBlock = !inCodeBlock;
-          continue;
-        }
-
-        // Skip content outside code blocks for weapon data
-        if (!inCodeBlock && line.match(/^```/)) {
-          continue;
-        }
-
-        // Match item header (## or ### Item Name)
-        const itemMatch = line.match(/^#{2,3}\s+(.+)$/);
-        if (itemMatch) {
-          if (currentItem && currentItem.name) {
-            storeData.items.push(currentItem);
-          }
-          currentItem = {
-            name: itemMatch[1].trim(),
-            value: 0,
-            weight: 0,
-            description: '',
-            type: typeInfo.primary,
-            tags: typeInfo.tags ? [...typeInfo.tags] : []
-          };
-          continue;
-        }
-
-        // Match value
-        if (currentItem && line.includes('Value:')) {
-          const valueMatch = line.match(/Value:\s*(\d+)/);
-          if (valueMatch) {
-            currentItem.value = parseInt(valueMatch[1]);
-          }
-          continue;
-        }
-
-        // Match weight (handles both "Weight: X lbs" and "W: X lbs.")
-        if (currentItem && (line.includes('Weight:') || line.includes('W:'))) {
-          const weightMatch = line.match(/(?:Weight|W):\s*([\d.]+)\s*lbs?\.?/);
-          if (weightMatch) {
-            currentItem.weight = parseFloat(weightMatch[1]);
-          }
-          continue;
-        }
-
-        // Collect description (non-empty lines that don't start with headers, Value:, Weight:, W:, or contain special markers)
-        if (
-          currentItem &&
-          line.trim() &&
-          !line.match(/^#+/) &&
-          !line.includes('Value:') &&
-          !line.includes('Weight:') &&
-          !line.match(/^W:\s/) &&
-          !line.match(/^.*\*\*/) &&
-          !line.trim().startsWith('```')
-        ) {
-          currentItem.description += (currentItem.description ? ' ' : '') + line.trim();
-        }
-      }
-
-      // Add last item
-      if (currentItem && currentItem.name) {
-        storeData.items.push(currentItem);
-      }
-
-      // Filter out items without value
-      storeData.items = storeData.items.filter(item => item.value > 0);
-    }
-
     function initializeTypeFilters() {
-      const types = [...new Set(storeData.items.map(item => item.type))].sort();
+      const types = [...new Set(storeData.items.map(item => item.category))].sort();
       const filterContainer = document.getElementById('type-filters');
       filterContainer.innerHTML = '';
 
@@ -623,7 +542,7 @@
       types.forEach(type => {
         const tag = document.createElement('button');
         tag.className = 'type-tag';
-        tag.textContent = type;
+        tag.textContent = type.charAt(0).toUpperCase() + type.slice(1); // Capitalize
         tag.onclick = () => setTypeFilter(type);
         filterContainer.appendChild(tag);
       });
@@ -640,7 +559,7 @@
       tags.forEach(tag => {
         if (storeData.selectedType === null && tag.textContent === 'All Items') {
           tag.classList.add('active');
-        } else if (tag.textContent === storeData.selectedType) {
+        } else if (tag.textContent.toLowerCase() === storeData.selectedType) {
           tag.classList.add('active');
         } else {
           tag.classList.remove('active');
@@ -651,9 +570,9 @@
     function filterItems() {
       let filtered = storeData.items;
 
-      // Filter by type
+      // Filter by category (changed from type to category)
       if (storeData.selectedType !== null) {
-        filtered = filtered.filter(item => item.type === storeData.selectedType);
+        filtered = filtered.filter(item => item.category === storeData.selectedType);
       }
 
       // Filter by search
@@ -662,7 +581,8 @@
         filtered = filtered.filter(
           item =>
             item.name.toLowerCase().includes(query) ||
-            item.description.toLowerCase().includes(query)
+            item.description.toLowerCase().includes(query) ||
+            (item.tags && item.tags.some(tag => tag.toLowerCase().includes(query)))
         );
       }
 

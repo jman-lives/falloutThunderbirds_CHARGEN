@@ -300,88 +300,29 @@
         checkoutData.cart = cartData.items;
         checkoutData.budget = cartData.budgetUsed ? (cartData.budgetUsed + cartData.budgetRemaining) : 80000;
 
-        // Load store data to get full item details
+        // Load config
         const configRes = await fetch('prod-config.json');
         const config = await configRes.json();
         checkoutData.budget = config.storeCredit || checkoutData.budget;
 
-        // Load all equipment files to rebuild item list
-        const equipmentFiles = [
-          'equipment.md',
-          'armors.md',
-          'assault_rifles.md',
-          'machine_guns.md',
-          'melee_skill_weapons.md',
-          'pistols.md',
-          'primitive_missile_weapons.md',
-          'rifles.md',
-          'shotguns.md',
-          'submachine_guns.md',
-          'unarmed_skill_weapons.md'
-        ];
-
-        for (const file of equipmentFiles) {
-          try {
-            const equipRes = await fetch(`./equipment-instructions/${file}`);
-            if (equipRes.ok) {
-              const equipText = await equipRes.text();
-              parseEquipmentMarkdown(equipText);
-            }
-          } catch (error) {
-          }
+        // Load database.json
+        const dbRes = await fetch('database.json');
+        if (!dbRes.ok) {
+          throw new Error('Failed to load database.json');
         }
+        const database = await dbRes.json();
+
+        // Flatten all items from database
+        checkoutData.items = [];
+        if (database.ammunition) checkoutData.items.push(...database.ammunition);
+        if (database.weapons) checkoutData.items.push(...database.weapons);
+        if (database.armor) checkoutData.items.push(...database.armor);
+        if (database.equipment) checkoutData.items.push(...database.equipment);
+        if (database.chems) checkoutData.items.push(...database.chems);
 
         renderCheckout();
       } catch (error) {
         showMessage('Error loading checkout data', 'error');
-      }
-    }
-
-    function parseEquipmentMarkdown(markdown) {
-      const lines = markdown.split('\n');
-      let currentItem = null;
-      let inCodeBlock = false;
-
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-
-        if (line.trim().startsWith('```')) {
-          inCodeBlock = !inCodeBlock;
-          continue;
-        }
-
-        const itemMatch = line.match(/^#{2,3}\s+(.+)$/);
-        if (itemMatch) {
-          if (currentItem && currentItem.name) {
-            checkoutData.items.push(currentItem);
-          }
-          currentItem = {
-            name: itemMatch[1].trim(),
-            value: 0,
-            weight: 0
-          };
-          continue;
-        }
-
-        if (currentItem && line.includes('Value:')) {
-          const valueMatch = line.match(/Value:\s*(\d+)/);
-          if (valueMatch) {
-            currentItem.value = parseInt(valueMatch[1]);
-          }
-          continue;
-        }
-
-        if (currentItem && (line.includes('Weight:') || line.includes('W:'))) {
-          const weightMatch = line.match(/(?:Weight|W):\s*([\d.]+)\s*lbs?\.?/);
-          if (weightMatch) {
-            currentItem.weight = parseFloat(weightMatch[1]);
-          }
-          continue;
-        }
-      }
-
-      if (currentItem && currentItem.name) {
-        checkoutData.items.push(currentItem);
       }
     }
 
