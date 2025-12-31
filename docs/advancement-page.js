@@ -1107,33 +1107,30 @@ function togglePerkSelection(perkId) {
         
         // CRITICAL FIX: If this perk is locked, we need to track when the rank-up happened
         // so that when we later level up, we know this rank is a rank-up and not part of the locked selection
-        if (selectedPerk.lockedAtLevel !== undefined && selectedPerk.rankedUpAtLevel === undefined) {
-          // First time ranking up this locked perk at this level
+        if (selectedPerk.lockedAtLevel !== undefined) {
+          // This is a locked perk - track/update its rank-up level
+          const previousRankUpLevel = selectedPerk.rankedUpAtLevel;
           selectedPerk.rankedUpAtLevel = currentLevel;
-          console.log(`  ✓ Ranked up perk to rank ${selectedPerk.rank}`);
+          
+          console.log(`  ✓ Ranked up LOCKED perk to rank ${selectedPerk.rank}`);
           console.log(`  Perk state AFTER rank-up:`);
-          console.log(`    - rank: ${selectedPerk.rank}`);
-          console.log(`    - lockedAtLevel: ${selectedPerk.lockedAtLevel}`);
-          console.log(`    - lockedRank: ${selectedPerk.lockedRank}`);
-          console.log(`    - rankedUpAtLevel: ${selectedPerk.rankedUpAtLevel} (NEW - tracks rank-up of locked perk)`);
-        } else if (selectedPerk.lockedAtLevel !== undefined && selectedPerk.rankedUpAtLevel === currentLevel) {
-          // Already ranked up at this level, just updating the rank count
-          console.log(`  ✓ Ranked up perk to rank ${selectedPerk.rank}`);
-          console.log(`  Perk state AFTER rank-up:`);
-          console.log(`    - rank: ${selectedPerk.rank}`);
-          console.log(`    - lockedAtLevel: ${selectedPerk.lockedAtLevel}`);
-          console.log(`    - lockedRank: ${selectedPerk.lockedRank}`);
-          console.log(`    - rankedUpAtLevel: ${selectedPerk.rankedUpAtLevel} (continued rank-up)`);
+          console.log(`    - rank: ${selectedPerk.rank} (increased from ${selectedPerk.rank - 1})`);
+          console.log(`    - lockedAtLevel: ${selectedPerk.lockedAtLevel} (original lock level)`);
+          console.log(`    - lockedRank: ${selectedPerk.lockedRank} (rank when locked)`);
+          console.log(`    - rankedUpAtLevel: ${selectedPerk.rankedUpAtLevel} (rank-ups tracked from level ${currentLevel})`);
+          if (previousRankUpLevel !== undefined && previousRankUpLevel !== currentLevel) {
+            console.log(`    ⚠️  NOTE: Previous rank-ups were tracked at level ${previousRankUpLevel}, now updating to ${currentLevel}`);
+          }
         } else {
-          // New perk (not locked yet)
-          console.log(`  ✓ Ranked up perk to rank ${selectedPerk.rank}`);
+          // New perk (not locked yet) - just increased rank
+          console.log(`  ✓ Ranked up UNLOCKED perk to rank ${selectedPerk.rank}`);
           console.log(`  Perk state AFTER rank-up:`);
-          console.log(`    - rank: ${selectedPerk.rank}`);
-          console.log(`    - modifiedAtLevel: ${selectedPerk.modifiedAtLevel}`);
-          console.log(`    - lockedAtLevel: ${selectedPerk.lockedAtLevel}`);
+          console.log(`    - rank: ${selectedPerk.rank} (increased from ${selectedPerk.rank - 1})`);
+          console.log(`    - modifiedAtLevel: ${selectedPerk.modifiedAtLevel} (selection tracking)`);
+          console.log(`    - lockedAtLevel: ${selectedPerk.lockedAtLevel || 'not yet locked'}`);
         }
       } else {
-        console.log(`  ✗ No slots available`);
+        console.log(`  ✗ No slots available for rank-up`);
         alert(`You can only select ${perksEarned} perk rank${perksEarned !== 1 ? 's' : ''} at this level.`);
         return;
       }
@@ -1242,20 +1239,40 @@ function renderSelectedPerks(maxPerks, perksEarned) {
   
   if (noSelectedMsg) noSelectedMsg.style.display = 'none';
   
+  const perksConfirmed = characterData.perksConfirmed || false;
+  
   container.innerHTML = selectedPerks.map((selection) => {
     const perk = PERKS[selection.id];
     if (!perk) return '';
     
-    // Perk is locked ONLY if it was locked at a previous level AND 
-    // - it hasn't been modified (newly selected) at current level AND
-    // - it hasn't been ranked up (via rankedUpAtLevel) at current level
-    const isLocked = selection.lockedAtLevel && 
-                     selection.lockedAtLevel < currentLevel && 
-                     selection.modifiedAtLevel !== currentLevel &&
-                     selection.rankedUpAtLevel !== currentLevel;
+    // SIMPLE: Perk is LOCKED if it was locked at any previous level
+    // Once locked, it cannot be modified at all—no exceptions for rank-ups
+    const isLocked = selection.lockedAtLevel !== undefined && selection.lockedAtLevel < currentLevel;
+    
+    console.log(`  [RENDER PERK] ${selection.id}:`);
+    console.log(`    - rank: ${selection.rank}`);
+    console.log(`    - lockedAtLevel: ${selection.lockedAtLevel}`);
+    console.log(`    - lockedRank: ${selection.lockedRank}`);
+    console.log(`    - rankedUpAtLevel: ${selection.rankedUpAtLevel}`);
+    console.log(`    - modifiedAtLevel: ${selection.modifiedAtLevel}`);
+    console.log(`    - currentLevel: ${currentLevel}`);
+    console.log(`    - isLocked calculation: lockedAtLevel (${selection.lockedAtLevel}) !== undefined AND lockedAtLevel (${selection.lockedAtLevel}) < currentLevel (${currentLevel}) = ${isLocked}`);
+    
     const isMaxRank = selection.rank >= perk.ranks;
-    // Can remove rank if NOT locked (can remove any time before lock is applied)
-    const canRemoveRank = !isLocked;
+    // Can remove ranks if:
+    // 1. Newly selected at current level (not locked)
+    // 2. OR locked perk that was ranked up at current level (can remove back to lockedRank)
+    const canRemoveRank = (
+      (selection.modifiedAtLevel === currentLevel && !isLocked) || // New perk
+      (selection.rankedUpAtLevel === currentLevel && selection.rank > selection.lockedRank) // Ranked-up locked perk
+    ) && !characterData.perksConfirmed;
+    
+    console.log(`    - isMaxRank: ${isMaxRank}`);
+    console.log(`    - perksConfirmed: ${characterData.perksConfirmed}`);
+    console.log(`    - modifiedAtLevel: ${selection.modifiedAtLevel}`);
+    console.log(`    - rankedUpAtLevel: ${selection.rankedUpAtLevel}`);
+    console.log(`    - isLocked: ${isLocked}`);
+    console.log(`    - canRemoveRank (will show button): ${canRemoveRank}`);
     
     return `
       <div 
@@ -1271,8 +1288,8 @@ function renderSelectedPerks(maxPerks, perksEarned) {
         <div style="font-size: 0.9rem; color: #ddd; margin: 4px 0;">${perk.description}</div>
         <div style="font-size: 0.85rem; color: #aaa; margin-bottom: 6px;">${perk.effects}</div>
         <div style="margin-top: 6px; display: flex; gap: 4px;">
-          ${isLocked ? 
-            `<div style="flex: 1; padding: 6px 8px; background-color: #1a4d1a; color: #8BC34A; border-radius: 2px; font-size: 0.85rem; text-align: center; font-weight: bold;">Locked After Level Up</div>` :
+          ${!canRemoveRank ? 
+            `<div style="flex: 1; padding: 6px 8px; background-color: #1a4d1a; color: #8BC34A; border-radius: 2px; font-size: 0.85rem; text-align: center; font-weight: bold;">Locked - No Rank-Ups</div>` :
             `<button 
               type="button"
               class="remove-rank-btn"
@@ -1290,10 +1307,14 @@ function renderSelectedPerks(maxPerks, perksEarned) {
   }).join('');
   
   // Attach remove handlers
-  document.querySelectorAll('.remove-rank-btn').forEach(btn => {
+  const removeButtons = document.querySelectorAll('.remove-rank-btn');
+  console.log(`  → Found ${removeButtons.length} remove-rank buttons to attach handlers`);
+  removeButtons.forEach((btn, idx) => {
+    const perkId = btn.dataset.perkId;
+    console.log(`    [${idx}] Attaching click handler for perk: ${perkId}`);
     btn.addEventListener('click', (e) => {
+      console.log(`%c[REMOVE RANK BUTTON CLICKED]`, 'color: #FF6B6B; font-weight: bold;', `perkId=${perkId}`);
       e.stopPropagation();
-      const perkId = btn.dataset.perkId;
       removeRank(perkId);
     });
   });
@@ -1305,46 +1326,135 @@ function renderSelectedPerks(maxPerks, perksEarned) {
 
 // Remove a rank from a perk
 function removeRank(perkId) {
+  console.log('%c[REMOVE RANK FUNCTION CALLED]', 'color: #FF6B6B; font-weight: bold;', `perkId=${perkId}`);
+  
   const currentLevel = getLevelFromXP(characterData.totalXP || 0);
+  console.log(`  → currentLevel from XP: ${currentLevel}`);
+  
   const selectedPerks = characterData.selectedPerks || [];
+  console.log(`  → selectedPerks array length: ${selectedPerks.length}`);
+  
   const selectedPerkIndex = selectedPerks.findIndex(p => p.id === perkId);
+  console.log(`  → selectedPerkIndex: ${selectedPerkIndex}`);
   
-  if (selectedPerkIndex === -1) return;
-  
-  const selectedPerk = selectedPerks[selectedPerkIndex];
-  
-  // Check if this perk is locked at a previous level AND hasn't been modified/ranked-up at the current level
-  // If modifiedAtLevel === currentLevel, it means we just newly selected it and can remove it
-  // If rankedUpAtLevel === currentLevel, it means we just ranked it up and can remove that rank
-  const isCurrentlyLocked = selectedPerk.lockedAtLevel !== undefined && 
-                           selectedPerk.lockedAtLevel < currentLevel && 
-                           selectedPerk.modifiedAtLevel !== currentLevel &&
-                           selectedPerk.rankedUpAtLevel !== currentLevel;
-  
-  if (isCurrentlyLocked) {
-    alert(`This perk was locked at level ${selectedPerk.lockedAtLevel} and cannot be removed or ranked down.`);
+  if (selectedPerkIndex === -1) {
+    console.log(`  ✗ PERK NOT FOUND in selectedPerks array! Returning early.`);
     return;
   }
   
-  // Decrease rank
-  if (selectedPerk.rank > 1) {
-    selectedPerk.rank -= 1;
-    
-    // If we're back to the locked rank, clear the rank-up tracking
-    if (selectedPerk.lockedAtLevel && selectedPerk.rank === selectedPerk.lockedRank) {
-      // We've removed the rank-ups added after locking
-      selectedPerk.rankedUpAtLevel = undefined;
-    }
-  } else {
-    // Remove the perk entirely if it's the last rank
-    selectedPerks.splice(selectedPerkIndex, 1);
+  const selectedPerk = selectedPerks[selectedPerkIndex];
+  const perksConfirmed = characterData.perksConfirmed || false;
+  
+  // EARLY GUARD: If perk is locked AND at or below locked rank, block removal
+  // (But allow removal of rank-ups added above the locked rank)
+  if (selectedPerk.lockedAtLevel !== undefined && selectedPerk.rank <= selectedPerk.lockedRank) {
+    console.log(`%c[REMOVE RANK BLOCKED]`, 'color: #ff0000; font-weight: bold;', `Perk is at or below its locked rank ${selectedPerk.lockedRank}`);
+    alert('Cannot remove rank: This perk is at its locked rank from level ' + selectedPerk.lockedAtLevel + '. You can only add ranks to locked perks, not remove them below the locked rank.');
+    return;
   }
   
+  console.log(`[REMOVE RANK] ${perkId}:`);
+  console.log(`  Current state:`);
+  console.log(`    - rank: ${selectedPerk.rank}`);
+  console.log(`    - lockedAtLevel: ${selectedPerk.lockedAtLevel}`);
+  console.log(`    - lockedRank: ${selectedPerk.lockedRank}`);
+  console.log(`    - rankedUpAtLevel: ${selectedPerk.rankedUpAtLevel}`);
+  console.log(`    - modifiedAtLevel: ${selectedPerk.modifiedAtLevel}`);
+  console.log(`    - perksConfirmed: ${perksConfirmed}`);
+  console.log(`    - currentLevel: ${currentLevel}`);
+  
+  // Determine the removal floor and what's allowed
+  const isNewlySelectedThisLevel = selectedPerk.modifiedAtLevel === currentLevel;
+  const isLockedPerk = selectedPerk.lockedAtLevel !== undefined;
+  const wasRankedUpThisLevel = selectedPerk.rankedUpAtLevel === currentLevel;
+  const aboveLockedRank = selectedPerk.rank > (selectedPerk.lockedRank || 1);
+  
+  console.log(`  Analysis:`);
+  console.log(`    - isNewlySelectedThisLevel (modifiedAtLevel=${selectedPerk.modifiedAtLevel} === currentLevel=${currentLevel}): ${isNewlySelectedThisLevel}`);
+  console.log(`    - isLockedPerk (lockedAtLevel=${selectedPerk.lockedAtLevel} !== undefined): ${isLockedPerk}`);
+  console.log(`    - wasRankedUpThisLevel (rankedUpAtLevel=${selectedPerk.rankedUpAtLevel} === currentLevel=${currentLevel}): ${wasRankedUpThisLevel}`);
+  console.log(`    - aboveLockedRank (rank=${selectedPerk.rank} > lockedRank=${selectedPerk.lockedRank}): ${aboveLockedRank}`);
+  console.log(`    - perksConfirmed: ${perksConfirmed}`);
+  
+  // Determine if removal is allowed and what the floor is
+  let canRemove = false;
+  let removalFloor = 1;
+  let removalReason = '';
+  
+  if (isNewlySelectedThisLevel) {
+    console.log(`  → CASE 1: Newly selected this level`);
+    console.log(`    Setting: canRemove=true, removalFloor=0`);
+    canRemove = true;
+    removalFloor = 0;
+  } else if (isLockedPerk && perksConfirmed) {
+    console.log(`  → CASE 4: Locked at level ${selectedPerk.lockedAtLevel} AND perks CONFIRMED`);
+    console.log(`    ✗ BLOCKING removal - alert user`);
+    alert(`This perk was locked and confirmed. You can only rank it up further at future levels.`);
+    return;
+  } else if (isLockedPerk && aboveLockedRank) {
+    console.log(`  → CASE 2/3: Locked perk with ranks above locked rank`);
+    console.log(`    rank=${selectedPerk.rank}, lockedRank=${selectedPerk.lockedRank}`);
+    console.log(`    Setting: canRemove=true, removalFloor=${selectedPerk.lockedRank || 1}`);
+    canRemove = true;
+    removalFloor = selectedPerk.lockedRank || 1;
+  } else if (isLockedPerk && !aboveLockedRank) {
+    console.log(`  → CASE LOCKED AT FLOOR: Locked perk at exactly locked rank`);
+    console.log(`    rank=${selectedPerk.rank}, lockedRank=${selectedPerk.lockedRank}`);
+    console.log(`    ✗ BLOCKING removal - alert user`);
+    alert(`This perk is locked at rank ${selectedPerk.lockedRank}. You can only rank it up further.`);
+    return;
+  } else {
+    console.log(`  → UNKNOWN CASE: No conditions matched`);
+    console.log(`    isNewlySelectedThisLevel=${isNewlySelectedThisLevel}, isLockedPerk=${isLockedPerk}, perksConfirmed=${perksConfirmed}, aboveLockedRank=${aboveLockedRank}`);
+  }
+  
+  if (!canRemove) {
+    console.log(`  ✗ Cannot remove: canRemove is false, unknown state`);
+    return;
+  }
+  
+  console.log(`  ✓ Removal is ALLOWED`);
+  console.log(`  Checking removal conditions:`);
+  console.log(`    - rank (${selectedPerk.rank}) === 1? ${selectedPerk.rank === 1}`);
+  console.log(`    - removalFloor (${removalFloor}) === 0? ${removalFloor === 0}`);
+  console.log(`    - rank (${selectedPerk.rank}) > removalFloor (${removalFloor})? ${selectedPerk.rank > removalFloor}`);
+  
+  // Perform the removal
+  if (selectedPerk.rank === 1 && removalFloor === 0) {
+    console.log(`  → REMOVE ENTIRELY: rank=1 AND floor=0 (newly selected)`);
+    console.log(`    Splicing perk from selectedPerks array at index ${selectedPerkIndex}`);
+    selectedPerks.splice(selectedPerkIndex, 1);
+    console.log(`  ✓ REMOVED entirely (newly selected, rank was 1)`);
+    console.log(`    selectedPerks length is now: ${selectedPerks.length}`);
+  } else if (selectedPerk.rank > removalFloor) {
+    console.log(`  → DECREASE RANK: rank (${selectedPerk.rank}) > floor (${removalFloor})`);
+    selectedPerk.rank -= 1;
+    console.log(`  ✓ DECREASED rank to ${selectedPerk.rank} (floor was ${removalFloor})`);
+    
+    if (selectedPerk.rankedUpAtLevel !== undefined && selectedPerk.rank === selectedPerk.lockedRank) {
+      console.log(`    → Rank now equals lockedRank, clearing rankedUpAtLevel`);
+      selectedPerk.rankedUpAtLevel = undefined;
+      console.log(`    → Cleared rankedUpAtLevel (back to lockedRank)`);
+    } else {
+      console.log(`    → NOT clearing rankedUpAtLevel: rankedUpAtLevel=${selectedPerk.rankedUpAtLevel}, lockedRank=${selectedPerk.lockedRank}`);
+    }
+  } else {
+    console.log(`  ✗ CANNOT DECREASE: rank (${selectedPerk.rank}) NOT > floor (${removalFloor})`);
+    console.log(`    Condition: ${selectedPerk.rank} > ${removalFloor} = ${selectedPerk.rank > removalFloor}`);
+    alert(`Cannot rank down below ${removalFloor}. This perk is locked to that rank.`);
+    return;
+  }
+  
+  console.log(`  → Saving characterData to localStorage`);
   characterData.selectedPerks = selectedPerks;
   saveCharacterData();
+  console.log(`  ✓ Character data saved`);
   
+  console.log(`  → Re-rendering UI`);
   // Re-render
   const perksEarned = calculatePerksEarned(currentLevel, characterData.race || 'Human', characterData.selectedTraits || []);
+  console.log(`  → perksEarned recalculated: ${perksEarned}`);
+  
   const attributes = characterData.attributes || {};
   const character = {
     level: currentLevel,
@@ -1356,8 +1466,11 @@ function removeRank(perkId) {
   };
   
   const eligiblePerkIds = getEligiblePerks(character);
+  console.log(`  → Rendering available perks`);
   renderAvailablePerks(eligiblePerkIds);
+  console.log(`  → Rendering selected perks`);
   renderSelectedPerks(perksEarned, perksEarned);
+  console.log(`%c[REMOVE RANK COMPLETE]`, 'color: #4CAF50; font-weight: bold;');
 }
 
 function getTimestamp() {
