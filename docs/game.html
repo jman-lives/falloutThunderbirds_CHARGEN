@@ -276,6 +276,10 @@
             <div class="stat-value" id="char-equipped-armor" style="color: #a78bfa;">—</div>
           </div>
           <div class="stat-block">
+            <div class="stat-label">Armor Class</div>
+            <div class="stat-value" id="char-armor-class" style="color: #9C27B0;">—</div>
+          </div>
+          <div class="stat-block">
             <div class="stat-label">Melee Damage</div>
             <div class="stat-value" id="char-melee-damage" style="color: #ef4444;">—</div>
           </div>
@@ -1840,13 +1844,41 @@
 
     function updateEquippedArmorDisplay() {
       const armorDisplay = qs('char-equipped-armor');
+      const armorClassDisplay = qs('char-armor-class');
       const savedSelection = localStorage.getItem('equipmentItemSelection');
+      const stored = localStorage.getItem('characterData');
+      
+      // Get base AC from character stats
+      let baseAC = 0;
+      if (stored) {
+        try {
+          const characterData = JSON.parse(stored);
+          baseAC = parseInt(characterData.stats?.Armor_Class) || 0;
+        } catch (e) {
+          console.log('Could not parse character data for AC');
+        }
+      }
       
       try {
         if (savedSelection) {
           const selection = JSON.parse(savedSelection);
           if (selection && selection[2] && selection[2].name) {
             armorDisplay.textContent = selection[2].name;
+            
+            // Extract armor bonus and calculate total AC
+            const armorStats = ITEM_STATS[selection[2].name];
+            let armorBonus = 0;
+            
+            if (armorStats && armorStats.armor && armorStats.armor !== '—') {
+              // Parse armor bonus from format like "+2 AC"
+              const match = armorStats.armor.match(/([+-]?\d+)/);
+              if (match) {
+                armorBonus = parseInt(match[1]);
+              }
+            }
+            
+            const totalAC = baseAC + armorBonus;
+            armorClassDisplay.textContent = totalAC;
             return;
           }
         }
@@ -1855,6 +1887,7 @@
       }
       
       armorDisplay.textContent = 'None';
+      armorClassDisplay.textContent = baseAC;
     }
 
     function updateMeleeDamageDisplay(strength) {
@@ -1939,6 +1972,11 @@
         if (characterData.totalXP !== undefined && typeof getLevelFromXP === 'function') {
           const calculatedLevel = getLevelFromXP(characterData.totalXP || 0);
           characterData.level = calculatedLevel;
+        }
+        
+        // Recalculate Sequence to ensure perk/trait bonuses are applied
+        if (typeof recalculateSequence === 'function') {
+          recalculateSequence(characterData);
         }
         
         // Display character info
@@ -2160,7 +2198,7 @@
     // Item stats for dice table - maps item names to their stats
     const ITEM_STATS = {
       'Leather Jacket': { flavor: 'A worn leather jacket. Provides basic protection and looks the part.', dice: '—', weight: '10 lbs', armor: '+2 AC', skill: '—', type: 'Armor' },
-      '10mm Pistol': { ammo:'12',ammotype:'10mm',flavor: 'Party Like It\'s 1997', dice: '2d6', weight: '4 lbs', armor: '—', skill: 'Guns', type: 'Weapon' },
+      '10mm Pistol': { reloadap: '2', apCost:"5/6/-", ammo:'12',ammotype:'10mm',flavor: 'Party Like It\'s 1997', dice: '2d6', weight: '4 lbs', armor: '—', skill: 'Guns', type: 'Weapon' },
       'Brass Knuckles': { flavor: 'Brass knuckles. Improves your punch with style and a little extra hurt.', dice: '1d4+1', weight: '1 lb', armor: '—', skill: 'Unarmed', type: 'Weapon' },
       'Lighter': { flavor: 'A worn lighter. Still works, sometimes.', dice: '—', weight: '1 lb', armor: '—', skill: '—', type: 'Tool' },
       'Jet': { flavor: 'A hit of Jet. Warning: highly addictive.', dice: '—', weight: '0.5 lb', armor: '—', skill: '—', type: 'Drug' },
@@ -2182,6 +2220,7 @@
       const stats = ITEM_STATS[itemName] || {
         flavor: 'No description available.',
         dice: '—',
+        apCost: '—',
         weight: '—',
         armor: '—',
         skill: '—',
@@ -2192,10 +2231,11 @@
       flavorElement.textContent = stats.flavor || 'No description available.';
 
       const rows = [
-        { label: 'Type', value: stats.type },
+        { label: 'Dice', value: stats.dice },
+        { label: 'AP (S/T/B)', value: stats.apCost || '2/-/-'},
         { label: 'Ammo Type', value: stats.ammotype || 'N/A' },
         { label: 'Ammo', value: stats.ammo || 'N/A' },
-        { label: 'Dice', value: stats.dice },
+        { label: 'Reload AP', value: stats.reloadap || 'N/A' },
         { label: 'Skill', value: stats.skill }
       ];
 

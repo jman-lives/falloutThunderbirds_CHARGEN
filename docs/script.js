@@ -885,6 +885,33 @@ function calculateRadiationResistance(end) {
 function calculateSequence(pe) {
   return 2 * pe;
 }
+
+/**
+ * Recalculate Sequence stat including all trait and perk modifiers
+ * @param {object} characterData - Character data object
+ */
+function recalculateSequence(characterData) {
+  if (!characterData || !characterData.attributes || !characterData.stats) {
+    return;
+  }
+
+  const perception = characterData.attributes.perception || 5;
+  let sequence = calculateSequence(perception);
+
+  // Add trait bonuses
+  const selectedTraits = characterData.selectedTraits || [];
+  if (selectedTraits.includes('kamikaze')) {
+    sequence += 5; // +5 Sequence
+  }
+
+  // Add perk bonuses
+  const perkEffects = characterData.perkEffects || {};
+  const sequenceBonus = perkEffects.sequenceBonus || 0;
+  sequence += sequenceBonus;
+
+  // Update stats object
+  characterData.stats.Sequence = sequence;
+}
 // #endregion
 
 // #region HEALING RATE FORMULAS

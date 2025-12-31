@@ -300,10 +300,10 @@
 
       <section id="perks-section">
         <h2>Perks</h2>
-        <div style="margin-bottom: 12px;">
+        <!-- <div style="margin-bottom: 12px;">
           <label>Perks Gained: <span id="perks_earned">0</span></label>
           <p style="font-size: 0.9rem; color: #aaa;">Perks are gained at levels 3, 6, 9, 12, 15, 18, 21, 24, etc.</p>
-        </div>
+        </div> -->
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
           <!-- Available Perks Column -->
@@ -383,8 +383,8 @@
     const fromChargen = localStorage.getItem('fromChargen') === 'true' && !isLevelUpSession;
     window.showEquipmentButton = fromChargen;
   </script>
-  <script src="advancement.js?v=2"></script>
-  <script src="advancement-page.js?v=2"></script>
+  <script src="advancement.js?v=4"></script>
+    <script src="advancement-page.js?v=33"></script>
   <script>
     // Hide/show buttons initially based on source
     document.addEventListener('DOMContentLoaded', () => {
