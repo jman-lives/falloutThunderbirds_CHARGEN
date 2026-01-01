@@ -9,18 +9,24 @@
     .store-container {
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
-      padding: 24px;
+      height: 100vh;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 16px 24px;
       background: linear-gradient(180deg, #071026 0%, #08131a 100%);
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
     }
 
     .store-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 32px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 12px;
+      flex-shrink: 0;
     }
 
     .store-title {
@@ -64,9 +70,10 @@
     .store-controls {
       display: flex;
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 12px;
       flex-wrap: wrap;
       align-items: center;
+      flex-shrink: 0;
     }
 
     .search-box {
@@ -104,6 +111,32 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+      margin-bottom: 12px;
+      min-height: 32px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .loading-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 1.2rem;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(139, 92, 246, 0.2);
+      border-top-color: #8b5cf6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     .type-tag {
@@ -168,20 +201,28 @@
     .store-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
+      grid-auto-rows: 1fr;
+      gap: 12px;
       flex: 1;
       overflow-y: auto;
+      scrollbar-gutter: stable;
+      padding-right: 8px;
+      min-height: 0;
+      align-items: stretch;
     }
 
     .item-card {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 8px;
-      padding: 16px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
       transition: all 0.3s ease;
       cursor: pointer;
+      height: 100%;
+      min-height: 200px;
+      max-height: 200px;
     }
 
     .item-card:hover {
@@ -200,15 +241,16 @@
       display: flex;
       justify-content: space-between;
       align-items: start;
-      margin-bottom: 8px;
-      gap: 12px;
+      margin-bottom: 6px;
+      gap: 8px;
     }
 
     .item-name {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 600;
       color: #a78bfa;
       margin: 0;
+      line-height: 1.3;
     }
 
     .item-price {
@@ -220,15 +262,15 @@
     }
 
     .item-weight {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--muted);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .item-tags {
       display: flex;
-      gap: 6px;
-      margin-bottom: 8px;
+      gap: 4px;
+      margin-bottom: 6px;
       flex-wrap: wrap;
     }
 
@@ -248,11 +290,13 @@
     }
 
     .item-description {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--muted);
-      line-height: 1.5;
-      margin-bottom: 12px;
+      line-height: 1.4;
+      margin-bottom: 10px;
       flex: 1;
+      overflow-y: auto;
+      min-height: 0;
     }
 
     .item-actions {
@@ -291,10 +335,26 @@
       background: rgba(255, 0, 0, 0.2);
       color: #ff7b7b;
       border: 1px solid #ff7b7b;
+      flex: 0 0 auto;
+      min-width: 40px;
     }
 
     .item-btn-remove:hover {
       background: rgba(255, 0, 0, 0.3);
+    }
+
+    .item-btn-qty {
+      background: rgba(96, 165, 250, 0.2);
+      color: #60a5fa;
+      border: 1px solid #60a5fa;
+      min-width: 40px;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .item-btn-qty:hover {
+      background: rgba(96, 165, 250, 0.3);
+      border-color: #60a5fa;
     }
 
     .item-quantity {
@@ -307,23 +367,24 @@
     }
 
     .store-footer {
-      margin-top: 24px;
-      padding-top: 24px;
+      margin-top: 12px;
+      padding-top: 12px;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 12px;
+      flex-shrink: 0;
     }
 
     .cart-summary {
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       color: var(--muted);
     }
 
     .cart-total {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: #fbbf24;
       font-family: 'Courier New', monospace;
@@ -336,10 +397,12 @@
     }
 
     .store-msg {
-      padding: 12px 16px;
+      padding: 8px 16px;
       border-radius: 6px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       text-align: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
     }
 
     .store-msg-error {
@@ -352,6 +415,162 @@
       background: rgba(52, 211, 153, 0.1);
       border: 1px solid #34d399;
       color: #6ee7b7;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: linear-gradient(180deg, #0a1628 0%, #071026 100%);
+      border: 1px solid rgba(96, 165, 250, 0.5);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4);
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 16px;
+      gap: 16px;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #a78bfa;
+      margin: 0;
+    }
+
+    .modal-close {
+      background: rgba(255, 0, 0, 0.2);
+      border: 1px solid #ff7b7b;
+      color: #ff7b7b;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 0, 0, 0.3);
+    }
+
+    .modal-info {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      border: 1px solid rgba(96, 165, 250, 0.2);
+    }
+
+    .modal-info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .modal-info-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-info-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fbbf24;
+      font-family: 'Courier New', monospace;
+    }
+
+    .modal-section {
+      margin-bottom: 16px;
+    }
+
+    .modal-section-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #60a5fa;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-description {
+      font-size: 1rem;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .modal-flavor {
+      font-size: 0.95rem;
+      color: #fbbf24;
+      font-style: italic;
+      line-height: 1.5;
+      padding: 12px;
+      background: rgba(251, 191, 36, 0.05);
+      border-left: 3px solid #fbbf24;
+      border-radius: 4px;
+    }
+
+    .modal-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .modal-tag {
+      padding: 6px 12px;
+      border-radius: 4px;
+      background: rgba(96, 165, 250, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(96, 165, 250, 0.4);
+      font-size: 0.85rem;
+    }
+
+    .item-btn-info {
+      background: rgba(96, 165, 250, 0.2);
+      color: #60a5fa;
+      border: 1px solid #60a5fa;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    .item-btn-info:hover {
+      background: rgba(96, 165, 250, 0.3);
     }
 
     @media (max-width: 768px) {
@@ -398,13 +617,21 @@
         type="text"
         id="search-box"
         class="search-box"
-        placeholder="Search items..."
+        placeholder="🔍 Search items by name, description, or tags..."
       />
-      <div class="type-filter-tags" id="type-filters"></div>
+      <select id="sort-select" class="type-filter">
+        <option value="name-asc">Sort: Name (A-Z)</option>
+        <option value="name-desc">Sort: Name (Z-A)</option>
+        <option value="price-asc">Sort: Price (Low-High)</option>
+        <option value="price-desc">Sort: Price (High-Low)</option>
+        <option value="weight-asc">Sort: Weight (Light-Heavy)</option>
+        <option value="weight-desc">Sort: Weight (Heavy-Light)</option>
+      </select>
       <button id="clear-cart-btn" class="store-btn store-btn-secondary">
-        Clear Cart
+        🗑️ Clear Cart
       </button>
     </div>
+    <div class="type-filter-tags" id="type-filters"></div>
 
     <div class="store-grid" id="store-grid"></div>
 
@@ -428,6 +655,28 @@
         <a href="equipmentchoice.html" class="store-btn store-btn-secondary">
           ← Go Back
         </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Item Details Modal -->
+  <div id="item-modal" class="modal-overlay" onclick="closeItemModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-item-name">Item Details</h2>
+        <button class="modal-close" onclick="closeItemModal()" title="Close">×</button>
+      </div>
+      <div class="modal-section" id="modal-flavor-section" style="display: none;">
+        <div class="modal-flavor" id="modal-item-flavor"></div>
+      </div>
+      <div class="modal-info" id="modal-item-info"></div>
+      <div class="modal-section" id="modal-description-section">
+        <div class="modal-section-title">Description</div>
+        <div class="modal-description" id="modal-item-description"></div>
+      </div>
+      <div class="modal-section" id="modal-tags-section" style="display: none;">
+        <div class="modal-section-title">Tags</div>
+        <div class="modal-tags" id="modal-item-tags"></div>
       </div>
     </div>
   </div>
@@ -482,8 +731,8 @@
         console.log('%c[STORE BUDGET LOADED: ' + storeData.budget + ']', 'color: #ffd700;');
         updateBudgetDisplay();
 
-        // Load database.json
-        const dbRes = await fetch('database.json');
+        // Load database.json (with cache-busting)
+        const dbRes = await fetch('database.json?v=' + Date.now());
         if (!dbRes.ok) {
           throw new Error('Failed to load database.json');
         }
@@ -491,34 +740,50 @@
         console.log('%c[DATABASE LOADED]', 'color: #00ff00; font-weight: bold;', database.metadata);
 
         // Flatten all items from database into storeData.items
+        // Filter out invalid/incomplete items (must have id, name, and category)
+        // Also filter by IsInChargenStore flag (default to true if not present)
+        const isValidItem = (item) => {
+          if (!item || !item.id || !item.name || !item.category) {
+            return false;
+          }
+          // Only include items where IsInChargenStore is true or undefined (default to true)
+          return item.IsInChargenStore !== false;
+        };
+        
         storeData.items = [];
         
         // Add ammunition
         if (database.ammunition) {
-          storeData.items.push(...database.ammunition);
+          storeData.items.push(...database.ammunition.filter(isValidItem));
         }
         
         // Add weapons
         if (database.weapons) {
-          storeData.items.push(...database.weapons);
+          storeData.items.push(...database.weapons.filter(isValidItem));
         }
         
         // Add armor
         if (database.armor) {
-          storeData.items.push(...database.armor);
+          storeData.items.push(...database.armor.filter(isValidItem));
         }
         
         // Add equipment
         if (database.equipment) {
-          storeData.items.push(...database.equipment);
+          storeData.items.push(...database.equipment.filter(isValidItem));
         }
         
         // Add chems
         if (database.chems) {
-          storeData.items.push(...database.chems);
+          storeData.items.push(...database.chems.filter(isValidItem));
         }
 
         console.log('%c[TOTAL ITEMS LOADED: ' + storeData.items.length + ']', 'color: #4CAF50; font-weight: bold;');
+        console.log('%c[ITEM BREAKDOWN]', 'color: #4CAF50;');
+        console.log('  Ammunition:', database.ammunition?.filter(isValidItem).length || 0);
+        console.log('  Weapons:', database.weapons?.filter(isValidItem).length || 0);
+        console.log('  Armor:', database.armor?.filter(isValidItem).length || 0);
+        console.log('  Equipment:', database.equipment?.filter(isValidItem).length || 0);
+        console.log('  Chems:', database.chems?.filter(isValidItem).length || 0);
 
         initializeTypeFilters();
         renderStore();
@@ -570,7 +835,7 @@
     function filterItems() {
       let filtered = storeData.items;
 
-      // Filter by category (changed from type to category)
+      // Filter by category
       if (storeData.selectedType !== null) {
         filtered = filtered.filter(item => item.category === storeData.selectedType);
       }
@@ -581,7 +846,8 @@
         filtered = filtered.filter(
           item =>
             item.name.toLowerCase().includes(query) ||
-            item.description.toLowerCase().includes(query) ||
+            (item.description && item.description.toLowerCase().includes(query)) ||
+            (item.flavor && item.flavor.toLowerCase().includes(query)) ||
             (item.tags && item.tags.some(tag => tag.toLowerCase().includes(query)))
         );
       }
@@ -589,14 +855,42 @@
       return filtered;
     }
 
+    function sortItems(items) {
+      const sortValue = document.getElementById('sort-select').value;
+      const sorted = [...items];
+
+      switch(sortValue) {
+        case 'name-asc':
+          sorted.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case 'name-desc':
+          sorted.sort((a, b) => b.name.localeCompare(a.name));
+          break;
+        case 'price-asc':
+          sorted.sort((a, b) => (a.value || 0) - (b.value || 0));
+          break;
+        case 'price-desc':
+          sorted.sort((a, b) => (b.value || 0) - (a.value || 0));
+          break;
+        case 'weight-asc':
+          sorted.sort((a, b) => (a.weight || 0) - (b.weight || 0));
+          break;
+        case 'weight-desc':
+          sorted.sort((a, b) => (b.weight || 0) - (a.weight || 0));
+          break;
+      }
+
+      return sorted;
+    }
+
     function renderStore(filteredItems = null) {
-      const items = filteredItems || storeData.items;
+      const items = sortItems(filteredItems || storeData.items);
       const grid = document.getElementById('store-grid');
       grid.innerHTML = '';
 
       if (items.length === 0) {
         grid.innerHTML =
-          '<p style="grid-column: 1/-1; text-align: center; color: var(--muted);">No items found</p>';
+          '<div class="loading-state"><p>No items found</p><p style="font-size: 0.9rem; margin-top: 8px;">Try adjusting your filters or search terms</p></div>';
         return;
       }
 
@@ -621,32 +915,36 @@
 
       card.innerHTML = `
         <div class="item-header">
-          <h3 class="item-name">${item.name}</h3>
-          <div class="item-price">${item.value}</div>
+          <h3 class="item-name">${item.name || 'Unknown Item'}</h3>
+          <div class="item-price">${item.value || 0}</div>
         </div>
-        <div class="item-weight">Weight: ${item.weight} lbs</div>
+        <div class="item-weight">Weight: ${item.weight || 0} lbs</div>
         ${tagsHTML}
-        <p class="item-description">${item.description}</p>
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 0;">
+          <button class="item-btn item-btn-info" onclick="showItemDetails('${(item.name || '').replace(/'/g, "\\'")}')">ℹ️ View Details</button>
+        </div>
         <div class="item-actions">
-          <button class="item-btn item-btn-add" onclick="addToCart('${item.name.replace(/'/g, "\\'")}', ${item.value}, ${item.weight})">
-            + Add
-          </button>
           ${quantity > 0 ? `
-            <button class="item-btn item-btn-remove" onclick="removeFromCart('${item.name.replace(/'/g, "\\'")}')">
-              Remove
-            </button>
-            <div class="item-quantity">×${quantity}</div>
-          ` : ''}
+            <button class="item-btn item-btn-qty" onclick="decrementItem('${(item.name || '').replace(/'/g, "\\'")}')">−</button>
+            <div class="item-quantity" style="flex: 1; text-align: center;">×${quantity}</div>
+            <button class="item-btn item-btn-qty" onclick="incrementItem('${(item.name || '').replace(/'/g, "\\'")}')">+</button>
+            <button class="item-btn item-btn-remove" onclick="removeFromCart('${(item.name || '').replace(/'/g, "\\'")}')">🗑️</button>
+          ` : `
+            <button class="item-btn item-btn-add" onclick="addToCart('${(item.name || '').replace(/'/g, "\\'")}')">+ Add to Cart</button>
+          `}
         </div>
       `;
 
       return card;
     }
 
-    function addToCart(itemName, price, weight) {
+    function addToCart(itemName) {
+      const item = storeData.items.find(i => i.name === itemName);
+      if (!item) return;
+
       const cartCost = getCartCost();
-      if (cartCost + price > storeData.budget) {
-        showMessage('Insufficient credit for this purchase', 'error');
+      if (cartCost + item.value > storeData.budget) {
+        showMessage('⚠️ Insufficient credit for this purchase', 'error');
         return;
       }
 
@@ -654,15 +952,42 @@
         storeData.cart[itemName] = 0;
       }
       storeData.cart[itemName]++;
+      showMessage(`✓ ${itemName} added to cart`, 'success');
       updateCart();
     }
 
-    function removeFromCart(itemName) {
+    function incrementItem(itemName) {
+      const item = storeData.items.find(i => i.name === itemName);
+      if (!item) return;
+
+      const cartCost = getCartCost();
+      if (cartCost + item.value > storeData.budget) {
+        showMessage('⚠️ Insufficient credit for this purchase', 'error');
+        return;
+      }
+
+      storeData.cart[itemName]++;
+      updateCart();
+    }
+
+    function decrementItem(itemName) {
       if (storeData.cart[itemName] > 1) {
         storeData.cart[itemName]--;
+        updateCart();
       } else {
-        delete storeData.cart[itemName];
+        removeFromCart(itemName);
       }
+    }
+
+    function removeFromCart(itemName) {
+      const quantity = storeData.cart[itemName] || 0;
+      if (quantity > 3) {
+        if (!confirm(`Remove all ${quantity} ${itemName} from cart?`)) {
+          return;
+        }
+      }
+      delete storeData.cart[itemName];
+      showMessage(`✓ ${itemName} removed from cart`, 'success');
       updateCart();
     }
 
@@ -714,15 +1039,99 @@
       }, 4000);
     }
 
+    function showItemDetails(itemName) {
+      const item = storeData.items.find(i => i.name === itemName);
+      if (!item) return;
+
+      const modal = document.getElementById('item-modal');
+      document.getElementById('modal-item-name').textContent = item.name || 'Unknown Item';
+      
+      // Build info grid
+      const infoHTML = `
+        <div class="modal-info-item">
+          <div class="modal-info-label">Price</div>
+          <div class="modal-info-value">${(item.value || 0).toLocaleString()}</div>
+        </div>
+        <div class="modal-info-item">
+          <div class="modal-info-label">Weight</div>
+          <div class="modal-info-value">${item.weight || 0} lbs</div>
+        </div>
+      `;
+      document.getElementById('modal-item-info').innerHTML = infoHTML;
+      
+      // Description
+      document.getElementById('modal-item-description').textContent = item.description || 'No description available.';
+      
+      // Flavor text
+      const flavorSection = document.getElementById('modal-flavor-section');
+      if (item.flavor) {
+        document.getElementById('modal-item-flavor').textContent = `"${item.flavor}"`;
+        flavorSection.style.display = 'block';
+      } else {
+        flavorSection.style.display = 'none';
+      }
+      
+      // Tags
+      const tagsSection = document.getElementById('modal-tags-section');
+      if (item.tags && item.tags.length > 0) {
+        const tagsHTML = item.tags.map(tag => `<span class="modal-tag">${tag}</span>`).join('');
+        document.getElementById('modal-item-tags').innerHTML = tagsHTML;
+        tagsSection.style.display = 'block';
+      } else {
+        tagsSection.style.display = 'none';
+      }
+      
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeItemModal(event) {
+      if (event && event.target !== event.currentTarget) return;
+      const modal = document.getElementById('item-modal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeItemModal();
+      }
+    });
+
+    // Debounce function for search
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
     // Event listeners
-    document.getElementById('search-box').addEventListener('input', () => {
+    document.getElementById('search-box').addEventListener('input', debounce(() => {
+      renderStore(filterItems());
+    }, 300));
+
+    document.getElementById('sort-select').addEventListener('change', () => {
       renderStore(filterItems());
     });
 
     document.getElementById('clear-cart-btn').addEventListener('click', () => {
-      storeData.cart = {};
-      updateCart();
-      showMessage('Cart cleared', 'success');
+      const itemCount = Object.keys(storeData.cart).length;
+      if (itemCount === 0) {
+        showMessage('Cart is already empty', 'error');
+        return;
+      }
+      if (confirm(`Clear all ${itemCount} item(s) from cart?`)) {
+        storeData.cart = {};
+        updateCart();
+        showMessage('✓ Cart cleared', 'success');
+      }
     });
 
     document.getElementById('checkout-btn').addEventListener('click', () => {
@@ -750,7 +1159,11 @@
     });
 
     // Load data on page load
-    window.addEventListener('load', loadStoreData);
+    window.addEventListener('load', () => {
+      const grid = document.getElementById('store-grid');
+      grid.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p style="margin-top: 16px;">Loading store inventory...</p></div>';
+      loadStoreData();
+    });
   </script>
 </body>
 </html>

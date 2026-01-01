@@ -13,15 +13,16 @@
       "value": 1,
       "weight": 0.1,
       "description": "Low recoil, low penetration.",
-      "stats": {
-        "damage": "1d6",
-        "armorMod": "+0"
-      },
+      "flavor": "Plink!",
       "tags": [
         "ammo",
         "ballistic",
         "pistol"
-      ]
+      ],
+      "stats": {
+        "damage": "1d6",
+        "armorMod": "+0"
+      }
     },
     {
       "id": "ammo_9mm",
@@ -31,15 +32,16 @@
       "value": 2,
       "weight": 0.1,
       "description": "Common light pistol round.",
-      "stats": {
-        "damage": "1d10",
-        "armorMod": "+0"
-      },
+      "flavor": "Plenty Of Stopping Power, Seriously. Stop Laughing.",
       "tags": [
         "ammo",
         "ballistic",
         "pistol"
-      ]
+      ],
+      "stats": {
+        "damage": "1d10",
+        "armorMod": "+0"
+      }
     },
     {
       "id": "ammo_10mm",
@@ -48,16 +50,36 @@
       "type": "ballistic",
       "value": 3,
       "weight": 0.1,
-      "description": "Higher stopping power than 9mm.",
-      "stats": {
-        "damage": "1d12",
-        "armorMod": "+0"
-      },
+      "description": "The preferred choice of Pre-War Police and the American Military.",
+      "flavor": "Good Enough For The FBI HRT",
       "tags": [
         "ammo",
         "ballistic",
         "pistol"
-      ]
+      ],
+      "stats": {
+        "damage": "1d12",
+        "armorMod": "+0"
+      }
+    },
+    {
+      "id": "ammo_45acp",
+      "name": ".45 ACP",
+      "category": "ammunition",
+      "type": "ballistic",
+      "value": 3,
+      "weight": 0.1,
+      "description": "A reliable and battle-tested caliber.",
+      "flavor": "Something Something John Moses Browning",
+      "tags": [
+        "ammo",
+        "ballistic",
+        "pistol"
+      ],
+      "stats": {
+        "damage": "1d12",
+        "armorMod": "+0"
+      }
     },
     {
       "id": "ammo_357",
@@ -67,16 +89,17 @@
       "value": 4,
       "weight": 0.1,
       "description": "Strong penetration; revolvers only.",
-      "stats": {
-        "damage": "1d12+2",
-        "armorMod": "-1 AP"
-      },
+      "flavor": "Bad Guys, Good Guys, What's The Difference?",
       "tags": [
         "ammo",
         "ballistic",
         "pistol",
         "revolver"
-      ]
+      ],
+      "stats": {
+        "damage": "1d12+2",
+        "armorMod": "-1 AP"
+      }
     },
     {
       "id": "ammo_44",
@@ -86,16 +109,17 @@
       "value": 5,
       "weight": 0.1,
       "description": "Excellent armor penetration.",
-      "stats": {
-        "damage": "2d8",
-        "armorMod": "-2 AP"
-      },
+      "flavor": "Ok Gumshoe, Try This!",
       "tags": [
         "ammo",
         "ballistic",
         "pistol",
         "revolver"
-      ]
+      ],
+      "stats": {
+        "damage": "2d8",
+        "armorMod": "-2 AP"
+      }
     },
     {
       "id": "ammo_14mm",
@@ -105,15 +129,16 @@
       "value": 15,
       "weight": 0.15,
       "description": "Very high penetration; rare caliber.",
-      "stats": {
-        "damage": "2d10",
-        "armorMod": "-3 AP"
-      },
+      "flavor": "From Bavaria With Love",
       "tags": [
         "ammo",
         "ballistic",
         "pistol"
-      ]
+      ],
+      "stats": {
+        "damage": "2d10",
+        "armorMod": "-3 AP"
+      }
     },
     {
       "id": "ammo_223",
@@ -123,15 +148,16 @@
       "value": 8,
       "weight": 0.1,
       "description": "Accurate rifle round; used in carbines and pistols.",
-      "stats": {
-        "damage": "2d8",
-        "armorMod": "-1 AP"
-      },
+      "flavor": "Perfect For Deer And Larger Game",
       "tags": [
         "ammo",
         "ballistic",
         "rifle"
-      ]
+      ],
+      "stats": {
+        "damage": "2d8",
+        "armorMod": "-1 AP"
+      }
     },
     {
       "id": "ammo_762",
@@ -141,15 +167,16 @@
       "value": 10,
       "weight": 0.15,
       "description": "Common battle-rifle ammunition.",
-      "stats": {
-        "damage": "2d10",
-        "armorMod": "-2 AP"
-      },
+      "flavor": "The Right Side Of The Wall",
       "tags": [
         "ammo",
         "ballistic",
         "rifle"
-      ]
+      ],
+      "stats": {
+        "damage": "2d10",
+        "armorMod": "-2 AP"
+      }
     },
     {
       "id": "ammo_50bmg",
@@ -159,16 +186,17 @@
       "value": 40,
       "weight": 0.3,
       "description": "Anti-materiel round with extreme recoil.",
-      "stats": {
-        "damage": "3d10+5",
-        "armorMod": "-6 AP"
-      },
+      "flavor": "What Armor?",
       "tags": [
         "ammo",
         "ballistic",
         "rifle",
         "heavy"
-      ]
+      ],
+      "stats": {
+        "damage": "3d10+5",
+        "armorMod": "-6 AP"
+      }
     },
     {
       "id": "ammo_12gauge_shot",
@@ -178,15 +206,16 @@
       "value": 3,
       "weight": 0.2,
       "description": "Standard buckshot; weak vs armor.",
-      "stats": {
-        "damage": "1d8 per pellet",
-        "armorMod": "+2 AC vs armor"
-      },
+      "flavor": "Good Enough For Dad",
       "tags": [
         "ammo",
         "shotgun",
         "buckshot"
-      ]
+      ],
+      "stats": {
+        "damage": "1d8 per pellet",
+        "armorMod": "+2 AC vs armor"
+      }
     },
     {
       "id": "ammo_12gauge_slug",
@@ -196,15 +225,16 @@
       "value": 4,
       "weight": 0.2,
       "description": "Solid projectile; good penetration.",
-      "stats": {
-        "damage": "2d10",
-        "armorMod": "-2 AP"
-      },
+      "flavor": "The Original Donkey Punch",
       "tags": [
         "ammo",
         "shotgun",
         "slug"
-      ]
+      ],
+      "stats": {
+        "damage": "2d10",
+        "armorMod": "-2 AP"
+      }
     },
     {
       "id": "ammo_12gauge_flechette",
@@ -214,15 +244,16 @@
       "value": 8,
       "weight": 0.2,
       "description": "Lethal to unarmored targets.",
-      "stats": {
-        "damage": "1d6 × pellet count",
-        "armorMod": "+4 AC vs armor"
-      },
+      "flavor": "For When You Really Want Someone To Have A Bad Day",
       "tags": [
         "ammo",
         "shotgun",
         "flechette"
-      ]
+      ],
+      "stats": {
+        "damage": "1d6 × pellet count",
+        "armorMod": "+4 AC vs armor"
+      }
     },
     {
       "id": "ammo_small_energy_cell",
@@ -232,15 +263,16 @@
       "value": 20,
       "weight": 0.5,
       "description": "Standard laser cell.",
-      "stats": {
-        "damage": "Varies by weapon",
-        "capacity": 12
-      },
+      "flavor": "The BADTFL Says We Can Sell It In Home Goods",
       "tags": [
         "ammo",
         "energy",
         "laser"
-      ]
+      ],
+      "stats": {
+        "damage": "Varies by weapon",
+        "capacity": 12
+      }
     },
     {
       "id": "ammo_microfusion_cell",
@@ -250,16 +282,17 @@
       "value": 40,
       "weight": 0.5,
       "description": "Plasma and high-power laser ammunition.",
-      "stats": {
-        "damage": "Varies by weapon",
-        "capacity": 24
-      },
+      "flavor": "It's New! It's Now!",
       "tags": [
         "ammo",
         "energy",
         "plasma",
         "laser"
-      ]
+      ],
+      "stats": {
+        "damage": "Varies by weapon",
+        "capacity": 24
+      }
     },
     {
       "id": "ammo_electron_charge_pack",
@@ -269,74 +302,16 @@
       "value": 60,
       "weight": 1,
       "description": "Industrial/heavy energy pack.",
-      "stats": {
-        "damage": "Varies",
-        "capacity": 30
-      },
+      "flavor": "H+H Tools And The US Navy Recommend Discharging Every 16 Hours",
       "tags": [
         "ammo",
         "energy",
         "heavy"
-      ]
-    },
-    {
-      "id": "ammo_frag_grenade",
-      "name": "Frag Grenade",
-      "category": "ammunition",
-      "type": "explosive",
-      "value": 180,
-      "weight": 1,
-      "description": "Standard fragmentation explosive.",
+      ],
       "stats": {
-        "damage": "2d10+10",
-        "radius": "1 hex (primary) + 1 hex (concussion)"
-      },
-      "tags": [
-        "ammo",
-        "explosive",
-        "grenade",
-        "thrown"
-      ]
-    },
-    {
-      "id": "ammo_plasma_grenade",
-      "name": "Plasma Grenade",
-      "category": "ammunition",
-      "type": "explosive",
-      "value": 400,
-      "weight": 1,
-      "description": "Ignores 4 points of armor.",
-      "stats": {
-        "damage": "3d10+10",
-        "radius": "1 hex"
-      },
-      "tags": [
-        "ammo",
-        "explosive",
-        "grenade",
-        "plasma",
-        "thrown"
-      ]
-    },
-    {
-      "id": "ammo_pulse_grenade",
-      "name": "Pulse Grenade",
-      "category": "ammunition",
-      "type": "explosive",
-      "value": 350,
-      "weight": 1,
-      "description": "Electromagnetic; devastating to machines.",
-      "stats": {
-        "damage": "5d10 vs robots / 1d10 vs organics",
-        "radius": "1 hex"
-      },
-      "tags": [
-        "ammo",
-        "explosive",
-        "grenade",
-        "emp",
-        "thrown"
-      ]
+        "damage": "Varies",
+        "capacity": 30
+      }
     },
     {
       "id": "ammo_dynamite",
@@ -346,15 +321,16 @@
       "value": 50,
       "weight": 2,
       "description": "Timed explosive.",
-      "stats": {
-        "damage": "3d10",
-        "radius": "2 hexes"
-      },
+      "flavor": "You're A Nobel Laureate too?",
       "tags": [
         "ammo",
         "explosive",
         "thrown"
-      ]
+      ],
+      "stats": {
+        "damage": "3d10",
+        "radius": "2 hexes"
+      }
     },
     {
       "id": "ammo_plastic_explosives",
@@ -363,15 +339,18 @@
       "type": "explosive",
       "value": 300,
       "weight": 2,
-      "description": "Moldable; requires detonator.",
+      "description": "C-14 is an improved version of the classic C-4 plastic explosive. A gummy-like substance that can be rigged to detonate, plastique is useful because it can be molded to any shape.",
+      "flavor": "The Last Playdough You'll Ever Use",
+      "tags": [
+        "ammo",
+        "explosive",
+        "throwable"
+      ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "5d10",
         "radius": "2 hexes"
-      },
-      "tags": [
-        "ammo",
-        "explosive"
-      ]
+      }
     },
     {
       "id": "ammo_flechette_needle",
@@ -381,15 +360,16 @@
       "value": 5,
       "weight": 0.05,
       "description": "Poor armor penetration.",
-      "stats": {
-        "damage": "1d10",
-        "armorMod": "+2 AC vs armor"
-      },
+      "flavor": "YEEOUCH!",
       "tags": [
         "ammo",
         "special",
         "needle"
-      ]
+      ],
+      "stats": {
+        "damage": "1d10",
+        "armorMod": "+2 AC vs armor"
+      }
     },
     {
       "id": "ammo_toxin_needle",
@@ -399,16 +379,17 @@
       "value": 25,
       "weight": 0.05,
       "description": "Used in Needler weapons.",
-      "stats": {
-        "damage": "2d6",
-        "special": "Applies poison (severity varies)"
-      },
+      "flavor": "Exposure Check!",
       "tags": [
         "ammo",
         "special",
         "needle",
         "poison"
-      ]
+      ],
+      "stats": {
+        "damage": "2d6",
+        "special": "Applies poison (severity varies)"
+      }
     },
     {
       "id": "ammo_gauss_round",
@@ -418,23 +399,24 @@
       "value": 50,
       "weight": 0.1,
       "description": "Electromagnetically accelerated; extreme penetration.",
-      "stats": {
-        "damage": "2d10",
-        "armorMod": "-4 AP"
-      },
+      "flavor": "HOW Many Car Doors?",
       "tags": [
         "ammo",
         "special",
         "gauss",
         "electromagnetic"
-      ]
+      ],
+      "stats": {
+        "damage": "2d10",
+        "armorMod": "-4 AP"
+      }
     }
   ],
   "weapons": [
     {
       "id": "weap_rock",
       "name": "Rock",
-      "category": "weapon",
+      "category": "weapons",
       "type": "melee",
       "value": 0,
       "weight": 1,
@@ -442,40 +424,21 @@
       "flavor": "Charlie Brown Special",
       "tags": [
         "weapon",
-        "melee",
-        "improvised"
+        "improvised",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d4 + MD",
         "ap": "S 3 / T 4",
-        "range": 1
-      }
-    },
-    {
-      "id": "weap_sap",
-      "name": "Sap",
-      "category": "weapon",
-      "type": "melee",
-      "value": 1,
-      "weight": 1,
-      "requirements": "STR 5",
-      "description": "Non-lethal; successful head hit knocks out target for 1d10 rounds.",
-      "flavor": "Weeaboo!",
-      "tags": [
-        "weapon",
-        "melee",
-        "nonlethal"
-      ],
-      "stats": {
-        "damage": "—",
-        "ap": "T 5",
-        "range": 1
+        "range": 1,
+        "skill": "Throwing"
       }
     },
     {
       "id": "weap_shiv",
       "name": "Shiv",
-      "category": "weapon",
+      "category": "weapons",
       "type": "melee",
       "value": 2,
       "weight": 1,
@@ -486,18 +449,21 @@
         "melee",
         "blade",
         "improvised",
-        "concealable"
+        "concealable",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d4 + MD",
         "ap": "S 3 / T 4",
-        "range": 1
+        "range": 1,
+        "skill": "Melee Weapons"
       }
     },
     {
       "id": "weap_wooden_club",
       "name": "Wooden Club",
-      "category": "weapon",
+      "category": "weapons",
       "type": "melee",
       "value": 5,
       "weight": 5,
@@ -507,18 +473,21 @@
         "weapon",
         "melee",
         "blunt",
-        "improvised"
+        "improvised",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d6 + MD",
         "ap": "S 4 / T 5",
-        "range": 1
+        "range": 1,
+        "skill": "Melee Weapons"
       }
     },
     {
       "id": "weap_knife",
       "name": "Knife",
-      "category": "weapon",
+      "category": "weapons",
       "type": "melee",
       "value": 10,
       "weight": 1,
@@ -527,12 +496,15 @@
       "tags": [
         "weapon",
         "melee",
-        "blade"
+        "blade",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d6 + MD",
         "ap": "S 3 / T 4",
-        "range": 1
+        "range": 1,
+        "skill": "Melee Weapons"
       }
     },
     {
@@ -547,18 +519,21 @@
       "tags": [
         "weapon",
         "melee",
-        "pierce"
+        "pierce",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d8 + MD",
         "ap": "S 4 / T 5",
-        "range": 1
+        "range": 1,
+        "skill": "Melee Weapons"
       }
     },
     {
       "id": "weap_crowbar",
       "name": "Crowbar",
-      "category": "weapon",
+      "category": "weapons",
       "type": "melee",
       "value": 20,
       "weight": 4,
@@ -568,18 +543,21 @@
         "weapon",
         "melee",
         "blunt",
-        "tool"
+        "tool",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d6 + MD",
         "ap": "S 4 / T 5",
-        "range": 1
+        "range": 1,
+        "skill": "Melee Weapons"
       }
     },
     {
       "id": "weap_board",
       "name": "Board",
-      "category": "weapon",
+      "category": "weapons",
       "type": "melee",
       "value": 20,
       "weight": 8,
@@ -589,18 +567,21 @@
         "weapon",
         "melee",
         "blunt",
-        "improvised"
+        "improvised",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d10 + MD",
         "ap": "S 4 / T 5",
-        "range": 1
+        "range": 1,
+        "skill": "Melee Weapons"
       }
     },
     {
       "id": "weap_sharpened_pole",
       "name": "Sharpened Pole",
-      "category": "weapon",
+      "category": "weapons",
       "type": "melee",
       "value": 25,
       "weight": 5,
@@ -610,18 +591,21 @@
         "weapon",
         "melee",
         "pierce",
-        "improvised"
+        "improvised",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d8 + MD",
         "ap": "S 4 / T 5",
-        "range": 1
+        "range": 1,
+        "skill": "Melee Weapons"
       }
     },
     {
       "id": "weap_pipe",
       "name": "Pipe",
-      "category": "weapon",
+      "category": "weapons",
       "type": "melee",
       "value": 25,
       "weight": 6,
@@ -631,12 +615,15 @@
         "weapon",
         "melee",
         "blunt",
-        "improvised"
+        "improvised",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d8 + MD",
         "ap": "S 4 / T 5",
-        "range": 1
+        "range": 1,
+        "skill": "Melee Weapons"
       }
     },
     {
@@ -652,22 +639,24 @@
         "weapon",
         "melee",
         "blade",
-        "military"
+        "military",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d8 + MD",
         "ap": "S 3 / T 4",
-        "range": 1
+        "range": 1,
+        "skill": "Melee Weapons"
       }
     },
     {
       "id": "weap_sledgehammer",
       "name": "Sledgehammer",
-      "category": "weapon",
+      "category": "weapons",
       "type": "melee",
       "value": 80,
       "weight": 12,
-      "requirements": "STR 6",
       "description": "Slow but powerful.",
       "flavor": "Demolition Man",
       "tags": [
@@ -675,18 +664,22 @@
         "melee",
         "blunt",
         "heavy",
-        "tool"
+        "tool",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "2d6 + MD",
         "ap": "S 5 / T 6",
-        "range": 1
-      }
+        "range": 1,
+        "skill": "Melee Weapons"
+      },
+      "requirements": "STR 6"
     },
     {
       "id": "weap_axe",
       "name": "Axe",
-      "category": "weapon",
+      "category": "weapons",
       "type": "melee",
       "value": 150,
       "weight": 8,
@@ -696,18 +689,21 @@
         "weapon",
         "melee",
         "blade",
-        "heavy"
+        "heavy",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d12 + MD",
         "ap": "S 4 / T 5",
-        "range": 1
+        "range": 1,
+        "skill": "Melee Weapons"
       }
     },
     {
       "id": "weap_machete",
       "name": "Machete",
-      "category": "weapon",
+      "category": "weapons",
       "type": "melee",
       "value": 180,
       "weight": 3,
@@ -716,44 +712,49 @@
       "tags": [
         "weapon",
         "melee",
-        "blade"
+        "blade",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d8 + 2 + MD",
         "ap": "S 3 / T 4",
-        "range": 1
+        "range": 1,
+        "skill": "Melee Weapons"
       }
     },
     {
       "id": "weap_war_club",
       "name": "War Club",
-      "category": "weapon",
+      "category": "weapons",
       "type": "melee",
       "value": 200,
       "weight": 10,
-      "requirements": "STR 5",
       "description": "Tribal heavy club.",
       "flavor": "Get the medicine man!",
       "tags": [
         "weapon",
         "melee",
         "blunt",
-        "tribal"
+        "tribal",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "2d6 + MD",
         "ap": "S 4 / T 5",
-        "range": 1
-      }
+        "range": 1,
+        "skill": "Melee Weapons"
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_war_axe",
       "name": "War Axe",
-      "category": "weapon",
+      "category": "weapons",
       "type": "melee",
       "value": 300,
       "weight": 12,
-      "requirements": "STR 6",
       "description": "Heavy two-handed battle axe.",
       "flavor": "And my axe!",
       "tags": [
@@ -761,13 +762,17 @@
         "melee",
         "blade",
         "heavy",
-        "tribal"
+        "tribal",
+        "throwing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "2d8 + MD",
         "ap": "S 4 / T 5",
-        "range": 1
-      }
+        "range": 1,
+        "skill": "Melee Weapons"
+      },
+      "requirements": "STR 6"
     },
     {
       "id": "weap_brass_knuckles",
@@ -783,53 +788,59 @@
         "unarmed",
         "fist"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d10 + MD",
         "ap": "S 3 / T 4",
-        "range": 1
+        "range": 1,
+        "skill": "Unarmed"
       }
     },
     {
       "id": "weap_tiger_claw",
       "name": "Tiger Claw",
-      "category": "weapon",
+      "category": "weapons",
       "type": "unarmed",
       "value": 75,
       "weight": 1,
       "description": "Often poisoned; low base damage.",
-      "flavor": "",
+      "flavor": "How's This For Cat's Paw?",
       "tags": [
         "weapon",
         "unarmed",
         "claw"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d2 + MD",
         "ap": "S 3 / T 4",
-        "range": 1
+        "range": 1,
+        "skill": "Unarmed"
       }
     },
     {
       "id": "weap_sapper",
       "name": "Sapper",
-      "category": "weapon",
+      "category": "weapons",
       "type": "unarmed",
       "value": 80,
       "weight": 4,
-      "requirements": "STR 3",
       "description": "75% KO chance on head hit.",
-      "flavor": "",
+      "flavor": "Weeaboo!",
       "tags": [
         "weapon",
         "unarmed",
         "nonlethal",
         "fist"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d6 + MD",
         "ap": "S 3 / T 4",
-        "range": 1
-      }
+        "range": 1,
+        "skill": "Melee Weapons"
+      },
+      "requirements": "STR 3"
     },
     {
       "id": "weap_shredders",
@@ -845,10 +856,12 @@
         "unarmed",
         "claw"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d4 + MD",
         "ap": "S 3 / T 4",
-        "range": 1
+        "range": 1,
+        "skill": "Unarmed"
       }
     },
     {
@@ -865,33 +878,37 @@
         "unarmed",
         "claw"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "(1d8 + 2) + MD",
         "ap": "S 3 / T 4",
-        "range": 1
+        "range": 1,
+        "skill": "Unarmed"
       }
     },
     {
       "id": "weap_mace_glove",
       "name": "Mace Glove",
-      "category": "weapon",
+      "category": "weapons",
       "type": "unarmed",
       "value": 150,
       "weight": 5,
-      "requirements": "STR 3",
       "description": "Heavy crushing glove.",
-      "flavor": "",
+      "flavor": "Somebody has scratched 'Iron Mike' into the head of the mace",
       "tags": [
         "weapon",
         "unarmed",
         "fist",
         "blunt"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d12 + MD",
         "ap": "S 3 / T 4",
-        "range": 1
-      }
+        "range": 1,
+        "skill": "Unarmed"
+      },
+      "requirements": "STR 3"
     },
     {
       "id": "weap_spiked_knuckles",
@@ -908,10 +925,12 @@
         "fist",
         "pierce"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "(1d10 + 4) + MD",
         "ap": "S 3 / T 4",
-        "range": 1
+        "range": 1,
+        "skill": "Unarmed"
       }
     },
     {
@@ -929,10 +948,12 @@
         "fist",
         "nonlethal"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d4 + MD",
         "ap": "S 3 / T 4",
-        "range": 1
+        "range": 1,
+        "skill": "Unarmed"
       }
     },
     {
@@ -949,10 +970,12 @@
         "unarmed",
         "fist"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "(1d4 + 5) + MD",
         "ap": "S 3 / T 4",
-        "range": 1
+        "range": 1,
+        "skill": "Unarmed"
       }
     },
     {
@@ -970,10 +993,12 @@
         "blade",
         "pierce"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "(1d10 + 2) + MD",
         "ap": "S 3 / T 4",
-        "range": 1
+        "range": 1,
+        "skill": "Unarmed"
       }
     },
     {
@@ -991,12 +1016,14 @@
         "fist",
         "special"
       ],
-      "requirements": "STR 2",
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d4 + Ammo Damage + MD",
         "ap": "S 4 / T 5",
-        "range": 1
-      }
+        "range": 1,
+        "skill": "Unarmed"
+      },
+      "requirements": "STR 2"
     },
     {
       "id": "weap_impact_glove",
@@ -1013,20 +1040,21 @@
         "fist",
         "tech"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "(1d10 + 8) + MD",
         "ap": "S 4 / T 5",
-        "range": 1
+        "range": 1,
+        "skill": "Unarmed"
       }
     },
     {
       "id": "weap_adamantine_claws",
       "name": "Adamantine Claws",
-      "category": "weapon",
+      "category": "weapons",
       "type": "unarmed",
       "value": 1000,
       "weight": 3,
-      "requirements": "STR 2",
       "description": "Retractable blade claws.",
       "flavor": "Somethin' don't smell quite right about you, bub.",
       "tags": [
@@ -1035,11 +1063,14 @@
         "claw",
         "retractable"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "(1d10 + 5) + MD",
         "ap": "S 3 / T 4",
-        "range": 1
-      }
+        "range": 1,
+        "skill": "Unarmed"
+      },
+      "requirements": "STR 2"
     },
     {
       "id": "weap_power_fist",
@@ -1057,16 +1088,18 @@
         "tech",
         "powered"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "damage": "(2d8 + 10) + MD",
         "ap": "S 4 / T 5",
-        "range": 1
+        "range": 1,
+        "skill": "Unarmed"
       }
     },
     {
       "id": "weap_zip_gun",
       "name": "Zip Gun",
-      "category": "weapon",
+      "category": "weapons",
       "type": "pistol",
       "value": 25,
       "weight": 3,
@@ -1078,18 +1111,20 @@
         "pistol",
         "improvised"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 5 / T 6",
         "range": 10,
         "capacity": 1,
-        "ammoType": ""
+        "ammoType": "",
+        "skill": "Guns"
       }
     },
     {
       "id": "weap_derringer",
       "name": "Derringer",
-      "category": "weapon",
+      "category": "weapons",
       "type": "pistol",
       "value": 60,
       "weight": 2,
@@ -1101,18 +1136,20 @@
         "pistol",
         "concealable"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 4 / T 5",
         "range": 10,
         "capacity": 2,
-        "ammoType": ""
+        "ammoType": "",
+        "skill": "Guns"
       }
     },
     {
       "id": "weap_22_pistol",
       "name": ".22 Pistol",
-      "category": "weapon",
+      "category": "weapons",
       "type": "pistol",
       "value": 100,
       "weight": 2,
@@ -1123,18 +1160,20 @@
         "gun",
         "pistol"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 4 / T 5",
         "range": 20,
         "capacity": 10,
-        "ammoType": ""
+        "ammoType": "",
+        "skill": "Guns"
       }
     },
     {
       "id": "weap_9mm_pistol",
       "name": "9mm Pistol",
-      "category": "weapon",
+      "category": "weapons",
       "type": "pistol",
       "value": 200,
       "weight": 3,
@@ -1145,18 +1184,20 @@
         "gun",
         "pistol"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 4 / T 5",
         "range": 25,
         "capacity": 10,
-        "ammoType": ""
+        "ammoType": "",
+        "skill": "Guns"
       }
     },
     {
       "id": "weap_10mm_pistol",
       "name": "10mm Pistol",
-      "category": "weapon",
+      "category": "weapons",
       "type": "pistol",
       "value": 300,
       "weight": 4,
@@ -1167,18 +1208,20 @@
         "gun",
         "pistol"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 4 / T 5",
         "range": 30,
         "capacity": 12,
-        "ammoType": ""
+        "ammoType": "",
+        "skill": "Guns"
       }
     },
     {
       "id": "weap_m1911a1",
       "name": "M1911A1",
-      "category": "weapon",
+      "category": "weapons",
       "type": "pistol",
       "value": 300,
       "weight": 4,
@@ -1190,18 +1233,20 @@
         "pistol",
         "military"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 4 / T 5",
         "range": 30,
         "capacity": 12,
-        "ammoType": ""
+        "ammoType": "",
+        "skill": "Guns"
       }
     },
     {
       "id": "weap_357_revolver",
       "name": ".357 Magnum Revolver",
-      "category": "weapon",
+      "category": "weapons",
       "type": "pistol",
       "value": 350,
       "weight": 4,
@@ -1213,18 +1258,20 @@
         "pistol",
         "revolver"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage + 2",
         "ap": "S 5 / T 6",
         "range": 25,
         "capacity": "6 (revolver)",
-        "ammoType": ""
+        "ammoType": "",
+        "skill": "Guns"
       }
     },
     {
       "id": "weap_44_revolver",
       "name": ".44 Magnum Revolver",
-      "category": "weapon",
+      "category": "weapons",
       "type": "pistol",
       "value": 500,
       "weight": 5,
@@ -1236,22 +1283,23 @@
         "pistol",
         "revolver"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage + 4",
         "ap": "S 5 / T 6",
         "range": 30,
         "capacity": "6 (revolver)",
-        "ammoType": ""
+        "ammoType": "",
+        "skill": "Guns"
       }
     },
     {
       "id": "weap_14mm_pistol",
       "name": "14mm Pistol",
-      "category": "weapon",
+      "category": "weapons",
       "type": "pistol",
       "value": 1200,
       "weight": 6,
-      "requirements": "STR 5",
       "description": "Extremely powerful semiautomatic pistol.",
       "flavor": "Still safer than the P320",
       "tags": [
@@ -1260,22 +1308,24 @@
         "pistol",
         "heavy"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 6",
         "ap": "S 5 / T 6",
         "range": 40,
         "capacity": 6,
-        "ammoType": ""
-      }
+        "ammoType": "",
+        "skill": "Guns"
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_223_pistol",
       "name": ".223 Pistol",
-      "category": "weapon",
+      "category": "weapons",
       "type": "pistol",
       "value": 1500,
       "weight": 7,
-      "requirements": "STR 6",
       "description": "Cut-down rifle action; very high penetration.",
       "flavor": "Wake up. Time to die!",
       "tags": [
@@ -1284,18 +1334,21 @@
         "pistol",
         "heavy"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 8",
         "ap": "S 5 / T 6",
         "range": 45,
         "capacity": 5,
-        "ammoType": ""
-      }
+        "ammoType": "",
+        "skill": "Guns"
+      },
+      "requirements": "STR 6"
     },
     {
       "id": "weap_needler_pistol",
       "name": "Needler Pistol",
-      "category": "weapon",
+      "category": "weapons",
       "type": "pistol",
       "value": 2000,
       "weight": 4,
@@ -1307,18 +1360,20 @@
         "pistol",
         "special"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "damage": "1d10 (flechette) / 2d6 (tox)",
         "ap": "S 4 / T 5",
         "range": 25,
         "capacity": 10,
-        "ammoType": ""
+        "ammoType": "",
+        "skill": "Guns"
       }
     },
     {
       "id": "weap_alien_blaster",
       "name": "Alien Blaster",
-      "category": "weapon",
+      "category": "weapons",
       "type": "pistol",
       "value": 5000,
       "weight": 2,
@@ -1332,12 +1387,14 @@
         "alien",
         "rare"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "damage": "3d10 (energy)",
         "ap": "S 3 / T 4",
         "range": 35,
         "capacity": "6 (energy cell)",
-        "ammoType": ""
+        "ammoType": "",
+        "skill": "Energy Weapons"
       }
     },
     {
@@ -1355,10 +1412,12 @@
         "blade",
         "melee"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d6 + MD (melee) / 1d6 (thrown)",
         "ap": "S 4 / T 5",
-        "range": 15
+        "range": 15,
+        "skill": "Throwing"
       }
     },
     {
@@ -1375,10 +1434,12 @@
         "thrown",
         "pierce"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d8 (thrown)",
         "ap": "S 4 / T 5",
-        "range": 20
+        "range": 20,
+        "skill": "Throwing"
       }
     },
     {
@@ -1396,10 +1457,12 @@
         "explosive",
         "grenade"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "2d10 + 10 (explosive)",
         "ap": "S 5",
-        "range": 15
+        "range": 15,
+        "skill": "Throwing"
       }
     },
     {
@@ -1418,10 +1481,61 @@
         "fire",
         "improvised"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d10 fire + burning (1d6 for 1d3 rounds)",
         "ap": "S 5",
-        "range": 10
+        "range": 10,
+        "skill": "Throwing"
+      }
+    },
+    {
+      "id": "weap_plasma_grenade",
+      "name": "Plasma Grenade",
+      "category": "weapons",
+      "type": "thrown",
+      "value": 400,
+      "weight": 1,
+      "description": "Ignores 4 points of armor.",
+      "flavor": "Do Not Drink The Slime",
+      "tags": [
+        "weapon",
+        "thrown",
+        "explosive",
+        "grenade",
+        "plasma"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "3d10 + 10 (plasma)",
+        "ap": "S 5",
+        "range": 15,
+        "armorPiercing": "-4",
+        "skill": "Throwing"
+      }
+    },
+    {
+      "id": "weap_pulse_grenade",
+      "name": "Pulse Grenade",
+      "category": "weapons",
+      "type": "thrown",
+      "value": 350,
+      "weight": 1,
+      "description": "Electromagnetic; devastating to machines.",
+      "flavor": "Will Stancil Keeps These On a Deadman's Switch",
+      "tags": [
+        "weapon",
+        "thrown",
+        "explosive",
+        "grenade",
+        "emp"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "5d10 vs robots / 1d10 vs organics (EMP)",
+        "ap": "S 5",
+        "range": 15,
+        "skill": "Throwing"
       }
     },
     {
@@ -1438,10 +1552,12 @@
         "thrown",
         "pierce"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d12 (thrown)",
         "ap": "S 4 / T 5",
-        "range": 25
+        "range": 25,
+        "skill": "Throwing"
       }
     },
     {
@@ -1459,10 +1575,12 @@
         "pierce",
         "tribal"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d12 + 2 (thrown)",
         "ap": "S 4 / T 5",
-        "range": 25
+        "range": 25,
+        "skill": "Throwing"
       }
     },
     {
@@ -1480,10 +1598,12 @@
         "pierce",
         "poison"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d3",
         "ap": "S 3 / T 4",
-        "range": 20
+        "range": 20,
+        "skill": "Throwing"
       }
     },
     {
@@ -1501,10 +1621,12 @@
         "blunt",
         "special"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "damage": "1d6",
         "ap": "S 4 / T 5",
-        "range": 20
+        "range": 20,
+        "skill": "Throwing"
       }
     },
     {
@@ -1522,39 +1644,43 @@
         "rifle",
         "improvised"
       ],
-      "requirements": "STR 4",
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 6 / T 7",
         "range": 25,
-        "capacity": 1
-      }
+        "capacity": 1,
+        "skill": "Guns"
+      },
+      "requirements": "STR 4"
     },
     {
       "id": "weap_hunting_rifle",
       "name": "Hunting Rifle",
-      "category": "weapon",
+      "category": "weapons",
       "type": "rifle",
       "value": 350,
       "weight": 8,
-      "requirements": "STR 5",
       "description": "Standard bolt-action hunting rifle.",
-      "flavor": "",
+      "flavor": "Not fast. Not flashy. Not forgiving.",
       "tags": [
         "weapon",
         "gun",
         "rifle"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 5 / T 6",
         "range": 40,
-        "capacity": 5
-      }
+        "capacity": 5,
+        "skill": "Guns"
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_assault_rifle_semi",
-      "name": "Service Rifle (SA)",
+      "name": "Service Rifle",
       "category": "weapons",
       "type": "rifle",
       "value": 650,
@@ -1567,13 +1693,15 @@
         "rifle",
         "military"
       ],
-      "requirements": "STR 6",
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 5 / T 6",
         "range": 45,
-        "capacity": 24
-      }
+        "capacity": 24,
+        "skill": "Guns"
+      },
+      "requirements": "STR 6"
     },
     {
       "id": "weap_sniper_rifle",
@@ -1591,13 +1719,15 @@
         "scoped",
         "precision"
       ],
-      "requirements": "STR 6",
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 4",
         "ap": "S 5 / T 6",
         "range": 60,
-        "capacity": 6
-      }
+        "capacity": 6,
+        "skill": "Guns"
+      },
+      "requirements": "STR 6"
     },
     {
       "id": "weap_50cal_rifle",
@@ -1615,13 +1745,15 @@
         "heavy",
         "anti-materiel"
       ],
-      "requirements": "STR 7",
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 8",
         "ap": "S 6 / T 7",
         "range": 70,
-        "capacity": 5
-      }
+        "capacity": 5,
+        "skill": "Guns"
+      },
+      "requirements": "STR 7"
     },
     {
       "id": "weap_gauss_rifle",
@@ -1640,22 +1772,23 @@
         "gauss",
         "rare"
       ],
-      "requirements": "STR 6",
+      "IsInChargenStore": false,
       "stats": {
         "damage": "3d10 (magnetic accelerator)",
         "ap": "S 4 / T 5",
         "range": 65,
-        "capacity": 8
-      }
+        "capacity": 8,
+        "skill": "Guns"
+      },
+      "requirements": "STR 6"
     },
     {
       "id": "weap_single_barrel_shotgun",
       "name": "Single Barrel Shotgun",
-      "category": "weapon",
+      "category": "weapons",
       "type": "shotgun",
       "value": 75,
       "weight": 6,
-      "requirements": "STR 4",
       "description": "Crude single-shot scattergun.",
       "flavor": "Lets hunt some geckos",
       "tags": [
@@ -1663,23 +1796,25 @@
         "gun",
         "shotgun"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage × 6",
         "ap": "S 6 / T 7",
         "range": 10,
         "capacity": 1,
         "spread": "Wide",
-        "ammoType": "20 Gauge"
-      }
+        "ammoType": "20 Gauge",
+        "skill": "Guns"
+      },
+      "requirements": "STR 4"
     },
     {
       "id": "weap_sawed_off_shotgun",
       "name": "Sawed-Off Shotgun",
-      "category": "weapon",
+      "category": "weapons",
       "type": "shotgun",
       "value": 175,
       "weight": 7,
-      "requirements": "STR 5",
       "description": "Extremely short-range double-barrel shotgun.",
       "flavor": "Get off my lawn!",
       "tags": [
@@ -1687,23 +1822,25 @@
         "gun",
         "shotgun"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage × 6 (per barrel)",
         "ap": "S 6 / T 7",
         "range": 10,
         "capacity": "2 (break action)",
         "spread": "Very wide",
-        "ammoType": "12 Gauge"
-      }
+        "ammoType": "12 Gauge",
+        "skill": "Guns"
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_12gauge_hunting_shotgun",
       "name": "12-Gauge Hunting Shotgun",
-      "category": "weapon",
+      "category": "weapons",
       "type": "shotgun",
       "value": 350,
       "weight": 9,
-      "requirements": "STR 5",
       "description": "Accurate hunting shotgun.",
       "flavor": "This is my boomstick!",
       "tags": [
@@ -1711,23 +1848,25 @@
         "gun",
         "shotgun"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage × 6",
         "ap": "S 6 / T 7",
         "range": 30,
         "capacity": "2 (break action)",
         "spread": "Tight",
-        "ammoType": "12 Gauge"
-      }
+        "ammoType": "12 Gauge",
+        "skill": "Guns"
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_lever_action_shotgun",
       "name": "Lever-Action Shotgun",
-      "category": "weapon",
+      "category": "weapons",
       "type": "shotgun",
       "value": 550,
       "weight": 8,
-      "requirements": "STR 5",
       "description": "Faster cycling than break-action.",
       "flavor": "I'll be back",
       "tags": [
@@ -1735,23 +1874,25 @@
         "gun",
         "shotgun"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage × 6",
         "ap": "S 6 / T 7",
         "range": 25,
         "capacity": 5,
         "spread": "Moderate",
-        "ammoType": "12 Gauge"
-      }
+        "ammoType": "12 Gauge",
+        "skill": "Guns"
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_combat_shotgun",
       "name": "Combat Shotgun",
-      "category": "weapon",
+      "category": "weapons",
       "type": "shotgun",
       "value": 450,
       "weight": 8,
-      "requirements": "STR 5",
       "description": "Semiautomatic combat shotgun.",
       "flavor": "They're coming out of the walls!",
       "tags": [
@@ -1760,23 +1901,25 @@
         "shotgun",
         "military"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage × 6",
         "ap": "S 6 / T 7",
         "range": 20,
         "capacity": 12,
         "spread": "Moderate",
-        "ammoType": "12 Gauge"
-      }
+        "ammoType": "12 Gauge",
+        "skill": "Guns"
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_assault_shotgun",
       "name": "Assault Shotgun",
-      "category": "weapon",
+      "category": "weapons",
       "type": "shotgun",
       "value": 700,
       "weight": 10,
-      "requirements": "STR 6",
       "description": "High-capacity automatic shotgun.",
       "flavor": "Sweep the streets!",
       "tags": [
@@ -1785,23 +1928,25 @@
         "shotgun",
         "automatic"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage × 6",
         "ap": "S 6 / T 7",
         "range": 25,
         "capacity": 20,
         "spread": "Moderate",
-        "ammoType": "12 Gauge"
-      }
+        "ammoType": "12 Gauge",
+        "skill": "Guns"
+      },
+      "requirements": "STR 6"
     },
     {
       "id": "weap_pancor_jackhammer",
       "name": "Pancor Jackhammer",
-      "category": "weapon",
+      "category": "weapons",
       "type": "shotgun",
       "value": 1800,
       "weight": 14,
-      "requirements": "STR 7",
       "description": "Fully automatic rotary shotgun.",
       "flavor": "Fuck the NFA",
       "tags": [
@@ -1811,14 +1956,17 @@
         "automatic",
         "rare"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage × 6",
         "ap": "S 6 / T 7",
         "range": 30,
         "capacity": "10 (drum)",
         "spread": "Tight",
-        "ammoType": "12 Gauge"
-      }
+        "ammoType": "12 Gauge",
+        "skill": "Guns"
+      },
+      "requirements": "STR 7"
     },
     {
       "id": "weap_zip_smg",
@@ -1836,14 +1984,16 @@
         "improvised",
         "automatic"
       ],
-      "requirements": "STR 4",
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 5 / T 6 / B 8",
         "range": 15,
         "capacity": 16,
-        "burst": "6 rounds"
-      }
+        "burst": "6 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 4"
     },
     {
       "id": "weap_9mm_smg",
@@ -1860,14 +2010,16 @@
         "smg",
         "automatic"
       ],
-      "requirements": "STR 4",
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 5 / T 6 / B 7",
         "range": 20,
         "capacity": 30,
-        "burst": "10 rounds"
-      }
+        "burst": "10 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 4"
     },
     {
       "id": "weap_10mm_smg",
@@ -1884,18 +2036,20 @@
         "smg",
         "automatic"
       ],
-      "requirements": "STR 5",
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 5 / T 6 / B 7",
         "range": 25,
         "capacity": 30,
-        "burst": "10 rounds"
-      }
+        "burst": "10 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_tommy_gun",
-      "name": "Tommy Gun (.45 SMG)",
+      "name": "Tommy Gun",
       "category": "weapons",
       "type": "smg",
       "value": 650,
@@ -1908,14 +2062,16 @@
         "smg",
         "automatic"
       ],
-      "requirements": "STR 6",
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 5 / T 6 / B 7",
         "range": 30,
         "capacity": "50 (drum)",
-        "burst": "10 rounds"
-      }
+        "burst": "10 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 6"
     },
     {
       "id": "weap_hk_p90c",
@@ -1933,14 +2089,16 @@
         "automatic",
         "military"
       ],
-      "requirements": "STR 5",
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 2",
         "ap": "S 4 / T 5 / B 6",
         "range": 35,
         "capacity": 50,
-        "burst": "12 rounds"
-      }
+        "burst": "12 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_hk_mp9",
@@ -1958,25 +2116,26 @@
         "automatic",
         "military"
       ],
-      "requirements": "STR 5",
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 3",
         "ap": "S 4 / T 5 / B 6",
         "range": 40,
         "capacity": 32,
-        "burst": "12 rounds"
-      }
+        "burst": "12 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_gauss_smg",
       "name": "Gauss SMG",
-      "category": "weapon",
+      "category": "weapons",
       "type": "smg",
       "value": 4000,
       "weight": 8,
-      "requirements": "STR 6",
       "description": "Electromagnetic SMG with extreme penetration.",
-      "flavor": "",
+      "flavor": "Newton's Gravedigger",
       "tags": [
         "weapon",
         "gun",
@@ -1986,13 +2145,16 @@
         "gauss",
         "rare"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "damage": "2d10 (magnetic accelerator)",
         "ap": "S 4 / T 5 / B 6",
         "range": 50,
         "capacity": "20 (microfusion)",
-        "burst": "6 rounds"
-      }
+        "burst": "6 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 6"
     },
     {
       "id": "weap_ak112",
@@ -2010,14 +2172,16 @@
         "automatic",
         "military"
       ],
-      "requirements": "STR 6",
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage + 1",
         "ap": "S 5 / T 6 / B 7",
         "range": 50,
         "capacity": 30,
-        "burst": "6 rounds"
-      }
+        "burst": "6 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 6"
     },
     {
       "id": "weap_r91",
@@ -2035,14 +2199,16 @@
         "automatic",
         "military"
       ],
-      "requirements": "STR 6",
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 2",
         "ap": "S 5 / T 6 / B 7",
         "range": 55,
         "capacity": 30,
-        "burst": "8 rounds"
-      }
+        "burst": "8 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 6"
     },
     {
       "id": "weap_hk_g11",
@@ -2061,14 +2227,16 @@
         "military",
         "caseless"
       ],
-      "requirements": "STR 5",
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 2",
         "ap": "S 4 / T 5 / B 6",
         "range": 60,
         "capacity": 45,
-        "burst": "15 rounds"
-      }
+        "burst": "15 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_hk_g11e",
@@ -2087,14 +2255,16 @@
         "military",
         "caseless"
       ],
-      "requirements": "STR 5",
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 3",
         "ap": "S 4 / T 5 / B 6",
         "range": 65,
         "capacity": 50,
-        "burst": "15 rounds"
-      }
+        "burst": "15 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_fn_fal",
@@ -2113,14 +2283,16 @@
         "military",
         "battle_rifle"
       ],
-      "requirements": "STR 7",
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 3",
         "ap": "S 5 / T 6 / B 7",
         "range": 70,
         "capacity": 20,
-        "burst": "5 rounds"
-      }
+        "burst": "5 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 7"
     },
     {
       "id": "weap_xl70e3",
@@ -2140,14 +2312,16 @@
         "bullpup",
         "prototype"
       ],
-      "requirements": "STR 5",
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 2",
         "ap": "S 4 / T 5 / B 6",
         "range": 65,
         "capacity": 30,
-        "burst": "10 rounds"
-      }
+        "burst": "10 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_lmg",
@@ -2166,14 +2340,16 @@
         "heavy",
         "military"
       ],
-      "requirements": "STR 7",
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage",
         "ap": "S 6 / T 7 / B 8",
         "range": 45,
         "capacity": 50,
-        "burst": "10 rounds"
-      }
+        "burst": "10 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 7"
     },
     {
       "id": "weap_m60",
@@ -2192,25 +2368,26 @@
         "heavy",
         "military"
       ],
-      "requirements": "STR 8",
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 1",
         "ap": "S 6 / T 7 / B 8",
         "range": 55,
         "capacity": "100 (belt)",
-        "burst": "12 rounds"
-      }
+        "burst": "12 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 8"
     },
     {
       "id": "weap_bozar",
       "name": "Bozar (Hybrid LMG/Sniper Platform)",
-      "category": "weapon",
+      "category": "weapons",
       "type": "machine_gun",
       "value": 5000,
       "weight": 28,
-      "requirements": "STR 8",
       "description": "Unique precision machine gun with exceptional accuracy.",
-      "flavor": "",
+      "flavor": "Something's Off About This Fire Rate...",
       "tags": [
         "weapon",
         "gun",
@@ -2220,24 +2397,26 @@
         "precision",
         "rare"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 4",
         "ap": "S 5 / T 6 / B 7",
         "range": 70,
         "capacity": 30,
-        "burst": "8 rounds"
-      }
+        "burst": "8 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 8"
     },
     {
       "id": "weap_vindicator_minigun",
       "name": "Vindicator Minigun",
-      "category": "weapon",
+      "category": "weapons",
       "type": "machine_gun",
       "value": 8000,
       "weight": 35,
-      "requirements": "STR 9",
       "description": "Rotary-barrel minigun with immense suppressive fire.",
-      "flavor": "",
+      "flavor": "Ooh It Spins!",
       "tags": [
         "weapon",
         "gun",
@@ -2247,24 +2426,26 @@
         "minigun",
         "rare"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 2",
         "ap": "B 8",
         "range": 60,
         "capacity": 500,
-        "burst": "25 rounds"
-      }
+        "burst": "25 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 9"
     },
     {
       "id": "weap_avenger_minigun",
       "name": "Avenger Minigun",
-      "category": "weapon",
+      "category": "weapons",
       "type": "machine_gun",
       "value": 9500,
       "weight": 38,
-      "requirements": "STR 9",
       "description": "Improved minigun with tighter grouping.",
-      "flavor": "",
+      "flavor": "Who Took The Gun Off The Vertibird?",
       "tags": [
         "weapon",
         "gun",
@@ -2274,24 +2455,26 @@
         "minigun",
         "rare"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 3",
         "ap": "B 8",
         "range": 65,
         "capacity": 500,
-        "burst": "30 rounds"
-      }
+        "burst": "30 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 9"
     },
     {
       "id": "weap_cz53_minigun",
       "name": "CZ53 Personal Minigun",
-      "category": "weapon",
+      "category": "weapons",
       "type": "machine_gun",
       "value": 11000,
       "weight": 40,
-      "requirements": "STR 10",
       "description": "High-end pre-war rotary weapon; top-tier damage output.",
-      "flavor": "",
+      "flavor": "When Pink Mist Isn't Enough",
       "tags": [
         "weapon",
         "gun",
@@ -2301,13 +2484,16 @@
         "minigun",
         "rare"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage + 4",
         "ap": "B 8",
         "range": 70,
         "capacity": 500,
-        "burst": "35 rounds"
-      }
+        "burst": "35 rounds",
+        "skill": "Guns"
+      },
+      "requirements": "STR 10"
     }
   ],
   "armor": [
@@ -2436,32 +2622,6 @@
       }
     },
     {
-      "id": "armor_brotherhood_leather",
-      "name": "Brotherhood Leather Armor",
-      "category": "armor",
-      "type": "light",
-      "value": 900,
-      "weight": 10,
-      "description": "The standard leather armor issued to members of the Brotherhood of Steel. If a non-member is caught wearing this by a member of the Brotherhood, expect a rigorous questioning.",
-      "tags": [
-        "armor",
-        "light",
-        "leather",
-        "brotherhood",
-        "faction"
-      ],
-      "stats": {
-        "ac": 15,
-        "dt_dr": {
-          "normal": "2/25",
-          "laser": "0/25",
-          "fire": "0/15",
-          "plasma": "0/25",
-          "explosion": "0/20"
-        }
-      }
-    },
-    {
       "id": "armor_combat_leather_jacket",
       "name": "Combat Leather Jacket",
       "category": "armor",
@@ -2469,6 +2629,7 @@
       "value": 1000,
       "weight": 7,
       "description": "This leather jacket has been padded and reinforced for better protection. You just can't find anything more fashionable in the post-nuclear world.",
+      "flavor": "Knowing Is Half The Battle",
       "tags": [
         "armor",
         "light",
@@ -2493,6 +2654,7 @@
       "value": 1000,
       "weight": 10,
       "description": "Reinforced leather armor that covers the arms and groin as well as the torso.",
+      "flavor": "King Of Bartertown",
       "tags": [
         "armor",
         "light",
@@ -2506,32 +2668,6 @@
           "fire": "1/17",
           "plasma": "1/30",
           "explosion": "1/25"
-        }
-      }
-    },
-    {
-      "id": "armor_brotherhood_leather_mk2",
-      "name": "Brotherhood Leather Armor MK II",
-      "category": "armor",
-      "type": "light",
-      "value": 1100,
-      "weight": 11,
-      "description": "An improved version of the Brotherhood's Leather Armor.",
-      "tags": [
-        "armor",
-        "light",
-        "leather",
-        "brotherhood",
-        "faction"
-      ],
-      "stats": {
-        "ac": 23,
-        "dt_dr": {
-          "normal": "3/30",
-          "laser": "1/25",
-          "fire": "1/30",
-          "plasma": "1/15",
-          "explosion": "1/30"
         }
       }
     },
@@ -2564,18 +2700,20 @@
       }
     },
     {
-      "id": "armor_reaver_banding",
-      "name": "Reaver Banding",
+      "id": "armor_legion",
+      "name": "Legion Uniform",
       "category": "armor",
       "type": "medium",
       "value": 1200,
       "weight": 10,
-      "description": "Manufactured by the Reavers, this armor is banded together from cloth and metal.",
+      "description": "Manufactured by Caesar's Legion, this football armor is banded together from cloth and metal.",
+      "flavor": "Degenerates Like You Belong On A Cross",
       "tags": [
         "armor",
         "medium",
-        "faction"
+        "legion"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "ac": 20,
         "dt_dr": {
@@ -2594,14 +2732,16 @@
       "type": "light",
       "value": 1300,
       "weight": 10,
-      "requirements": "Ghoul or very small humans only",
       "description": "A small set of armor designed for and by ghouls. It is light, and provides only the most basic protection.",
+      "flavor": "Not Much Left To Shoot Off",
       "tags": [
         "armor",
         "light",
         "ghoul",
         "special"
       ],
+      "IsInChargenStore": false,
+      "requirements": "Ghoul or very small humans only",
       "stats": {
         "ac": 10,
         "dt_dr": {
@@ -2620,14 +2760,16 @@
       "type": "light",
       "value": 1400,
       "weight": 10,
-      "requirements": "Ghoul or very small humans only",
       "description": "Leather and metal strips held together by rubber straps. This light armor provides decent protection.",
+      "flavor": "Smoothskins OUT!",
       "tags": [
         "armor",
         "light",
         "ghoul",
         "special"
       ],
+      "IsInChargenStore": false,
+      "requirements": "Ghoul or very small humans only",
       "stats": {
         "ac": 20,
         "dt_dr": {
@@ -2636,35 +2778,6 @@
           "fire": "1/15",
           "plasma": "1/25",
           "explosion": "1/20"
-        }
-      }
-    },
-    {
-      "id": "armor_brotherhood_metal",
-      "name": "Brotherhood Metal Armor",
-      "category": "armor",
-      "type": "heavy",
-      "value": 1500,
-      "weight": 35,
-      "penalties": {
-        "sneak": -25
-      },
-      "description": "The standard suit of metal armor issued to members of the Brotherhood of Steel. Even more rare than the Brotherhood's leather armor, this finely made suit will keep the wearer safe from many different attacks.",
-      "tags": [
-        "armor",
-        "heavy",
-        "metal",
-        "brotherhood",
-        "faction"
-      ],
-      "stats": {
-        "ac": 15,
-        "dt_dr": {
-          "normal": "4/30",
-          "laser": "3/37",
-          "fire": "4/15",
-          "plasma": "3/37",
-          "explosion": "4/25"
         }
       }
     },
@@ -2682,6 +2795,7 @@
         "heavy",
         "metal"
       ],
+      "IsInChargenStore": false,
       "penalties": {
         "sneak": -20
       },
@@ -2697,16 +2811,14 @@
       }
     },
     {
-      "id": "armor_brotherhood_metal_mk2",
-      "name": "Brotherhood Metal Armor MK II",
+      "id": "armor_metal_mk3",
+      "name": "Metal Armor MK III",
       "category": "armor",
       "type": "heavy",
       "value": 2100,
       "weight": 35,
-      "penalties": {
-        "sneak": -20
-      },
-      "description": "An advanced version of the Brotherhood of Steel's Metal Armor.",
+      "description": "An advanced version of the Metal Armor.",
+      "flavor": "Gold Standard In Wastelander Protection",
       "tags": [
         "armor",
         "heavy",
@@ -2714,6 +2826,10 @@
         "brotherhood",
         "faction"
       ],
+      "IsInChargenStore": false,
+      "penalties": {
+        "sneak": -20
+      },
       "stats": {
         "ac": 15,
         "dt_dr": {
@@ -2733,11 +2849,13 @@
       "value": 2200,
       "weight": 18,
       "description": "Used by Pre-War Law Enforcement and the Marines, this excellent body armor is made of metal and Kevlar encased in carbon fiber and leather. Economical and sturdy, it is some of the finest armor money can buy in the wastes.",
+      "flavor": "It Looks Really Cool",
       "tags": [
         "armor",
         "medium",
         "faction"
       ],
+      "IsInChargenStore": false,
       "penalties": {
         "sneak": -15
       },
@@ -2759,14 +2877,16 @@
       "type": "heavy",
       "value": 3000,
       "weight": 40,
-      "requirements": "Mutants only",
       "description": "One of the few suits of armor a mutant can wear, this 'suit' consists mostly of strips of leather and metal that form a crude protective covering.",
+      "flavor": "The Word \"UNITY\" Is Engraved On The Front",
       "tags": [
         "armor",
         "heavy",
         "mutant",
         "special"
       ],
+      "IsInChargenStore": false,
+      "requirements": "Mutants only",
       "stats": {
         "ac": 10,
         "dt_dr": {
@@ -2785,14 +2905,16 @@
       "type": "heavy",
       "value": 4200,
       "weight": 50,
-      "requirements": "Mutants only",
       "description": "An improvement on normal mutant plate armor, this suit offers better protection, better craftsmanship, and weights a lot more.",
+      "flavor": "Hmpf! Punies.",
       "tags": [
         "armor",
         "heavy",
         "mutant",
         "special"
       ],
+      "IsInChargenStore": false,
+      "requirements": "Mutants only",
       "stats": {
         "ac": 15,
         "dt_dr": {
@@ -2820,6 +2942,7 @@
         "energy",
         "rare"
       ],
+      "IsInChargenStore": false,
       "penalties": {
         "sneak": -20
       },
@@ -2835,24 +2958,24 @@
       }
     },
     {
-      "id": "armor_brotherhood_tesla",
-      "name": "Brotherhood Tesla Armor",
+      "id": "armor_tesla_mk2",
+      "name": "Advanced Tesla Armor",
       "category": "armor",
       "type": "heavy",
       "value": 4800,
       "weight": 35,
-      "penalties": {
-        "sneak": -20
-      },
-      "description": "The Brotherhood of Steel manufactured this improved version of the Tesla Armor. It is usually only worn by Brotherhood technicians.",
+      "description": "The DHS manufactured this improved version of the Tesla Armor. It is usually only worn by Brotherhood technicians.",
+      "flavor": "This Armor Insists That The Laws Of Physics Work Harder.",
       "tags": [
         "armor",
         "heavy",
         "metal",
-        "energy",
-        "brotherhood",
-        "faction"
+        "energy"
       ],
+      "IsInChargenStore": false,
+      "penalties": {
+        "sneak": -20
+      },
       "stats": {
         "ac": 15,
         "dt_dr": {
@@ -2865,24 +2988,24 @@
       }
     },
     {
-      "id": "armor_brotherhood_combat",
-      "name": "Brotherhood Combat Armor",
+      "id": "armor_infantry_combat",
+      "name": "NCR Combat Armor",
       "category": "armor",
       "type": "heavy",
       "value": 4800,
       "weight": 25,
-      "bonuses": {
-        "radiation_resistance": 20
-      },
-      "description": "This combat armor is standard-issue for combat-members in the Brotherhood of Steel. This is an advanced version of the Combat Armor, and can occasionally be found for sale in large cities. This suit of armor already has a helmet.",
+      "description": "This combat armor is standard-issue for the New California Republic. This is an advanced version of the Combat Armor, and can occasionally be found for sale in large cities. This suit of armor already has a helmet.",
+      "flavor": "Remember Fort Aradesh!",
       "tags": [
         "armor",
         "heavy",
         "combat",
-        "brotherhood",
-        "faction",
         "military"
       ],
+      "IsInChargenStore": false,
+      "bonuses": {
+        "radiation_resistance": 20
+      },
       "stats": {
         "ac": 20,
         "dt_dr": {
@@ -2944,6 +3067,7 @@
         "combat",
         "military"
       ],
+      "IsInChargenStore": false,
       "bonuses": {
         "radiation_resistance": 20
       },
@@ -2974,6 +3098,7 @@
         "combat",
         "military"
       ],
+      "IsInChargenStore": false,
       "bonuses": {
         "radiation_resistance": 20
       },
@@ -3003,6 +3128,7 @@
         "special",
         "hazmat"
       ],
+      "IsInChargenStore": false,
       "bonuses": {
         "radiation_resistance": 60,
         "gas_resistance": "100/100",
@@ -3030,12 +3156,21 @@
       }
     },
     {
-      "id": "armor_brotherhood_environmental_mk2",
-      "name": "Brotherhood Environmental Armor MK II",
+      "id": "armor_advanced_radiation_mk2",
+      "name": "Advanced Radiation Suit MK II",
       "category": "armor",
       "type": "special",
       "value": 10000,
       "weight": 35,
+      "description": "An advanced version of the Advanced Radiation Suit. Field Tested In Tel Aviv.",
+      "flavor": "Life's Worth Living When Nature's Giving",
+      "tags": [
+        "armor",
+        "special",
+        "hazmat",
+        "rare"
+      ],
+      "IsInChargenStore": false,
       "bonuses": {
         "radiation_resistance": 90,
         "gas_resistance": "100/100",
@@ -3052,15 +3187,6 @@
         "science": -5,
         "pilot": -2
       },
-      "description": "An advanced version of the Brotherhood's Environmental Armor. Such is the price of decent protection. Needless to say, only the highest ranking officers in the Brotherhood have access to this kind of armor.",
-      "tags": [
-        "armor",
-        "special",
-        "hazmat",
-        "brotherhood",
-        "faction",
-        "rare"
-      ],
       "stats": {
         "ac": 20,
         "dt_dr": {
@@ -3089,6 +3215,7 @@
         "experimental",
         "rare"
       ],
+      "IsInChargenStore": false,
       "bonuses": {
         "radiation_resistance": 20
       },
@@ -3120,6 +3247,7 @@
         "powered",
         "rare"
       ],
+      "IsInChargenStore": false,
       "bonuses": {
         "strength": 3,
         "radiation_resistance": 30,
@@ -3149,7 +3277,7 @@
     },
     {
       "id": "armor_power_t45d_hardened",
-      "name": "Hardened Power Armor",
+      "name": "Hardened T45d Power Armor",
       "category": "armor",
       "type": "power",
       "value": 15000,
@@ -3163,6 +3291,7 @@
         "powered",
         "rare"
       ],
+      "IsInChargenStore": false,
       "bonuses": {
         "strength": 3,
         "radiation_resistance": 30,
@@ -3208,6 +3337,7 @@
         "faction",
         "rare"
       ],
+      "IsInChargenStore": false,
       "bonuses": {
         "strength": 3,
         "radiation_resistance": 30,
@@ -3252,6 +3382,7 @@
         "powered",
         "rare"
       ],
+      "IsInChargenStore": false,
       "bonuses": {
         "strength": 4,
         "radiation_resistance": 60,
@@ -3297,6 +3428,7 @@
         "enclave",
         "rare"
       ],
+      "IsInChargenStore": false,
       "bonuses": {
         "strength": 4,
         "radiation_resistance": 60,
@@ -3342,6 +3474,7 @@
         "enclave",
         "rare"
       ],
+      "IsInChargenStore": false,
       "bonuses": {
         "strength": 4,
         "radiation_resistance": 75,
@@ -3559,6 +3692,7 @@
         "tool",
         "lockpick"
       ],
+      "IsInChargenStore": false,
       "bonuses": {
         "lockpick": 70
       }
@@ -3651,23 +3785,6 @@
       ]
     },
     {
-      "id": "equip_plastique",
-      "name": "Plastique (C-14 Plastic Explosive)",
-      "category": "equipment",
-      "type": "explosive",
-      "value": 400,
-      "weight": 2,
-      "description": "C-14 is an improved version of the classic C-4 plastic explosive. A gummy-like substance that can be rigged to detonate, plastique is useful because it can be molded to any shape. Setting it takes a successful roll against Traps. Plastique does 2d20+30 damage to anything within the hex in which it detonates, half damage to everything in adjacent hexes, and 1d6 concussion damage to anything within 4 hexes of the explosion. C-14 can be compounded on itself to make bigger bombs, too.",
-      "flavor": "The Last Playdough You'll Ever Use",
-      "tags": [
-        "equipment",
-        "explosive"
-      ],
-      "stats": {
-        "damage": "2d20+30 (primary), half in adjacent hexes, 1d6 concussion (4 hex radius)"
-      }
-    },
-    {
       "id": "equip_doctors_bag",
       "name": "Doctor's Bag",
       "category": "equipment",
@@ -3700,7 +3817,8 @@
         "lockpick",
         "electronic",
         "hacking"
-      ]
+      ],
+      "IsInChargenStore": false
     }
   ],
   "chems": [
@@ -3983,7 +4101,7 @@
     },
     {
       "id": "chem_military_trauma_pack",
-      "name": "MilitaryTrauma Pack",
+      "name": "Military Trauma Pack",
       "category": "chems",
       "type": "healing",
       "value": 600,
@@ -3995,6 +4113,7 @@
         "healing",
         "medical"
       ],
+      "IsInChargenStore": true,
       "effects": {
         "positive": {
           "healing": "6d10+60"
@@ -4053,6 +4172,7 @@
         "rare",
         "dangerous"
       ],
+      "IsInChargenStore": false,
       "effects": {
         "positive": {
           "healing": "10d10+50"
@@ -4079,6 +4199,7 @@
         "medical",
         "addictive"
       ],
+      "IsInChargenStore": false,
       "effects": {
         "positive": {
           "radiation_reduction": "25 rads (1 day later), 25 rads (2 days later)"
@@ -4101,6 +4222,7 @@
         "medical",
         "preventative"
       ],
+      "IsInChargenStore": false,
       "effects": {
         "positive": {
           "radiation_resistance": 50,
