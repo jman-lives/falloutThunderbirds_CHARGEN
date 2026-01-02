@@ -2088,12 +2088,7 @@
       const stored = localStorage.getItem('characterData');
       console.log('[GET EQUIPMENT] Stored data exists:', !!stored);
       
-      const defaultItems = [
-        { name: 'Punch', id: 'punch' },
-        { name: 'Kick', id: 'kick' }
-      ];
-      
-      if (!stored) return defaultItems;
+      if (!stored) return [];
       
       try {
         const characterData = JSON.parse(stored);
@@ -2108,43 +2103,23 @@
         if (savedSelection) {
           try {
             const selection = JSON.parse(savedSelection);
-            if (Array.isArray(selection) && selection.length >= 2) {
-              // Build items with position-specific defaults
-              const items = [
-                selection[0] || { name: 'Punch', id: 'punch' },
-                selection[1] || { name: 'Kick', id: 'kick' }
-              ];
+            if (Array.isArray(selection)) {
+              // Filter out null values and return actual items that were selected
+              const items = selection.filter(item => item !== null);
               console.log('[GET EQUIPMENT] Using saved equipment selection:', items);
               return items;
             }
           } catch (e) {
-            console.log('[GET EQUIPMENT] Saved selection invalid, falling back to defaults');
+            console.log('[GET EQUIPMENT] Saved selection invalid, user must configure items');
           }
         }
         
-        if (!characterData.equipment || !characterData.equipment.items || Object.keys(characterData.equipment.items).length === 0) {
-          // Return default items if none are defined
-          console.log('[GET EQUIPMENT] Returning default items (punch/kick)');
-          return defaultItems;
-        }
-        
-        // Get first two equipment items
-        const items = Object.values(characterData.equipment.items);
-        console.log('[GET EQUIPMENT] Raw items:', items);
-        
-        // Check if items are valid objects with a name property
-        // If not, they might be IDs or incomplete data, so use defaults
-        if (items.length > 0 && items[0] && typeof items[0] === 'object' && items[0].name) {
-          console.log('[GET EQUIPMENT] Returning actual equipment items:', items.slice(0, 2));
-          return items.slice(0, 2);
-        } else {
-          console.log('[GET EQUIPMENT] Items are not valid objects with name property, returning defaults');
-          return defaultItems;
-        }
+        // If no saved selection exists, return empty array (user must manually configure)
+        console.log('[GET EQUIPMENT] No saved selection found, user must configure items');
+        return [];
       } catch (err) {
         console.error('[GET EQUIPMENT] Error:', err);
-        // Return default items on error
-        return defaultItems;
+        return [];
       }
     }
 
@@ -2159,9 +2134,12 @@
       const swapBtn = qs('swap-btn');
       
       if (items.length === 0) {
-        nameElement.textContent = 'None';
-        swapBtn.style.display = 'none';
-        displayItemDiceTable('None');
+        // Default to Punch (index 0) or Kick (index 1)
+        const defaultAttacks = ['Punch', 'Kick'];
+        const defaultAttack = defaultAttacks[activeItemIndex] || 'Punch';
+        nameElement.textContent = defaultAttack;
+        swapBtn.style.display = 'inline-block';
+        displayItemDiceTable(defaultAttack);
         return;
       }
       
@@ -2182,6 +2160,16 @@
 
     function swapActiveItem() {
       const items = getEquipmentItems();
+      
+      // If no items, swap between Punch (0) and Kick (1)
+      if (items.length === 0) {
+        const currentIndex = parseInt(localStorage.getItem('activeItemIndex') || '0');
+        const newIndex = currentIndex === 0 ? 1 : 0;
+        localStorage.setItem('activeItemIndex', newIndex);
+        updateActiveItemDisplay();
+        return;
+      }
+      
       if (items.length < 2) return;
       
       const currentIndex = parseInt(localStorage.getItem('activeItemIndex') || '0');
@@ -2196,23 +2184,103 @@
     let allAvailableItems = [];
 
     // Item stats for dice table - maps item names to their stats
-    const ITEM_STATS = {
-      'Leather Jacket': { flavor: 'A worn leather jacket. Provides basic protection and looks the part.', dice: '—', weight: '10 lbs', armor: '+2 AC', skill: '—', type: 'Armor' },
-      '10mm Pistol': { reloadap: '2', apCost:"5/6/-", ammo:'12',ammotype:'10mm',flavor: 'Party Like It\'s 1997', dice: '2d6', weight: '4 lbs', armor: '—', skill: 'Guns', type: 'Weapon' },
-      'Brass Knuckles': { flavor: 'Brass knuckles. Improves your punch with style and a little extra hurt.', dice: '1d4+1', weight: '1 lb', armor: '—', skill: 'Unarmed', type: 'Weapon' },
-      'Lighter': { flavor: 'A worn lighter. Still works, sometimes.', dice: '—', weight: '1 lb', armor: '—', skill: '—', type: 'Tool' },
-      'Jet': { flavor: 'A hit of Jet. Warning: highly addictive.', dice: '—', weight: '0.5 lb', armor: '—', skill: '—', type: 'Drug' },
-      'Medical Kit': { flavor: 'A comprehensive medical kit. Useful for patching up wounds.', dice: '—', weight: '2 lbs', armor: '—', skill: 'First Aid', type: 'Tool' },
-      'Lockpick': { flavor: 'A set of lockpicks. Essential for getting into locked containers.', dice: '—', weight: '0.5 lb', armor: '—', skill: 'Lockpick', type: 'Tool' },
-      'Rope': { flavor: 'A length of sturdy rope. Can be useful in many situations.', dice: '—', weight: '5 lbs', armor: '—', skill: '—', type: 'Tool' },
-      'Flare': { flavor: 'A single-use flare. Lights things up or can be thrown as a weapon.', dice: '1d6', weight: '0.5 lb', armor: '—', skill: 'Throwing', type: 'Misc' },
-      'Shovel': { flavor: 'A trusty shovel. Great for digging or swinging at enemies.', dice: '1d6', weight: '8 lbs', armor: '—', skill: 'Melee Weapons', type: 'Weapon' },
-      'Spear': { flavor: 'A primitive spear. Effective at range and in melee.', dice: '1d8', weight: '5 lbs', armor: '—', skill: 'Melee Weapons', type: 'Weapon' },
-      'Brotherhood of Steel Trauma Pack': { flavor: 'Advanced medical technology. Can stabilize even the most severe wounds.', dice: '—', weight: '2 lbs', armor: '—', skill: 'Doctor', type: 'Tool' },
+    // Database will be loaded dynamically
+    let DATABASE = null;
+    let ITEM_STATS = {
       'Punch': { flavor: 'Your fist. Always available, always ready.', dice: '1d3 + MD', weight: '—', armor: '—', skill: 'Unarmed', type: 'Unarmed' },
       'Kick': { flavor: 'A well-placed kick. More powerful than a punch.', dice: '1d4 + MD', weight: '—', armor: '—', skill: 'Unarmed', type: 'Unarmed' },
       'None': { flavor: 'No item selected.', dice: '—', weight: '—', armor: '—', skill: '—', type: '—' }
     };
+
+    // Load database and build ITEM_STATS
+    async function loadDatabase() {
+      try {
+        const response = await fetch('database.json');
+        DATABASE = await response.json();
+        console.log('[DATABASE] Loaded successfully');
+        buildItemStats();
+      } catch (error) {
+        console.error('[DATABASE] Failed to load:', error);
+      }
+    }
+
+    function buildItemStats() {
+      if (!DATABASE) return;
+
+      // Keep the hardcoded unarmed attacks and None
+      const baseStats = { ...ITEM_STATS };
+      ITEM_STATS = baseStats;
+
+      // Process all categories
+      const categories = ['weapons', 'armor', 'ammunition', 'equipment', 'chems'];
+      
+      categories.forEach(category => {
+        if (DATABASE[category]) {
+          console.log(`[BUILD STATS] Processing ${category}: ${DATABASE[category].length} items`);
+          DATABASE[category].forEach(item => {
+            const stats = {
+              flavor: item.flavor || item.description || 'No description available.',
+              dice: item.stats?.damage || '—',
+              weight: item.weight ? `${item.weight} lbs` : '—',
+              type: item.category || item.type || 'Unknown'
+            };
+
+            // Handle weapons
+            if (category === 'weapons') {
+              stats.apCost = item.stats?.ap || '—';
+              stats.ammo = item.stats?.capacity || item.stats?.magazine || 'N/A';
+              stats.ammotype = item.stats?.ammoType || 'N/A';
+              stats.reloadap = item.stats?.reload || 'N/A';
+              stats.range = item.stats?.range || 'N/A';
+              stats.skill = item.stats?.skill || 'Guns';
+              stats.armor = '—';
+              
+              // Debug logging for skill
+              if (item.name) {
+                console.log(`[ITEM BUILD] ${item.name} - Skill: ${stats.skill} (from item.stats.skill: ${item.stats?.skill})`);
+              }
+            }
+            // Handle armor
+            else if (category === 'armor') {
+              stats.armor = item.stats?.ac ? `${item.stats.ac} AC` : '—';
+              stats.dt_dr = item.stats?.dt_dr || {};
+              stats.skill = '—';
+              stats.dice = '—';
+              stats.apCost = '—';
+            }
+            // Handle ammunition
+            else if (category === 'ammunition') {
+              // Auto-detect thrown items (grenades, etc.) and assign Throwing skill
+              const isThrownItem = item.tags?.includes('thrown') || 
+                                   item.tags?.includes('throwing') || 
+                                   item.tags?.includes('grenade') ||
+                                   item.type === 'explosive';
+              
+              stats.skill = item.stats?.skill || (isThrownItem ? 'Throwing' : '—');
+              stats.armor = '—';
+              stats.armorMod = item.stats?.armorMod || '—';
+              stats.apCost = item.stats?.ap || '—';
+              
+              // Debug: Check if throwing items have skills
+              if (isThrownItem) {
+                console.log(`[ITEM BUILD AMMO/THROWN] ${item.name} - Skill: ${stats.skill} (from db: ${item.stats?.skill}, auto-detected: ${!item.stats?.skill})`);
+              }
+            }
+            // Handle equipment and chems
+            else {
+              stats.skill = item.stats?.skill || '—';
+              stats.armor = '—';
+              stats.apCost = '—';
+            }
+
+            // Store by item name
+            ITEM_STATS[item.name] = stats;
+          });
+        }
+      });
+
+      console.log('[ITEM_STATS] Built from database:', Object.keys(ITEM_STATS).length, 'items');
+    }
 
     function displayItemDiceTable(itemName) {
       const tableBody = qs('dice-table-body');
@@ -2226,6 +2294,9 @@
         skill: '—',
         type: 'Unknown'
       };
+      
+      console.log(`[DISPLAY ITEM] ${itemName} - Stats:`, stats);
+      console.log(`[DISPLAY ITEM] Skill value:`, stats.skill);
 
       // Update flavor text
       flavorElement.textContent = stats.flavor || 'No description available.';
@@ -2308,6 +2379,7 @@
       }
 
       const html = availableForDisplay.map((item) => {
+        const quantityDisplay = item.quantity > 1 ? ` <span style="color: #4CAF50;">(x${item.quantity})</span>` : '';
         return `
           <div 
             draggable="true" 
@@ -2320,7 +2392,7 @@
             onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#FF9800';"
             onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#666';"
           >
-            ${item.name}
+            ${item.name}${quantityDisplay}
           </div>
         `;
       }).join('');
@@ -2416,7 +2488,7 @@
           // Check armor slot restriction
           if (slotIndex === 2) {
             const itemStats = ITEM_STATS[touchItem.name];
-            if (!itemStats || itemStats.type !== 'Armor') {
+            if (!itemStats || itemStats.type?.toLowerCase() !== 'armor') {
               alert('Only armor items can go in the armor slot.');
               touchItem = null;
               touchStartElement = null;
@@ -2489,7 +2561,7 @@
         // Armor slot can only accept armor items
         if (slotIndex === 2) {
           const itemStats = ITEM_STATS[draggedItem.name];
-          if (!itemStats || itemStats.type !== 'Armor') {
+          if (!itemStats || itemStats.type?.toLowerCase() !== 'armor') {
             console.log('[EQUIPMENT] Only armor items can go in the armor slot');
             alert('Only armor items can go in the armor slot.');
             return;
@@ -2590,7 +2662,10 @@
     }
 
     // Load character when page loads
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadDatabase();
+      // Clear equipment selection on page load BEFORE loading character
+      localStorage.removeItem('equipmentItemSelection');
       loadCharacter();
       updateActiveItemDisplay();
     });

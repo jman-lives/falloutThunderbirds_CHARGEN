@@ -505,25 +505,32 @@
         reviewContent.appendChild(statsSection);
       }
 
-      // Equipment
-      if (characterData.equipment && Object.keys(characterData.equipment.items).length > 0) {
+      // Equipment - normalized format from both package and store
+      if (characterData.equipment && characterData.equipment.items && Object.keys(characterData.equipment.items).length > 0) {
         const equipmentSection = document.createElement('div');
         equipmentSection.className = 'review-section';
         equipmentSection.innerHTML = `
           <h2 class="section-title">Equipment</h2>
           <div class="items-list" id="equipment-list"></div>
-          <div class="stat-row" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-            <span class="stat-label">Total Cost:</span>
-            <span class="stat-value highlight">${characterData.equipment.totalCost.toLocaleString()}</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">Total Weight:</span>
-            <span class="stat-value">${characterData.equipment.totalWeight.toFixed(1)} lbs</span>
-          </div>
         `;
-        reviewContent.appendChild(equipmentSection);
 
-        const equipmentList = equipmentSection.querySelector('#equipment-list');
+        const equipmentList = document.createElement('div');
+        equipmentList.className = 'items-list';
+        equipmentSection.appendChild(equipmentList);
+
+        // Display source info if available
+        if (characterData.equipment.source) {
+          const sourceInfo = document.createElement('div');
+          sourceInfo.style.cssText = 'color: #60a5fa; font-size: 0.85rem; margin-bottom: 12px; font-style: italic;';
+          if (characterData.equipment.source === 'package') {
+            sourceInfo.textContent = `📦 ${characterData.equipment.packageName || 'Equipment Package'}`;
+          } else {
+            sourceInfo.textContent = `🏪 Store Purchase`;
+          }
+          equipmentList.appendChild(sourceInfo);
+        }
+
+        // Display all items
         Object.entries(characterData.equipment.items).forEach(([itemName, qty]) => {
           const item = document.createElement('div');
           item.className = 'item-entry';
@@ -533,6 +540,42 @@
           `;
           equipmentList.appendChild(item);
         });
+
+        // Add summary
+        const summaryDiv = document.createElement('div');
+        summaryDiv.style.marginTop = '16px';
+        summaryDiv.style.paddingTop = '12px';
+        summaryDiv.style.borderTop = '1px solid rgba(255, 255, 255, 0.1)';
+        
+        const costRow = document.createElement('div');
+        costRow.className = 'stat-row';
+        costRow.innerHTML = `
+          <span class="stat-label">Total Value:</span>
+          <span class="stat-value">${characterData.equipment.totalCost.toLocaleString()} caps</span>
+        `;
+        summaryDiv.appendChild(costRow);
+        
+        const weightRow = document.createElement('div');
+        weightRow.className = 'stat-row';
+        weightRow.innerHTML = `
+          <span class="stat-label">Total Weight:</span>
+          <span class="stat-value">${characterData.equipment.totalWeight.toFixed(1)} lbs</span>
+        `;
+        summaryDiv.appendChild(weightRow);
+
+        // Show caps if from package
+        if (characterData.money !== undefined) {
+          const capsRow = document.createElement('div');
+          capsRow.className = 'stat-row';
+          capsRow.innerHTML = `
+            <span class="stat-label">💰 Caps:</span>
+            <span class="stat-value highlight">${characterData.money.toLocaleString()}</span>
+          `;
+          summaryDiv.appendChild(capsRow);
+        }
+        
+        equipmentList.appendChild(summaryDiv);
+        reviewContent.appendChild(equipmentSection);
       }
 
       // Perks
@@ -622,6 +665,11 @@
         URL.revokeObjectURL(url);
 
         showMessage(`Character saved as ${filename}`, 'success');
+        
+        // Redirect to index after a short delay to allow download to complete
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1500);
       } catch (error) {
         console.error('%c[ERROR SAVING CHARACTER]', 'color: #ff0000; font-weight: bold;', error);
         showMessage('Error saving character: ' + error.message, 'error');

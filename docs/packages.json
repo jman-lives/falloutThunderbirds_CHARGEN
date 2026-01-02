@@ -1,0 +1,60 @@
+{
+  "packages": [
+    {
+      "id": "survivor",
+      "name": "Survivor Package",
+      "description": "Basic armor, a 10mm pistol, and essential supplies for survival.",
+      "icon": "🛡️",
+      "showInChargen": true,
+      "items": [
+        { "id": "armor_leather", "quantity": 1 },
+        { "id": "weap_10mm_pistol", "quantity": 1 },
+        { "id": "weap_knife", "quantity": 1 },
+        { "id": "ammo_10mm", "quantity": 50 },
+        { "id": "chem_stimpak", "quantity": 3 },
+        { "id": "chem_radaway", "quantity": 2 },
+        { "id": "equip_water_canteen", "quantity": 1 }
+      ],
+      "caps": 150
+    },
+    {
+      "id": "soldier",
+      "name": "Soldier Package",
+      "description": "Combat armor, rifle, and ammo for the experienced fighter.",
+      "icon": "⚔️",
+      "showInChargen": false,
+      "items": [
+        { "id": "armor_combat", "quantity": 1 },
+        { "id": "weap_assault_rifle", "quantity": 1 },
+        { "id": "weap_combat_knife", "quantity": 1 },
+        { "id": "weap_frag_grenade", "quantity": 2 },
+        { "id": "ammo_762", "quantity": 120 },
+        { "id": "chem_stimpak", "quantity": 5 },
+        { "id": "chem_radaway", "quantity": 3 },
+        { "id": "equip_doctors_bag", "quantity": 1 }
+      ],
+      "caps": 200
+    },
+    {
+      "id": "scavenger",
+      "name": "Scavenger Package",
+      "description": "Light armor, diverse weapons, and tools for exploration.",
+      "icon": "🎒",
+      "showInChargen": true,
+      "items": [
+        { "id": "armor_leather_jacket", "quantity": 1 },
+        { "id": "weap_44_revolver", "quantity": 1 },
+        { "id": "weap_hunting_rifle", "quantity": 1 },
+        { "id": "weap_crowbar", "quantity": 1 },
+        { "id": "ammo_44", "quantity": 30 },
+        { "id": "ammo_762", "quantity": 40 },
+        { "id": "chem_stimpak", "quantity": 4 },
+        { "id": "chem_radaway", "quantity": 2 },
+        { "id": "equip_lockpick_set", "quantity": 1 },
+        { "id": "equip_repair_kit", "quantity": 1 },
+        { "id": "equip_flashlight", "quantity": 1 }
+      ],
+      "caps": 250
+    }
+  ]
+}

@@ -95,10 +95,58 @@
       margin: 0;
     }
 
+    .item-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .item-quantity {
       color: #60a5fa;
       font-weight: 600;
-      margin: 0 12px;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .qty-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #60a5fa;
+      background: rgba(96, 165, 250, 0.1);
+      color: #60a5fa;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .qty-btn:hover {
+      background: rgba(96, 165, 250, 0.2);
+      border-color: #60a5fa;
+    }
+
+    .remove-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #ff7b7b;
+      background: rgba(255, 0, 0, 0.1);
+      color: #ff7b7b;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      margin-left: 4px;
+    }
+
+    .remove-btn:hover {
+      background: rgba(255, 0, 0, 0.2);
     }
 
     .item-cost {
@@ -300,88 +348,29 @@
         checkoutData.cart = cartData.items;
         checkoutData.budget = cartData.budgetUsed ? (cartData.budgetUsed + cartData.budgetRemaining) : 80000;
 
-        // Load store data to get full item details
+        // Load config
         const configRes = await fetch('prod-config.json');
         const config = await configRes.json();
         checkoutData.budget = config.storeCredit || checkoutData.budget;
 
-        // Load all equipment files to rebuild item list
-        const equipmentFiles = [
-          'equipment.md',
-          'armors.md',
-          'assault_rifles.md',
-          'machine_guns.md',
-          'melee_skill_weapons.md',
-          'pistols.md',
-          'primitive_missile_weapons.md',
-          'rifles.md',
-          'shotguns.md',
-          'submachine_guns.md',
-          'unarmed_skill_weapons.md'
-        ];
-
-        for (const file of equipmentFiles) {
-          try {
-            const equipRes = await fetch(`./equipment-instructions/${file}`);
-            if (equipRes.ok) {
-              const equipText = await equipRes.text();
-              parseEquipmentMarkdown(equipText);
-            }
-          } catch (error) {
-          }
+        // Load database.json
+        const dbRes = await fetch('database.json');
+        if (!dbRes.ok) {
+          throw new Error('Failed to load database.json');
         }
+        const database = await dbRes.json();
+
+        // Flatten all items from database
+        checkoutData.items = [];
+        if (database.ammunition) checkoutData.items.push(...database.ammunition);
+        if (database.weapons) checkoutData.items.push(...database.weapons);
+        if (database.armor) checkoutData.items.push(...database.armor);
+        if (database.equipment) checkoutData.items.push(...database.equipment);
+        if (database.chems) checkoutData.items.push(...database.chems);
 
         renderCheckout();
       } catch (error) {
         showMessage('Error loading checkout data', 'error');
-      }
-    }
-
-    function parseEquipmentMarkdown(markdown) {
-      const lines = markdown.split('\n');
-      let currentItem = null;
-      let inCodeBlock = false;
-
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-
-        if (line.trim().startsWith('```')) {
-          inCodeBlock = !inCodeBlock;
-          continue;
-        }
-
-        const itemMatch = line.match(/^#{2,3}\s+(.+)$/);
-        if (itemMatch) {
-          if (currentItem && currentItem.name) {
-            checkoutData.items.push(currentItem);
-          }
-          currentItem = {
-            name: itemMatch[1].trim(),
-            value: 0,
-            weight: 0
-          };
-          continue;
-        }
-
-        if (currentItem && line.includes('Value:')) {
-          const valueMatch = line.match(/Value:\s*(\d+)/);
-          if (valueMatch) {
-            currentItem.value = parseInt(valueMatch[1]);
-          }
-          continue;
-        }
-
-        if (currentItem && (line.includes('Weight:') || line.includes('W:'))) {
-          const weightMatch = line.match(/(?:Weight|W):\s*([\d.]+)\s*lbs?\.?/);
-          if (weightMatch) {
-            currentItem.weight = parseFloat(weightMatch[1]);
-          }
-          continue;
-        }
-      }
-
-      if (currentItem && currentItem.name) {
-        checkoutData.items.push(currentItem);
       }
     }
 
@@ -420,9 +409,14 @@
           itemEl.innerHTML = `
             <div class="item-info">
               <p class="item-name">${item.name}</p>
-              <p class="item-details">${item.weight} lbs × ${quantity} = ${itemWeight.toFixed(1)} lbs</p>
+              <p class="item-details">${item.category} • ${item.weight} lbs × ${quantity} = ${itemWeight.toFixed(1)} lbs</p>
             </div>
-            <div class="item-quantity">×${quantity}</div>
+            <div class="item-controls">
+              <button class="qty-btn" onclick="decrementCheckoutItem('${(item.name || '').replace(/'/g, "\\'")}')">−</button>
+              <div class="item-quantity">×${quantity}</div>
+              <button class="qty-btn" onclick="incrementCheckoutItem('${(item.name || '').replace(/'/g, "\\'")}')">+</button>
+              <button class="remove-btn" onclick="removeCheckoutItem('${(item.name || '').replace(/'/g, "\\'")}')" title="Remove item">🗑️</button>
+            </div>
             <div class="item-cost">${itemCost.toLocaleString()}</div>
           `;
           itemsList.appendChild(itemEl);
@@ -477,11 +471,27 @@
     }
 
     function confirmCheckout() {
-      // Calculate equipment data
+      if (Object.keys(checkoutData.cart).length === 0) {
+        showMessage('⚠️ Cart is empty', 'error');
+        return;
+      }
+
       const totalCost = Object.entries(checkoutData.cart).reduce((total, [itemName, qty]) => {
         const item = checkoutData.items.find(i => i.name === itemName);
         return total + (item ? item.value * qty : 0);
       }, 0);
+
+      if (totalCost > checkoutData.budget) {
+        showMessage('⚠️ Total cost exceeds budget', 'error');
+        return;
+      }
+
+      const itemCount = Object.keys(checkoutData.cart).length;
+      if (!confirm(`Confirm purchase of ${itemCount} item type(s) for ${totalCost.toLocaleString()} caps?`)) {
+        return;
+      }
+
+      // Calculate equipment data
 
       const totalWeight = Object.entries(checkoutData.cart).reduce((total, [itemName, qty]) => {
         const item = checkoutData.items.find(i => i.name === itemName);
@@ -538,10 +548,78 @@
         sessionStorage.setItem('character', JSON.stringify(character));
       }
       
-      showMessage('Equipment purchased successfully!', 'success');
+      showMessage('✓ Equipment purchased successfully!', 'success');
       setTimeout(() => {
         window.location.href = 'review.html';
-      }, 1500);
+      }, 1000);
+    }
+
+    function incrementCheckoutItem(itemName) {
+      const item = checkoutData.items.find(i => i.name === itemName);
+      if (!item) return;
+
+      const currentCost = Object.entries(checkoutData.cart).reduce((total, [name, qty]) => {
+        const i = checkoutData.items.find(x => x.name === name);
+        return total + (i ? i.value * qty : 0);
+      }, 0);
+
+      if (currentCost + item.value > checkoutData.budget) {
+        showMessage('⚠️ Cannot add more - budget exceeded', 'error');
+        return;
+      }
+
+      checkoutData.cart[itemName]++;
+      updateSessionCart();
+      renderCheckout();
+    }
+
+    function decrementCheckoutItem(itemName) {
+      if (checkoutData.cart[itemName] > 1) {
+        checkoutData.cart[itemName]--;
+        updateSessionCart();
+        renderCheckout();
+      } else {
+        removeCheckoutItem(itemName);
+      }
+    }
+
+    function removeCheckoutItem(itemName) {
+      const quantity = checkoutData.cart[itemName];
+      if (quantity > 3) {
+        if (!confirm(`Remove all ${quantity} ${itemName} from cart?`)) {
+          return;
+        }
+      }
+      delete checkoutData.cart[itemName];
+      updateSessionCart();
+      
+      if (Object.keys(checkoutData.cart).length === 0) {
+        showMessage('Cart is now empty', 'warning');
+      }
+      
+      renderCheckout();
+    }
+
+    function updateSessionCart() {
+      const totalCost = Object.entries(checkoutData.cart).reduce((total, [itemName, qty]) => {
+        const item = checkoutData.items.find(i => i.name === itemName);
+        return total + (item ? item.value * qty : 0);
+      }, 0);
+
+      const totalWeight = Object.entries(checkoutData.cart).reduce((total, [itemName, qty]) => {
+        const item = checkoutData.items.find(i => i.name === itemName);
+        return total + (item ? item.weight * qty : 0);
+      }, 0);
+
+      const cartSummary = {
+        items: checkoutData.cart,
+        totalCost: totalCost,
+        totalWeight: totalWeight,
+        budgetUsed: totalCost,
+        budgetRemaining: checkoutData.budget - totalCost
+      };
+
+      sessionStorage.setItem('storeCart', JSON.stringify(cartSummary));
     }
 
     function showMessage(text, type) {
