@@ -282,14 +282,18 @@
   </div>
 
   <script>
+    let packagesData = null;
+    let databaseData = null;
+    let character = null;
+
     // Load character data from localStorage
     function loadCharacter() {
       const stored = localStorage.getItem('falloutCharacter');
       if (stored) {
         try {
-          const character = JSON.parse(stored);
-          console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', character);
-          return character;
+          const char = JSON.parse(stored);
+          console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', char);
+          return char;
         } catch (e) {
           return null;
         }
@@ -299,21 +303,150 @@
       return null;
     }
 
+    // Save character data to localStorage
+    function saveCharacter(char) {
+      localStorage.setItem('falloutCharacter', JSON.stringify(char));
+      console.log('%c[CHARACTER SAVED]', 'color: #4CAF50; font-weight: bold;', char);
+    }
+
+    // Load database
+    async function loadDatabase() {
+      try {
+        const response = await fetch('database.json');
+        const data = await response.json();
+        databaseData = data;
+        console.log('%c[DATABASE LOADED]', 'color: #4CAF50; font-weight: bold;', data);
+      } catch (error) {
+        console.error('Error loading database:', error);
+        alert('Failed to load item database. Please refresh the page.');
+      }
+    }
+
+    // Load packages from JSON
+    async function loadPackages() {
+      try {
+        const response = await fetch('packages.json');
+        const data = await response.json();
+        packagesData = data;
+        console.log('%c[PACKAGES LOADED]', 'color: #4CAF50; font-weight: bold;', data);
+        populatePackages();
+      } catch (error) {
+        console.error('Error loading packages:', error);
+        alert('Failed to load equipment packages. Please refresh the page.');
+      }
+    }
+
+    // Find item in database by ID
+    function findItemInDatabase(itemId) {
+      // Search all categories
+      const categories = ['ammunition', 'weapons', 'armor', 'equipment', 'chems'];
+      for (const category of categories) {
+        if (databaseData[category]) {
+          const item = databaseData[category].find(i => i.id === itemId);
+          if (item) {
+            return { ...item, category };
+          }
+        }
+      }
+      return null;
+    }
+
+    // Populate package list dynamically
+    function populatePackages() {
+      const packageList = document.getElementById('package-list');
+      packageList.innerHTML = '';
+
+      // Filter packages that should be shown in chargen
+      const chargenPackages = packagesData.packages.filter(pkg => pkg.showInChargen !== false);
+
+      chargenPackages.forEach(pkg => {
+        const item = document.createElement('div');
+        item.className = 'package-item';
+        item.setAttribute('data-package', pkg.id);
+        item.innerHTML = `
+          <div class="package-name">${pkg.icon} ${pkg.name}</div>
+          <div class="package-description">${pkg.description}</div>
+        `;
+        
+        item.addEventListener('click', () => selectPackage(pkg));
+        packageList.appendChild(item);
+      });
+    }
+
+    // Apply package to character
+    function selectPackage(pkg) {
+      console.log('%c[PACKAGE SELECTED]', 'color: #4CAF50; font-weight: bold;', pkg.name);
+      
+      // Build equipment in the same format as store/checkout
+      const items = {};
+      let totalCost = 0;
+      let totalWeight = 0;
+
+      // Process each item in the package
+      pkg.items.forEach(pkgItem => {
+        const dbItem = findItemInDatabase(pkgItem.id);
+        if (dbItem) {
+          items[dbItem.name] = pkgItem.quantity;
+          totalCost += (dbItem.value || 0) * pkgItem.quantity;
+          totalWeight += (dbItem.weight || 0) * pkgItem.quantity;
+        } else {
+          console.warn(`Item not found in database: ${pkgItem.id}`);
+        }
+      });
+
+      // Create equipment object in the same format as store/checkout
+      const equipment = {
+        items: items,
+        totalCost: totalCost,
+        totalWeight: totalWeight,
+        timestamp: new Date().toISOString(),
+        source: 'package',
+        packageId: pkg.id,
+        packageName: pkg.name
+      };
+
+      // Initialize money field if it doesn't exist
+      if (character.money === undefined) {
+        character.money = 80000; // Default starting caps
+      }
+
+      // Add caps from package to character's money
+      if (pkg.caps) {
+        character.money += pkg.caps;
+      }
+
+      // Set equipment on character
+      character.equipment = equipment;
+
+      // Mark which package was selected
+      character.selectedPackage = pkg.id;
+
+      // Save character with equipment
+      saveCharacter(character);
+
+      console.log('%c[EQUIPMENT ADDED TO CHARACTER]', 'color: #4CAF50; font-weight: bold;', character);
+
+      // Navigate to review page
+      window.location.href = 'review.html';
+    }
+
     // Initialize page
-    window.addEventListener('load', () => {
-      const character = loadCharacter();
+    window.addEventListener('load', async () => {
+      character = loadCharacter();
       if (!character) {
         alert('No character data found. Please create a character first.');
         window.location.href = 'chargen.html';
         return;
       }
-      // Character is loaded and available for equipment selection
+
+      // Load database and packages
+      await loadDatabase();
+      await loadPackages();
     });
 
     // Modal functionality
     const modal = document.getElementById('package-modal');
     const closeBtn = document.getElementById('close-modal');
-    const packageItems = document.querySelectorAll('.package-item');
 
     document.getElementById('select-package-btn').addEventListener('click', () => {
       modal.classList.add('active');
@@ -328,18 +461,6 @@
       if (event.target === modal) {
         modal.classList.remove('active');
       }
-    });
-
-    // Handle package selection
-    packageItems.forEach((item) => {
-      item.addEventListener('click', () => {
-        const packageType = item.getAttribute('data-package');
-        console.log('%c[PACKAGE SELECTED]', 'color: #4CAF50; font-weight: bold;', packageType);
-        
-        // TODO: Apply the selected package to character
-        // For now, just close the modal
-        modal.classList.remove('active');
-      });
     });
 
     document.getElementById('go-store-btn').addEventListener('click', () => {
