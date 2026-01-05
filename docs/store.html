@@ -10,12 +10,19 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
+      max-height: 100vh;
       max-width: 1600px;
       margin: 0 auto;
       padding: 16px 24px;
       background: linear-gradient(180deg, #071026 0%, #08131a 100%);
       width: 100%;
       box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
       overflow: hidden;
     }
 
@@ -115,6 +122,32 @@
       min-height: 32px;
       align-items: center;
       flex-shrink: 0;
+    }
+
+    .weapon-category-filters {
+      display: none;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      padding: 12px;
+      background: rgba(139, 92, 246, 0.05);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .weapon-category-filters.active {
+      display: flex;
+    }
+
+    .weapon-category-label {
+      font-size: 0.85rem;
+      color: #a78bfa;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 8px;
     }
 
     .loading-state {
@@ -632,6 +665,9 @@
       </button>
     </div>
     <div class="type-filter-tags" id="type-filters"></div>
+    <div class="weapon-category-filters" id="weapon-category-filters">
+      <span class="weapon-category-label">Weapon Type:</span>
+    </div>
 
     <div class="store-grid" id="store-grid"></div>
 
@@ -688,6 +724,7 @@
       budget: 1700,
       cart: {},
       selectedType: null,
+      selectedWeaponCategory: null,
       character: null
     };
 
@@ -813,9 +850,77 @@
       });
     }
 
+    function initializeWeaponCategoryFilters() {
+      // Get all weapons and extract their categories from stats.skill
+      const weapons = storeData.items.filter(item => item.category === 'weapons');
+      const weaponCategories = new Set();
+      
+      weapons.forEach(weapon => {
+        if (weapon.stats && weapon.stats.skill) {
+          weaponCategories.add(weapon.stats.skill);
+        }
+      });
+      
+      const categories = [...weaponCategories].sort();
+      const filterContainer = document.getElementById('weapon-category-filters');
+      
+      // Clear existing filters except the label
+      const label = filterContainer.querySelector('.weapon-category-label');
+      filterContainer.innerHTML = '';
+      if (label) {
+        filterContainer.appendChild(label);
+      }
+      
+      // Add "All Weapons" option
+      const allTag = document.createElement('button');
+      allTag.className = 'type-tag active';
+      allTag.textContent = 'All Weapons';
+      allTag.onclick = () => setWeaponCategoryFilter(null);
+      filterContainer.appendChild(allTag);
+      
+      // Add category filters
+      categories.forEach(category => {
+        const tag = document.createElement('button');
+        tag.className = 'type-tag';
+        tag.textContent = category;
+        tag.onclick = () => setWeaponCategoryFilter(category);
+        filterContainer.appendChild(tag);
+      });
+    }
+
+    function setWeaponCategoryFilter(category) {
+      storeData.selectedWeaponCategory = category;
+      updateWeaponCategoryFilterUI();
+      renderStore(filterItems());
+    }
+
+    function updateWeaponCategoryFilterUI() {
+      const tags = document.querySelectorAll('#weapon-category-filters .type-tag');
+      tags.forEach(tag => {
+        if (storeData.selectedWeaponCategory === null && tag.textContent === 'All Weapons') {
+          tag.classList.add('active');
+        } else if (tag.textContent === storeData.selectedWeaponCategory) {
+          tag.classList.add('active');
+        } else {
+          tag.classList.remove('active');
+        }
+      });
+    }
+
     function setTypeFilter(type) {
       storeData.selectedType = type;
+      storeData.selectedWeaponCategory = null; // Reset weapon category when changing main filter
       updateTypeFilterUI();
+      
+      // Show/hide weapon category filters
+      const weaponFilters = document.getElementById('weapon-category-filters');
+      if (type === 'weapons') {
+        initializeWeaponCategoryFilters();
+        weaponFilters.classList.add('active');
+      } else {
+        weaponFilters.classList.remove('active');
+      }
+      
       renderStore(filterItems());
     }
 
@@ -838,6 +943,13 @@
       // Filter by category
       if (storeData.selectedType !== null) {
         filtered = filtered.filter(item => item.category === storeData.selectedType);
+      }
+
+      // Filter by weapon category (only applies when weapons are selected)
+      if (storeData.selectedType === 'weapons' && storeData.selectedWeaponCategory !== null) {
+        filtered = filtered.filter(item => 
+          item.stats && item.stats.skill === storeData.selectedWeaponCategory
+        );
       }
 
       // Filter by search

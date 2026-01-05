@@ -145,6 +145,12 @@
           <div style="font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-bottom: 4px;">Active Item</div>
           <div id="active-item-name" style="font-size: 1.1rem;">—</div>
         </div>
+        <div style="display: flex; gap: 8px;">
+          <button id="targeted-attack-btn" onclick="targetedAttack()" style="display: none; padding: 8px 20px; background-color: #eab308; color: white; border: 2px solid #eab308; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1.5rem; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#ca8a04'; this.style.borderColor='#ca8a04'; this.style.transform='translateY(-2px)'" onmouseout="this.style.backgroundColor='#eab308'; this.style.borderColor='#eab308'; this.style.transform='translateY(0)'">🎯</button>
+          <button id="use-item-btn" onclick="useActiveItem()" style="padding: 8px 20px; background-color: #dc2626; color: white; border: 2px solid #dc2626; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#b91c1c'; this.style.borderColor='#b91c1c'; this.style.transform='translateY(-2px)'" onmouseout="this.style.backgroundColor='#dc2626'; this.style.borderColor='#dc2626'; this.style.transform='translateY(0)'">Use</button>
+          <button id="burst-mode-toggle-btn" onclick="toggleBurstMode()" style="display: none; padding: 8px 16px; background-color: #64748b; color: white; border: 2px solid #64748b; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s ease; font-size: 1.2rem;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">🔄</button>
+          <button id="reload-item-btn" onclick="reloadActiveItem()" style="display: none; padding: 8px 20px; background-color: #2563eb; color: white; border: 2px solid #2563eb; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#1d4ed8'; this.style.borderColor='#1d4ed8'; this.style.transform='translateY(-2px)'" onmouseout="this.style.backgroundColor='#2563eb'; this.style.borderColor='#2563eb'; this.style.transform='translateY(0)'">Reload</button>
+        </div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <button id="swap-btn" onclick="swapActiveItem()" style="padding: 12px 20px; background-color: #9C27B0; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#7B1FA2'; this.style.transform='translateY(-2px)'" onmouseout="this.style.backgroundColor='#9C27B0'; this.style.transform='translateY(0)'">Swap</button>
@@ -1587,12 +1593,14 @@
 
         const perkHTML = selectedPerks.map((perk, idx) => {
           const perkId = perk.id || perk;
+          const perkRank = perk.rank || 1;
           
           const isConditional = CONDITIONAL_PERK_IDS.has(perkId);
           const isAutoManaged = AUTO_MANAGED_PERKS.has(perkId);
           
           // Format perk name
           let perkName = perkId.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+          const rankBadge = `<span style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 3px; font-size: 0.85em; margin-left: 6px;">Rank ${perkRank}</span>`;
           
           // Get detailed description and effects
           const details = perkDetails[perkId] || {
@@ -1627,7 +1635,7 @@
                 style="width: 100%; padding: 8px; color: white; border: 2px solid ${isActive ? borderColor : '#666'}; background-color: ${isActive ? borderColor : '#666'}; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s;"
                 title="Toggle ${perkName}"
               >
-                ${isActive ? '● ' : '○ '}${perkName}
+                ${isActive ? '● ' : '○ '}${perkName}${rankBadge}
               </button>
             `;
           } else if (isAutoManaged) {
@@ -1636,14 +1644,14 @@
             const displayColor = isActive ? borderColor : '#666';
             toggleButton = `
               <div style="font-weight: bold; color: #fff; padding: 8px; background-color: ${displayColor}; border-radius: 4px; text-align: center; border: 1px solid ${displayColor}; transition: all 0.2s;">
-                ${isActive ? '● ' : '○ '}${perkName}
+                ${isActive ? '● ' : '○ '}${perkName}${rankBadge}
               </div>
             `;
           } else {
             // Passive perks with static display
             toggleButton = `
               <div style="font-weight: bold; color: #fff; padding: 8px; background-color: rgba(255,255,255,0.05); border-radius: 4px; text-align: center; border: 1px solid ${borderColor};">
-                ${perkName}
+                ${perkName}${rankBadge}
               </div>
             `;
           }
@@ -2132,6 +2140,10 @@
       const display = qs('active-item-display');
       const nameElement = qs('active-item-name');
       const swapBtn = qs('swap-btn');
+      const reloadBtn = qs('reload-item-btn');
+      const useBtn = qs('use-item-btn');
+      const targetedBtn = qs('targeted-attack-btn');
+      const burstBtn = qs('burst-mode-toggle-btn');
       
       if (items.length === 0) {
         // Default to Punch (index 0) or Kick (index 1)
@@ -2139,6 +2151,11 @@
         const defaultAttack = defaultAttacks[activeItemIndex] || 'Punch';
         nameElement.textContent = defaultAttack;
         swapBtn.style.display = 'inline-block';
+        reloadBtn.style.display = 'none';
+        targetedBtn.style.display = 'inline-block';
+        burstBtn.style.display = 'none';
+        localStorage.removeItem('burstModeActive');
+        useBtn.textContent = activeItemIndex === 0 ? 'Swing' : 'Strike';
         displayItemDiceTable(defaultAttack);
         return;
       }
@@ -2147,6 +2164,64 @@
         nameElement.textContent = items[0].name;
         swapBtn.style.display = 'none';
         displayItemDiceTable(items[0].name);
+        // Check if item has ammo and show reload button
+        const itemStats = ITEM_STATS[items[0].name];
+        if (itemStats) {
+          // Check for burst fire capability
+          // Format can be: "S X / T Y / B Z" (full), "S X / T Y" (no burst), or "B Z" (burst-only)
+          const apParts = itemStats.apCost ? itemStats.apCost.split('/').map(s => s.trim()) : [];
+          console.log(`[BURST CHECK] ${items[0].name} - apCost: "${itemStats.apCost}" - Parts:`, apParts, '- Length:', apParts.length);
+          
+          // Check if weapon has burst mode:
+          // - Has 3 parts with valid burst value (S X / T Y / B Z)
+          // - OR is burst-only (B X with no slashes)
+          const hasBurst = (apParts.length === 3 && apParts[2] && apParts[2] !== '-') ||
+                          (apParts.length === 1 && itemStats.apCost && itemStats.apCost.trim().startsWith('B '));
+          const isBurstOnly = apParts.length === 1 && itemStats.apCost && itemStats.apCost.trim().startsWith('B ');
+          
+          console.log(`[BURST CHECK] ${items[0].name} - hasBurst:`, hasBurst, '- isBurstOnly:', isBurstOnly);
+          const isBurstMode = localStorage.getItem('burstModeActive') === 'true' && hasBurst;
+          
+          // For burst-only weapons, automatically enable burst mode
+          if (isBurstOnly) {
+            localStorage.setItem('burstModeActive', 'true');
+          }
+          
+          // Hide targeted button when in burst mode
+          targetedBtn.style.display = isBurstMode || isBurstOnly ? 'none' : 'inline-block';
+          
+          if (hasBurst) {
+            // Only show toggle for weapons with multiple fire modes
+            burstBtn.style.display = isBurstOnly ? 'none' : 'inline-block';
+            if (!isBurstOnly) {
+              updateBurstToggleButton();
+            }
+          } else {
+            burstBtn.style.display = 'none';
+            localStorage.removeItem('burstModeActive');
+          }
+          
+          // Determine button text based on weapon type
+          const isMeleeOrUnarmed = itemStats.skill === 'Unarmed' || itemStats.skill === 'Melee Weapons';
+          
+          if (itemStats.ammo && itemStats.ammo !== 'N/A') {
+            reloadBtn.style.display = 'inline-block';
+            if (isBurstOnly) {
+              useBtn.textContent = 'Burst';
+            } else {
+              useBtn.textContent = isBurstMode ? 'Burst' : 'Fire';
+            }
+          } else {
+            reloadBtn.style.display = 'none';
+            useBtn.textContent = isMeleeOrUnarmed ? 'Swing' : 'Use';
+          }
+        } else {
+          targetedBtn.style.display = 'none';
+          burstBtn.style.display = 'none';
+          reloadBtn.style.display = 'none';
+          localStorage.removeItem('burstModeActive');
+          useBtn.textContent = 'Use';
+        }
         return;
       }
       
@@ -2156,6 +2231,126 @@
       console.log('[ACTIVE ITEM]', activeItem);
       nameElement.textContent = activeItem.name;
       displayItemDiceTable(activeItem.name);
+      // Check if item has ammo and show reload button
+      const itemStats = ITEM_STATS[activeItem.name];
+      if (itemStats) {
+        // Check for burst fire capability
+        // Format can be: "S X / T Y / B Z" (full), "S X / T Y" (no burst), or "B Z" (burst-only)
+        const apParts = itemStats.apCost ? itemStats.apCost.split('/').map(s => s.trim()) : [];
+        console.log(`[BURST CHECK] ${activeItem.name} - apCost: "${itemStats.apCost}" - Parts:`, apParts, '- Length:', apParts.length);
+        
+        // Check if weapon has burst mode:
+        // - Has 3 parts with valid burst value (S X / T Y / B Z)
+        // - OR is burst-only (B X with no slashes)
+        const hasBurst = (apParts.length === 3 && apParts[2] && apParts[2] !== '-') ||
+                        (apParts.length === 1 && itemStats.apCost && itemStats.apCost.trim().startsWith('B '));
+        const isBurstOnly = apParts.length === 1 && itemStats.apCost && itemStats.apCost.trim().startsWith('B ');
+        
+        console.log(`[BURST CHECK] ${activeItem.name} - hasBurst:`, hasBurst, '- isBurstOnly:', isBurstOnly);
+        const isBurstMode = localStorage.getItem('burstModeActive') === 'true' && hasBurst;
+        
+        // For burst-only weapons, automatically enable burst mode
+        if (isBurstOnly) {
+          localStorage.setItem('burstModeActive', 'true');
+        }
+        
+        // Hide targeted button when in burst mode
+        targetedBtn.style.display = isBurstMode || isBurstOnly ? 'none' : 'inline-block';
+        
+        if (hasBurst) {
+          // Only show toggle for weapons with multiple fire modes
+          burstBtn.style.display = isBurstOnly ? 'none' : 'inline-block';
+          if (!isBurstOnly) {
+            updateBurstToggleButton();
+          }
+        } else {
+          burstBtn.style.display = 'none';
+          localStorage.removeItem('burstModeActive');
+        }
+        
+        // Determine button text based on weapon type
+        const isMeleeOrUnarmed = itemStats.skill === 'Unarmed' || itemStats.skill === 'Melee Weapons';
+        
+        if (itemStats.ammo && itemStats.ammo !== 'N/A') {
+          reloadBtn.style.display = 'inline-block';
+          if (isBurstOnly) {
+            useBtn.textContent = 'Burst';
+          } else {
+            useBtn.textContent = isBurstMode ? 'Burst' : 'Fire';
+          }
+        } else {
+          reloadBtn.style.display = 'none';
+          useBtn.textContent = isMeleeOrUnarmed ? 'Swing' : 'Use';
+        }
+      } else {
+        targetedBtn.style.display = 'none';
+        burstBtn.style.display = 'none';
+        reloadBtn.style.display = 'none';
+        localStorage.removeItem('burstModeActive');
+        useBtn.textContent = 'Use';
+      }
+    }
+
+    function useActiveItem() {
+      const items = getEquipmentItems();
+      const currentIndex = parseInt(localStorage.getItem('activeItemIndex') || '0');
+      const activeItem = items[currentIndex] || { name: currentIndex === 0 ? 'Punch' : 'Kick' };
+      
+      alert(`Using: ${activeItem.name}\n\nThis would trigger the item's use action. Implementation can include:\n- Consuming item (food, drugs, etc.)\n- Applying effects\n- Rolling dice for item action\n- Etc.`);
+    }
+
+    function targetedAttack() {
+      const items = getEquipmentItems();
+      const currentIndex = parseInt(localStorage.getItem('activeItemIndex') || '0');
+      const activeItem = items[currentIndex];
+      
+      if (!activeItem) {
+        alert('No weapon equipped for targeted attack.');
+        return;
+      }
+      
+      alert(`Performing targeted attack with ${activeItem.name}!\n\nThis allows you to aim for specific body parts for increased damage or special effects.`);
+    }
+
+    function toggleBurstMode() {
+      const isBurstMode = localStorage.getItem('burstModeActive') === 'true';
+      localStorage.setItem('burstModeActive', (!isBurstMode).toString());
+      updateActiveItemDisplay();
+    }
+
+    function updateBurstToggleButton() {
+      const burstBtn = qs('burst-mode-toggle-btn');
+      const isBurstMode = localStorage.getItem('burstModeActive') === 'true';
+      
+      if (isBurstMode) {
+        burstBtn.style.backgroundColor = '#f97316';
+        burstBtn.style.borderColor = '#f97316';
+      } else {
+        burstBtn.style.backgroundColor = '#64748b';
+        burstBtn.style.borderColor = '#64748b';
+      }
+    }
+
+    function reloadActiveItem() {
+      const items = getEquipmentItems();
+      const currentIndex = parseInt(localStorage.getItem('activeItemIndex') || '0');
+      const activeItem = items[currentIndex];
+      
+      if (!activeItem) {
+        alert('No active weapon to reload.');
+        return;
+      }
+      
+      const itemStats = ITEM_STATS[activeItem.name];
+      if (!itemStats || !itemStats.ammo || itemStats.ammo === 'N/A') {
+        alert('This item cannot be reloaded.');
+        return;
+      }
+      
+      const reloadAP = itemStats.reloadap || '2';
+      const ammoType = itemStats.ammotype || 'unknown';
+      
+      alert(`Reloading: ${activeItem.name}\n\nAmmo Type: ${ammoType}\nReload AP Cost: ${reloadAP}\n\nWeapon reloaded!`);
     }
 
     function swapActiveItem() {
