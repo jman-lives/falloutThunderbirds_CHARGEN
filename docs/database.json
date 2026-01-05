@@ -1202,7 +1202,7 @@
       "value": 300,
       "weight": 4,
       "description": "High stopping power.",
-      "flavor": "PArty like it's 1997",
+      "flavor": "Party like it's 1997",
       "tags": [
         "weapon",
         "gun",
@@ -1394,6 +1394,33 @@
         "range": 35,
         "capacity": "6 (energy cell)",
         "ammoType": "",
+        "skill": "Energy Weapons"
+      }
+    },
+    {
+      "id": "weap_laser_pistol",
+      "name": "Laser Pistol",
+      "category": "weapons",
+      "type": "pistol",
+      "value": 700,
+      "weight": 2,
+      "description": "Wattz 2000 Laser Pistol. Packs a hot punch.",
+      "flavor": "Easy There Buck Rogers",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "energy",
+        "rare",
+        "laser"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "1d6 (energy)",
+        "ap": "S 5 / T 6",
+        "range": 15,
+        "capacity": "30",
+        "ammoType": "ammo_small_energy_cell",
         "skill": "Energy Weapons"
       }
     },
@@ -1679,7 +1706,7 @@
       "requirements": "STR 5"
     },
     {
-      "id": "weap_assault_rifle_semi",
+      "id": "weap_service_rifle",
       "name": "Service Rifle",
       "category": "weapons",
       "type": "rifle",
@@ -2426,7 +2453,7 @@
         "minigun",
         "rare"
       ],
-      "IsInChargenStore": false,
+      "IsInChargenStore": true,
       "stats": {
         "damage": "Ammo Damage + 2",
         "ap": "B 8",
@@ -2554,13 +2581,14 @@
       "type": "light",
       "value": 700,
       "weight": 8,
-      "description": "A shirt made of leather and padded for extra protection.",
+      "description": "A police motorcycle jacket and pants made of leather, padded for extra protection.",
       "flavor": "It's that rat circus out there. I'm beginning to enjoy it.",
       "tags": [
         "armor",
         "light",
         "leather"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "ac": 15,
         "dt_dr": {
@@ -2610,6 +2638,7 @@
         "armor",
         "medium"
       ],
+      "IsInChargenStore": false,
       "stats": {
         "ac": 15,
         "dt_dr": {
@@ -3502,6 +3531,168 @@
         "hasHelmet": true,
         "nightVision": true
       }
+    },
+    {
+      "id": "armor_vault_suit",
+      "name": "Vault Suit",
+      "category": "armor",
+      "type": "light",
+      "value": 90,
+      "weight": 10,
+      "description": "This jumpsuit was given out to residents for the Vault Experiments. Helps members identify as a group, but sticks out like a sore thumb in the Wastes.",
+      "flavor": "Did You Just Crawl Out From Under A Rock?",
+      "tags": [
+        "armor",
+        "light",
+        "cloth",
+        "vault"
+      ],
+      "IsInChargenStore": false,
+      "stats": {
+        "ac": 5,
+        "dt_dr": {
+          "normal": "0/20",
+          "laser": "0/25",
+          "fire": "0/10",
+          "plasma": "0/10",
+          "explosion": "0/10"
+        }
+      }
+    },
+    {
+      "id": "armor_wastelander",
+      "name": "Wastelander Clothes",
+      "category": "armor",
+      "type": "light",
+      "value": 90,
+      "weight": 10,
+      "description": "Although this garment can be awkward to fight in, it offers some basic protection against some kinds of attacks. More of a fashion statement than an actual effective piece of armor.",
+      "flavor": "At Home In The Brahmin Pens Or The Average Wasteland Watering Hole",
+      "tags": [
+        "armor",
+        "light",
+        "cloth",
+        "wastelander"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "ac": 5,
+        "dt_dr": {
+          "normal": "0/20",
+          "laser": "0/25",
+          "fire": "0/10",
+          "plasma": "0/10",
+          "explosion": "0/10"
+        }
+      }
+    },
+    {
+      "id": "armor_armored_vault_suit",
+      "name": "Armored Vault Suit",
+      "category": "armor",
+      "type": "light",
+      "value": 120,
+      "weight": 10,
+      "description": "This jumpsuit was given out to residents for the Vault Experiments. Helps members identify as a group, but sticks out like a sore thumb in the Wastes. This one has been reinforced with strategically placed leather and metal pieces.",
+      "flavor": "Your Waterchip, Or Your Life. What'll It Be?",
+      "tags": [
+        "armor",
+        "light",
+        "cloth",
+        "vault"
+      ],
+      "IsInChargenStore": false,
+      "stats": {
+        "ac": 10,
+        "dt_dr": {
+          "normal": "2/20",
+          "laser": "2/25",
+          "fire": "2/10",
+          "plasma": "0/10",
+          "explosion": "0/10"
+        }
+      }
+    },
+    {
+      "id": "armor_tribal",
+      "name": "Tribal Garb",
+      "category": "armor",
+      "type": "light",
+      "value": 90,
+      "weight": 10,
+      "description": "A garment not uncommon in small villages and the uncivilized parts of the Wasteland.",
+      "flavor": "Heua Hiya Heua Hiya",
+      "tags": [
+        "armor",
+        "light",
+        "cloth",
+        "tribal"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "ac": 5,
+        "dt_dr": {
+          "normal": "0/20",
+          "laser": "0/25",
+          "fire": "0/10",
+          "plasma": "0/10",
+          "explosion": "0/10"
+        }
+      }
+    },
+    {
+      "id": "armor_prewar_clothes",
+      "name": "Pre-War Clothes",
+      "category": "armor",
+      "type": "light",
+      "value": 90,
+      "weight": 10,
+      "description": "Although this garment can be awkward to fight in, it offers some basic protection against some kinds of attacks. More of a fashion statement than an actual effective piece of armor.",
+      "flavor": "A little Mayberry livin', Can go a long way.",
+      "tags": [
+        "armor",
+        "light",
+        "cloth",
+        "prewar"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "ac": 5,
+        "dt_dr": {
+          "normal": "0/20",
+          "laser": "0/25",
+          "fire": "0/10",
+          "plasma": "0/10",
+          "explosion": "0/10"
+        }
+      }
+    },
+    {
+      "id": "armor_tribal_warrior",
+      "name": "Tribal Warrior Armor",
+      "category": "armor",
+      "type": "medium",
+      "value": 700,
+      "weight": 10,
+      "description": "Typical tribal garb, woven with heavier and sturdier pieces of leather and metal, sealed with incantations and blessings from the Great Spirit.",
+      "flavor": "Last Owner: Chief Shitting-Pants",
+      "tags": [
+        "armor",
+        "medium",
+        "raider",
+        "tribal"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "ac": 8,
+        "dt_dr": {
+          "normal": "2/25",
+          "laser": "0/25",
+          "fire": "0/15",
+          "plasma": "0/25",
+          "explosion": "0/20"
+        }
+      }
     }
   ],
   "equipment": [
@@ -3756,13 +3947,14 @@
       "value": 300,
       "weight": 4,
       "description": "A first-aid kit that, when used, acts like one successful use of the First Aid skill, healing 1d10 points of damage in 1d10 minutes. Can only be used once.",
-      "flavor": "This one has \"Jangles the Moon Monkey\" bandages!",
+      "flavor": "This one has 'Jangles the Moon Monkey' bandages!",
       "tags": [
         "equipment",
         "medical",
         "consumable",
         "healing"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "healing": "1d10",
         "time": "1d10 minutes"
@@ -3817,6 +4009,24 @@
         "lockpick",
         "electronic",
         "hacking"
+      ],
+      "IsInChargenStore": false
+    },
+    {
+      "id": "equip_pipboy_3000",
+      "name": "Pip-Boy 3000A",
+      "category": "equipment",
+      "type": "tool",
+      "value": 1200,
+      "weight": 5,
+      "description": "The Pip-Boy 3000A is a safe, secure piece of Pre-War technology. It guarantees privacy, safety, and guidance in times of need.",
+      "flavor": "Can you get holomovies on that thing?",
+      "tags": [
+        "equipment",
+        "tool",
+        "detection",
+        "computer",
+        "science"
       ],
       "IsInChargenStore": false
     }

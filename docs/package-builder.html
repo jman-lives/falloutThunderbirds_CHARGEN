@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fallout TTRPG - Package Builder</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        :root {
+            --bg: #0f1720;
+            --card: #0b1220;
+            --accent: #60a5fa;
+            --muted: #9aa6b2;
+            --text: #e6eef6;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, ui-sans-serif, system-ui, Arial, Helvetica, sans-serif;
+            background: linear-gradient(180deg, #071026 0%, #08131a 100%);
+            color: var(--text);
+            padding: 24px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 24px;
+            border-radius: 10px;
+            box-shadow: 0 6px 24px rgba(2, 6, 23, 0.6);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent);
+            margin-bottom: 24px;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .section h2 {
+            color: var(--accent);
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .package-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .package-item {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .package-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(96, 165, 250, 0.3);
+            transform: translateX(4px);
+        }
+
+        .package-item.active {
+            background: rgba(96, 165, 250, 0.15);
+            border-color: var(--accent);
+        }
+
+        .package-item .name {
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .package-item .desc {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: var(--accent);
+            color: #022;
+            border: none;
+            font-family: Inter, ui-sans-serif, system-ui, Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: #7ab8ff;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
+        }
+
+        button.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        button.danger:hover {
+            background: #dc2626;
+        }
+
+        button.success {
+            background: var(--success);
+            color: #022;
+        }
+
+        button.success:hover {
+            background: #10b981;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text);
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            font-family: Inter, ui-sans-serif, system-ui, Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .item-browser {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar select,
+        .filter-bar input {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            font-family: Inter, ui-sans-serif, system-ui, Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            border-radius: 6px;
+        }
+
+        .filter-bar select {
+            min-width: 150px;
+        }
+
+        .filter-bar input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        .item-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .item-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(96, 165, 250, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .item-card .name {
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .item-card .item-id {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 6px;
+            opacity: 0.7;
+        }
+
+        .item-card .details {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .item-card .details span {
+            display: inline-block;
+            margin-right: 12px;
+        }
+
+        .selected-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .selected-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 6px;
+        }
+
+        .selected-item .info {
+            flex: 1;
+        }
+
+        .selected-item .name {
+            font-weight: 500;
+            color: var(--accent);
+            font-size: 14px;
+        }
+
+        .selected-item .item-id {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .selected-item .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .selected-item input[type="number"] {
+            width: 60px;
+            padding: 6px;
+            text-align: center;
+        }
+
+        .selected-item button {
+            padding: 6px 10px;
+            font-size: 12px;
+            min-width: auto;
+        }
+
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: rgba(15, 23, 32, 0.98);
+            border: 1px solid var(--accent);
+            color: var(--text);
+            z-index: 2000;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
+            display: none;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            border-color: var(--success);
+            background: rgba(52, 211, 153, 0.1);
+        }
+
+        .message.error {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .message.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .stats-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 6px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat .label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .stat .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 1200px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 PACKAGE BUILDER</h1>
+
+        <div class="layout">
+            <!-- Left Panel: Item Browser -->
+            <div class="left-panel">
+                <div class="section">
+                    <h2>🔍 Item Database</h2>
+                    <div class="item-browser">
+                        <div class="filter-bar">
+                            <select id="category-filter">
+                                <option value="all">All Categories</option>
+                                <option value="ammunition">Ammunition</option>
+                                <option value="weapons">Weapons</option>
+                                <option value="armor">Armor</option>
+                                <option value="equipment">Equipment</option>
+                                <option value="chems">Chems</option>
+                            </select>
+                            <input type="text" id="search-items" placeholder="Search items...">
+                        </div>
+                        <div class="items-grid" id="items-grid">
+                            <!-- Items will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Package Editor -->
+            <div class="right-panel">
+                <!-- Package List -->
+                <div class="section">
+                    <h2>📋 Packages</h2>
+                    <div class="controls">
+                        <button class="success" onclick="app.newPackage()">+ New Package</button>
+                        <button onclick="app.exportPackages()">💾 Export</button>
+                        <button onclick="app.importPackages()">📁 Import</button>
+                    </div>
+                    <div class="package-list" id="package-list">
+                        <!-- Packages will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Package Editor -->
+                <div class="section" id="package-editor" style="display: none;">
+                    <h2 id="editor-title">✏️ Edit Package</h2>
+                    
+                    <div class="form-group">
+                        <label>Package ID *</label>
+                        <input type="text" id="pkg-id" placeholder="survivor">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" id="pkg-name" placeholder="Survivor Package">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="pkg-description" placeholder="Basic armor, a 10mm pistol, and essential supplies..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Icon (emoji)</label>
+                        <input type="text" id="pkg-icon" placeholder="🛡️">
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="pkg-show-chargen">
+                            Show in Character Generation
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Starting Caps</label>
+                        <input type="number" id="pkg-caps" min="0" placeholder="150">
+                    </div>
+
+                    <h3 style="color: var(--accent); margin: 20px 0 12px;">Package Items</h3>
+                    <div class="selected-items" id="selected-items">
+                        <div class="empty-state">
+                            <div class="icon">📦</div>
+                            <div>Click items from the left to add them</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-box">
+                        <div class="stat">
+                            <div class="label">Total Items</div>
+                            <div class="value" id="total-items">0</div>
+                        </div>
+                        <div class="stat">
+                            <div class="label">Total Value</div>
+                            <div class="value" id="total-value">0</div>
+                        </div>
+                    </div>
+
+                    <div class="controls" style="margin-top: 20px;">
+                        <button class="success" onclick="app.savePackage()">💾 Save Package</button>
+                        <button class="danger" onclick="app.deletePackage()">🗑️ Delete</button>
+                        <button onclick="app.cancelEdit()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Toast -->
+    <div class="message" id="message"></div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="file-input" accept=".json" style="display: none;" onchange="app.handleFileImport(event)">
+
+    <script>
+        const app = {
+            database: null,
+            packages: null,
+            currentPackage: null,
+            currentPackageIndex: -1,
+            selectedPackageItems: [], // {id, quantity}
+            categoryFilter: 'all',
+            searchTerm: '',
+
+            async init() {
+                await this.loadDatabase();
+                await this.loadPackages();
+                this.setupEventListeners();
+                this.renderItems();
+                this.renderPackages();
+            },
+
+            async loadDatabase() {
+                try {
+                    const response = await fetch('database.json');
+                    this.database = await response.json();
+                    this.showMessage('Database loaded', 'success');
+                } catch (error) {
+                    this.showMessage('Error loading database: ' + error.message, 'error');
+                }
+            },
+
+            async loadPackages() {
+                try {
+                    const response = await fetch('packages.json');
+                    const data = await response.json();
+                    this.packages = data.packages || [];
+                    this.showMessage('Packages loaded', 'success');
+                } catch (error) {
+                    this.showMessage('Error loading packages: ' + error.message, 'error');
+                    this.packages = [];
+                }
+            },
+
+            setupEventListeners() {
+                document.getElementById('category-filter').addEventListener('change', (e) => {
+                    this.categoryFilter = e.target.value;
+                    this.renderItems();
+                });
+
+                document.getElementById('search-items').addEventListener('input', (e) => {
+                    this.searchTerm = e.target.value.toLowerCase();
+                    this.renderItems();
+                });
+            },
+
+            getItems() {
+                if (!this.database) return [];
+
+                let items = [];
+                const categories = this.categoryFilter === 'all'
+                    ? ['ammunition', 'weapons', 'armor', 'equipment', 'chems']
+                    : [this.categoryFilter];
+
+                categories.forEach(category => {
+                    if (this.database[category]) {
+                        items.push(...this.database[category].map(item => ({
+                            ...item,
+                            _category: category
+                        })));
+                    }
+                });
+
+                // Apply search filter
+                if (this.searchTerm) {
+                    items = items.filter(item => {
+                        const searchStr = `${item.name} ${item.id} ${item.description || ''}`.toLowerCase();
+                        return searchStr.includes(this.searchTerm);
+                    });
+                }
+
+                return items;
+            },
+
+            renderItems() {
+                const container = document.getElementById('items-grid');
+                const items = this.getItems();
+
+                if (items.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><div>No items found</div></div>';
+                    return;
+                }
+
+                container.innerHTML = items.map(item => `
+                    <div class="item-card" onclick="app.addItemToPackage('${item.id}')">
+                        <div class="item-id">${item.id}</div>
+                        <div class="name">${item.name}</div>
+                        <div class="details">
+                            <span>📁 ${item._category}</span>
+                            ${item.value !== undefined ? `<span>💰 ${item.value}</span>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            renderPackages() {
+                const container = document.getElementById('package-list');
+                
+                if (!this.packages || this.packages.length === 0) {
+                    container.innerHTML = '<div class="empty-state" style="padding: 20px;"><div>No packages yet</div></div>';
+                    return;
+                }
+
+                container.innerHTML = this.packages.map((pkg, index) => `
+                    <div class="package-item ${index === this.currentPackageIndex ? 'active' : ''}" 
+                         onclick="app.editPackage(${index})">
+                        <div class="name">${pkg.icon || '📦'} ${pkg.name}</div>
+                        <div class="desc">${pkg.description || 'No description'}</div>
+                    </div>
+                `).join('');
+            },
+
+            newPackage() {
+                this.currentPackage = {
+                    id: '',
+                    name: '',
+                    description: '',
+                    icon: '📦',
+                    showInChargen: true,
+                    items: [],
+                    caps: 0
+                };
+                this.currentPackageIndex = -1;
+                this.selectedPackageItems = [];
+                this.showEditor();
+            },
+
+            editPackage(index) {
+                this.currentPackageIndex = index;
+                this.currentPackage = JSON.parse(JSON.stringify(this.packages[index]));
+                this.selectedPackageItems = this.currentPackage.items || [];
+                this.showEditor();
+            },
+
+            showEditor() {
+                const editor = document.getElementById('package-editor');
+                editor.style.display = 'block';
+
+                document.getElementById('editor-title').textContent = 
+                    this.currentPackageIndex === -1 ? '✏️ New Package' : '✏️ Edit Package';
+
+                document.getElementById('pkg-id').value = this.currentPackage.id || '';
+                document.getElementById('pkg-name').value = this.currentPackage.name || '';
+                document.getElementById('pkg-description').value = this.currentPackage.description || '';
+                document.getElementById('pkg-icon').value = this.currentPackage.icon || '📦';
+                document.getElementById('pkg-show-chargen').checked = this.currentPackage.showInChargen !== false;
+                document.getElementById('pkg-caps').value = this.currentPackage.caps || 0;
+
+                this.renderSelectedItems();
+            },
+
+            cancelEdit() {
+                document.getElementById('package-editor').style.display = 'none';
+                this.currentPackage = null;
+                this.currentPackageIndex = -1;
+                this.selectedPackageItems = [];
+            },
+
+            addItemToPackage(itemId) {
+                if (!this.currentPackage) {
+                    this.showMessage('Please create or select a package first', 'error');
+                    return;
+                }
+
+                const existing = this.selectedPackageItems.find(i => i.id === itemId);
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    this.selectedPackageItems.push({ id: itemId, quantity: 1 });
+                }
+
+                this.renderSelectedItems();
+            },
+
+            updateItemQuantity(itemId, quantity) {
+                const item = this.selectedPackageItems.find(i => i.id === itemId);
+                if (item) {
+                    item.quantity = parseInt(quantity) || 1;
+                    this.renderSelectedItems();
+                }
+            },
+
+            removeItemFromPackage(itemId) {
+                this.selectedPackageItems = this.selectedPackageItems.filter(i => i.id !== itemId);
+                this.renderSelectedItems();
+            },
+
+            getItemById(itemId) {
+                if (!this.database) return null;
+
+                for (const category of ['ammunition', 'weapons', 'armor', 'equipment', 'chems']) {
+                    const item = this.database[category]?.find(i => i.id === itemId);
+                    if (item) return item;
+                }
+                return null;
+            },
+
+            renderSelectedItems() {
+                const container = document.getElementById('selected-items');
+
+                if (this.selectedPackageItems.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📦</div>
+                            <div>Click items from the left to add them</div>
+                        </div>
+                    `;
+                    document.getElementById('total-items').textContent = '0';
+                    document.getElementById('total-value').textContent = '0';
+                    return;
+                }
+
+                let totalValue = 0;
+                let totalItems = 0;
+
+                container.innerHTML = this.selectedPackageItems.map(pkgItem => {
+                    const item = this.getItemById(pkgItem.id);
+                    if (!item) return '';
+
+                    totalItems += pkgItem.quantity;
+                    totalValue += (item.value || 0) * pkgItem.quantity;
+
+                    return `
+                        <div class="selected-item">
+                            <div class="info">
+                                <div class="name">${item.name}</div>
+                                <div class="item-id">${item.id}</div>
+                            </div>
+                            <div class="controls">
+                                <input type="number" 
+                                       value="${pkgItem.quantity}" 
+                                       min="1"
+                                       onchange="app.updateItemQuantity('${pkgItem.id}', this.value)">
+                                <button class="danger" onclick="app.removeItemFromPackage('${pkgItem.id}')">×</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('total-items').textContent = totalItems;
+                document.getElementById('total-value').textContent = totalValue;
+            },
+
+            savePackage() {
+                const id = document.getElementById('pkg-id').value.trim();
+                const name = document.getElementById('pkg-name').value.trim();
+                const description = document.getElementById('pkg-description').value.trim();
+                const icon = document.getElementById('pkg-icon').value.trim();
+                const showInChargen = document.getElementById('pkg-show-chargen').checked;
+                const caps = parseInt(document.getElementById('pkg-caps').value) || 0;
+
+                if (!id || !name) {
+                    this.showMessage('ID and Name are required', 'error');
+                    return;
+                }
+
+                const pkg = {
+                    id,
+                    name,
+                    description,
+                    icon,
+                    showInChargen,
+                    items: this.selectedPackageItems,
+                    caps
+                };
+
+                if (this.currentPackageIndex === -1) {
+                    // Check for duplicate ID
+                    if (this.packages.find(p => p.id === id)) {
+                        this.showMessage('Package with this ID already exists', 'error');
+                        return;
+                    }
+                    this.packages.push(pkg);
+                    this.showMessage('Package created successfully', 'success');
+                } else {
+                    // Check for duplicate ID (excluding current package)
+                    if (this.packages.some((p, i) => p.id === id && i !== this.currentPackageIndex)) {
+                        this.showMessage('Package with this ID already exists', 'error');
+                        return;
+                    }
+                    this.packages[this.currentPackageIndex] = pkg;
+                    this.showMessage('Package updated successfully', 'success');
+                }
+
+                this.renderPackages();
+                this.cancelEdit();
+            },
+
+            deletePackage() {
+                if (this.currentPackageIndex === -1) return;
+
+                if (!confirm(`Delete package "${this.currentPackage.name}"?`)) return;
+
+                this.packages.splice(this.currentPackageIndex, 1);
+                this.showMessage('Package deleted', 'success');
+                this.renderPackages();
+                this.cancelEdit();
+            },
+
+            exportPackages() {
+                const data = { packages: this.packages };
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `packages_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+                this.showMessage('Packages exported successfully', 'success');
+            },
+
+            importPackages() {
+                document.getElementById('file-input').click();
+            },
+
+            async handleFileImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                try {
+                    const text = await file.text();
+                    const imported = JSON.parse(text);
+
+                    if (!confirm('This will replace all current packages. Continue?')) {
+                        return;
+                    }
+
+                    this.packages = imported.packages || [];
+                    this.renderPackages();
+                    this.showMessage('Packages imported successfully', 'success');
+                } catch (error) {
+                    this.showMessage('Error importing packages: ' + error.message, 'error');
+                }
+
+                event.target.value = '';
+            },
+
+            showMessage(text, type = 'success') {
+                const message = document.getElementById('message');
+                message.textContent = text;
+                message.className = `message ${type} active`;
+                setTimeout(() => {
+                    message.classList.remove('active');
+                }, 3000);
+            }
+        };
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+    </script>
+</body>
+</html>

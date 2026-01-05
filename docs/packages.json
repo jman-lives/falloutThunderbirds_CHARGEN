@@ -7,13 +7,34 @@
       "icon": "🛡️",
       "showInChargen": true,
       "items": [
-        { "id": "armor_leather", "quantity": 1 },
-        { "id": "weap_10mm_pistol", "quantity": 1 },
-        { "id": "weap_knife", "quantity": 1 },
-        { "id": "ammo_10mm", "quantity": 50 },
-        { "id": "chem_stimpak", "quantity": 3 },
-        { "id": "chem_radaway", "quantity": 2 },
-        { "id": "equip_water_canteen", "quantity": 1 }
+        {
+          "id": "armor_leather",
+          "quantity": 1
+        },
+        {
+          "id": "weap_10mm_pistol",
+          "quantity": 1
+        },
+        {
+          "id": "weap_knife",
+          "quantity": 1
+        },
+        {
+          "id": "ammo_10mm",
+          "quantity": 50
+        },
+        {
+          "id": "chem_stimpak",
+          "quantity": 3
+        },
+        {
+          "id": "chem_radaway",
+          "quantity": 2
+        },
+        {
+          "id": "equip_water_canteen",
+          "quantity": 1
+        }
       ],
       "caps": 150
     },
@@ -24,14 +45,38 @@
       "icon": "⚔️",
       "showInChargen": false,
       "items": [
-        { "id": "armor_combat", "quantity": 1 },
-        { "id": "weap_assault_rifle", "quantity": 1 },
-        { "id": "weap_combat_knife", "quantity": 1 },
-        { "id": "weap_frag_grenade", "quantity": 2 },
-        { "id": "ammo_762", "quantity": 120 },
-        { "id": "chem_stimpak", "quantity": 5 },
-        { "id": "chem_radaway", "quantity": 3 },
-        { "id": "equip_doctors_bag", "quantity": 1 }
+        {
+          "id": "armor_combat",
+          "quantity": 1
+        },
+        {
+          "id": "weap_ak112",
+          "quantity": 1
+        },
+        {
+          "id": "weap_combat_knife",
+          "quantity": 1
+        },
+        {
+          "id": "weap_frag_grenade",
+          "quantity": 2
+        },
+        {
+          "id": "ammo_762",
+          "quantity": 120
+        },
+        {
+          "id": "chem_stimpak",
+          "quantity": 5
+        },
+        {
+          "id": "chem_radaway",
+          "quantity": 3
+        },
+        {
+          "id": "equip_doctors_bag",
+          "quantity": 1
+        }
       ],
       "caps": 200
     },
@@ -42,19 +87,208 @@
       "icon": "🎒",
       "showInChargen": true,
       "items": [
-        { "id": "armor_leather_jacket", "quantity": 1 },
-        { "id": "weap_44_revolver", "quantity": 1 },
-        { "id": "weap_hunting_rifle", "quantity": 1 },
-        { "id": "weap_crowbar", "quantity": 1 },
-        { "id": "ammo_44", "quantity": 30 },
-        { "id": "ammo_762", "quantity": 40 },
-        { "id": "chem_stimpak", "quantity": 4 },
-        { "id": "chem_radaway", "quantity": 2 },
-        { "id": "equip_lockpick_set", "quantity": 1 },
-        { "id": "equip_repair_kit", "quantity": 1 },
-        { "id": "equip_flashlight", "quantity": 1 }
+        {
+          "id": "armor_leather_jacket",
+          "quantity": 1
+        },
+        {
+          "id": "weap_44_revolver",
+          "quantity": 1
+        },
+        {
+          "id": "weap_hunting_rifle",
+          "quantity": 1
+        },
+        {
+          "id": "weap_crowbar",
+          "quantity": 1
+        },
+        {
+          "id": "ammo_44",
+          "quantity": 30
+        },
+        {
+          "id": "ammo_762",
+          "quantity": 40
+        },
+        {
+          "id": "chem_stimpak",
+          "quantity": 4
+        },
+        {
+          "id": "chem_radaway",
+          "quantity": 2
+        },
+        {
+          "id": "equip_lockpick_set",
+          "quantity": 1
+        },
+        {
+          "id": "equip_repair_kit",
+          "quantity": 1
+        },
+        {
+          "id": "equip_flashlight",
+          "quantity": 1
+        }
       ],
       "caps": 250
+    },
+    {
+      "id": "vault_dweller",
+      "name": "Vault Dweller Package",
+      "description": "You take a sip from your trusty Vault canteen.",
+      "icon": "⚙️",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "ammo_10mm",
+          "quantity": 40
+        },
+        {
+          "id": "equip_boots",
+          "quantity": 1
+        },
+        {
+          "id": "equip_rope",
+          "quantity": 1
+        },
+        {
+          "id": "equip_flare",
+          "quantity": 3
+        },
+        {
+          "id": "weap_10mm_pistol",
+          "quantity": 1
+        },
+        {
+          "id": "chem_stimpak",
+          "quantity": 4
+        },
+        {
+          "id": "chem_antidote",
+          "quantity": 1
+        },
+        {
+          "id": "weap_knife",
+          "quantity": 1
+        },
+        {
+          "id": "armor_vault_suit",
+          "quantity": 1
+        }
+      ],
+      "caps": 295
+    },
+    {
+      "id": "tribal",
+      "name": "Tribal Package",
+      "description": "The Great Spirit Watches Over Us",
+      "icon": "🪶",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "equip_rope",
+          "quantity": 1
+        },
+        {
+          "id": "chem_healing_powder",
+          "quantity": 7
+        },
+        {
+          "id": "chem_voodoo",
+          "quantity": 1
+        },
+        {
+          "id": "weap_rock",
+          "quantity": 1
+        },
+        {
+          "id": "weap_war_club",
+          "quantity": 1
+        },
+        {
+          "id": "weap_spear",
+          "quantity": 3
+        },
+        {
+          "id": "armor_tribal_warrior",
+          "quantity": 1
+        }
+      ],
+      "caps": 330
+    },
+    {
+      "id": "raider",
+      "name": "Raider Package",
+      "description": "",
+      "icon": "💀",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "armor_vandal",
+          "quantity": 1
+        },
+        {
+          "id": "chem_jet",
+          "quantity": 5
+        },
+        {
+          "id": "chem_stimpak",
+          "quantity": 1
+        },
+        {
+          "id": "chem_buffout",
+          "quantity": 1
+        },
+        {
+          "id": "weap_knife",
+          "quantity": 1
+        },
+        {
+          "id": "ammo_9mm",
+          "quantity": 40
+        },
+        {
+          "id": "weap_9mm_pistol",
+          "quantity": 1
+        }
+      ],
+      "caps": 135
+    },
+    {
+      "id": "caravan",
+      "name": "Caravan Guard Package",
+      "description": "Damn Brahmin crap everywhere",
+      "icon": "🐂",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "weap_lever_action_shotgun",
+          "quantity": 1
+        },
+        {
+          "id": "armor_leather",
+          "quantity": 1
+        },
+        {
+          "id": "equip_lighter",
+          "quantity": 1
+        },
+        {
+          "id": "weap_crowbar",
+          "quantity": 1
+        },
+        {
+          "id": "ammo_12gauge_shot",
+          "quantity": 25
+        },
+        {
+          "id": "equip_shovel",
+          "quantity": 1
+        }
+      ],
+      "caps": 315
     }
   ]
 }
