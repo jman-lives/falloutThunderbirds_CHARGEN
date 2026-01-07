@@ -405,15 +405,8 @@
         packageName: pkg.name
       };
 
-      // Initialize money field if it doesn't exist
-      if (character.money === undefined) {
-        character.money = 80000; // Default starting credits
-      }
-
-      // Add credits from package to character's money
-      if (pkg.credits) {
-        character.money += pkg.credits;
-      }
+      // Set money to only what the package provides (packages don't give store credit)
+      character.money = pkg.credits || 0;
 
       // Set equipment on character
       character.equipment = equipment;

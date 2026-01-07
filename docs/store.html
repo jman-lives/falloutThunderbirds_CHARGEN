@@ -764,7 +764,7 @@
         // Load config
         const configRes = await fetch('prod-config.json');
         const config = await configRes.json();
-        storeData.budget = config.storeCredit || 80000;
+        storeData.budget = config.storeCredit || 1700;
         console.log('%c[STORE BUDGET LOADED: ' + storeData.budget + ']', 'color: #ffd700;');
         updateBudgetDisplay();
 
