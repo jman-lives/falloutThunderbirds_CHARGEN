@@ -314,45 +314,6 @@
       }
     },
     {
-      "id": "ammo_dynamite",
-      "name": "Dynamite",
-      "category": "ammunition",
-      "type": "explosive",
-      "value": 50,
-      "weight": 2,
-      "description": "Timed explosive.",
-      "flavor": "You're A Nobel Laureate too?",
-      "tags": [
-        "ammo",
-        "explosive",
-        "thrown"
-      ],
-      "stats": {
-        "damage": "3d10",
-        "radius": "2 hexes"
-      }
-    },
-    {
-      "id": "ammo_plastic_explosives",
-      "name": "Plastic Explosives",
-      "category": "ammunition",
-      "type": "explosive",
-      "value": 300,
-      "weight": 2,
-      "description": "C-14 is an improved version of the classic C-4 plastic explosive. A gummy-like substance that can be rigged to detonate, plastique is useful because it can be molded to any shape.",
-      "flavor": "The Last Playdough You'll Ever Use",
-      "tags": [
-        "ammo",
-        "explosive",
-        "throwable"
-      ],
-      "IsInChargenStore": true,
-      "stats": {
-        "damage": "5d10",
-        "radius": "2 hexes"
-      }
-    },
-    {
       "id": "ammo_flechette_needle",
       "name": "Flechette Needle",
       "category": "ammunition",
@@ -1103,8 +1064,9 @@
       "type": "pistol",
       "value": 25,
       "weight": 3,
+      "ammotype": "ammo_9mm",
       "description": "Crude improvised firearm.",
-      "flavor": "Aim the barrel and pray",
+      "flavor": "Aim The Barrel And Pray",
       "tags": [
         "weapon",
         "gun",
@@ -1128,6 +1090,7 @@
       "type": "pistol",
       "value": 60,
       "weight": 2,
+      "ammotype": "ammo_22lr",
       "description": "Small concealable double-shot pistol.",
       "flavor": "Hold your cards close",
       "tags": [
@@ -1153,6 +1116,7 @@
       "type": "pistol",
       "value": 100,
       "weight": 2,
+      "ammotype": "ammo_22lr",
       "description": "Light recoil, low damage.",
       "flavor": "Pest Control",
       "tags": [
@@ -1177,8 +1141,9 @@
       "type": "pistol",
       "value": 200,
       "weight": 3,
+      "ammotype": "ammo_9mm",
       "description": "Common semiautomatic sidearm.",
-      "flavor": "How do you solve a problem like Maria?",
+      "flavor": "How Do You Solve A Problem Like Maria?",
       "tags": [
         "weapon",
         "gun",
@@ -1201,6 +1166,7 @@
       "type": "pistol",
       "value": 300,
       "weight": 4,
+      "ammotype": "ammo_10mm",
       "description": "High stopping power.",
       "flavor": "Party like it's 1997",
       "tags": [
@@ -1225,6 +1191,7 @@
       "type": "pistol",
       "value": 300,
       "weight": 4,
+      "ammotype": "ammo_45acp",
       "description": "High stopping power.",
       "flavor": "Two World Wars!",
       "tags": [
@@ -1250,6 +1217,7 @@
       "type": "pistol",
       "value": 350,
       "weight": 4,
+      "ammotype": "ammo_357",
       "description": "Strong penetration; slower reload.",
       "flavor": "Pick up a wheel gun!",
       "tags": [
@@ -1275,6 +1243,7 @@
       "type": "pistol",
       "value": 500,
       "weight": 5,
+      "ammotype": "ammo_44",
       "description": "Powerful high-recoil handgun.",
       "flavor": "Do you feel lucky, punk?",
       "tags": [
@@ -1300,6 +1269,7 @@
       "type": "pistol",
       "value": 1200,
       "weight": 6,
+      "ammotype": "ammo_14mm",
       "description": "Extremely powerful semiautomatic pistol.",
       "flavor": "Still safer than the P320",
       "tags": [
@@ -1326,6 +1296,7 @@
       "type": "pistol",
       "value": 1500,
       "weight": 7,
+      "ammotype": "ammo_223",
       "description": "Cut-down rifle action; very high penetration.",
       "flavor": "Wake up. Time to die!",
       "tags": [
@@ -1352,6 +1323,7 @@
       "type": "pistol",
       "value": 2000,
       "weight": 4,
+      "ammotype": "ammo_toxin_needle",
       "description": "Fires darts; specialized toxin rounds available.",
       "flavor": "Did you clean those syringes?",
       "tags": [
@@ -1377,6 +1349,7 @@
       "type": "pistol",
       "value": 5000,
       "weight": 2,
+      "ammotype": "ammo_small_energy_cell",
       "description": "Extremely rare, high-damage energy pistol.",
       "flavor": "I want to believe",
       "tags": [
@@ -1404,6 +1377,7 @@
       "type": "pistol",
       "value": 700,
       "weight": 2,
+      "ammotype": "ammo_small_energy_cell",
       "description": "Wattz 2000 Laser Pistol. Packs a hot punch.",
       "flavor": "Easy There Buck Rogers",
       "tags": [
@@ -1420,7 +1394,6 @@
         "ap": "S 5 / T 6",
         "range": 15,
         "capacity": "30",
-        "ammoType": "ammo_small_energy_cell",
         "skill": "Energy Weapons"
       }
     },
@@ -1663,6 +1636,7 @@
       "type": "rifle",
       "value": 50,
       "weight": 6,
+      "ammotype": "ammo_10mm",
       "description": "Crude single-shot rifle.",
       "flavor": "Perfect For Shooting Womp Rats At Toshi Station",
       "tags": [
@@ -1688,6 +1662,7 @@
       "type": "rifle",
       "value": 350,
       "weight": 8,
+      "ammotype": "ammo_762",
       "description": "Standard bolt-action hunting rifle.",
       "flavor": "Not fast. Not flashy. Not forgiving.",
       "tags": [
@@ -1712,6 +1687,7 @@
       "type": "rifle",
       "value": 650,
       "weight": 10,
+      "ammotype": "ammo_223",
       "description": "Standard military rifle in semiautomatic mode.",
       "flavor": "It Has A Carrying Handle!",
       "tags": [
@@ -1737,6 +1713,7 @@
       "type": "rifle",
       "value": 1800,
       "weight": 12,
+      "ammotype": "ammo_762",
       "description": "Precision long-range rifle; ideal for targeted shots.",
       "flavor": "Psalm 144",
       "tags": [
@@ -1763,6 +1740,7 @@
       "type": "rifle",
       "value": 3000,
       "weight": 20,
+      "ammotype": "ammo_50bmg",
       "description": "Heavy rifle capable of piercing armor; high recoil.",
       "flavor": "Isn't This A Little Overkill?",
       "tags": [
@@ -1789,6 +1767,7 @@
       "type": "rifle",
       "value": 6000,
       "weight": 12,
+      "ammotype": "ammo_gauss_round",
       "description": "Electromagnetic rifle with exceptional penetration.",
       "flavor": "Fucking Magnets",
       "tags": [
@@ -1816,8 +1795,9 @@
       "type": "shotgun",
       "value": 75,
       "weight": 6,
+      "ammotype": "ammo_12gauge_shot",
       "description": "Crude single-shot scattergun.",
-      "flavor": "Lets hunt some geckos",
+      "flavor": "Let's Hunt Some Geckos",
       "tags": [
         "weapon",
         "gun",
@@ -1842,8 +1822,9 @@
       "type": "shotgun",
       "value": 175,
       "weight": 7,
+      "ammotype": "ammo_12gauge_shot",
       "description": "Extremely short-range double-barrel shotgun.",
-      "flavor": "Get off my lawn!",
+      "flavor": "Get Off My Lawn!",
       "tags": [
         "weapon",
         "gun",
@@ -1868,6 +1849,7 @@
       "type": "shotgun",
       "value": 350,
       "weight": 9,
+      "ammotype": "ammo_12gauge_shot",
       "description": "Accurate hunting shotgun.",
       "flavor": "This is my boomstick!",
       "tags": [
@@ -1894,8 +1876,9 @@
       "type": "shotgun",
       "value": 550,
       "weight": 8,
+      "ammotype": "ammo_12gauge_shot",
       "description": "Faster cycling than break-action.",
-      "flavor": "I'll be back",
+      "flavor": "I'll Be Back",
       "tags": [
         "weapon",
         "gun",
@@ -1920,8 +1903,9 @@
       "type": "shotgun",
       "value": 450,
       "weight": 8,
+      "ammotype": "ammo_12gauge_shot",
       "description": "Semiautomatic combat shotgun.",
-      "flavor": "They're coming out of the walls!",
+      "flavor": "They're Coming Out Of The Walls!",
       "tags": [
         "weapon",
         "gun",
@@ -1947,8 +1931,9 @@
       "type": "shotgun",
       "value": 700,
       "weight": 10,
+      "ammotype": "ammo_12gauge_shot",
       "description": "High-capacity automatic shotgun.",
-      "flavor": "Sweep the streets!",
+      "flavor": "Sweep The Streets!",
       "tags": [
         "weapon",
         "gun",
@@ -2002,6 +1987,7 @@
       "type": "smg",
       "value": 150,
       "weight": 6,
+      "ammotype": "ammo_9mm",
       "description": "Improvised automatic firearm.",
       "flavor": "You're Taking THAT?",
       "tags": [
@@ -2029,6 +2015,7 @@
       "type": "smg",
       "value": 300,
       "weight": 6,
+      "ammotype": "ammo_9mm",
       "description": "Common lightweight SMG.",
       "flavor": "Greased Lightning!",
       "tags": [
@@ -2055,6 +2042,7 @@
       "type": "smg",
       "value": 500,
       "weight": 7,
+      "ammotype": "ammo_10mm",
       "description": "Strong stopping power with notable recoil.",
       "flavor": "An Old Friend",
       "tags": [
@@ -2081,6 +2069,7 @@
       "type": "smg",
       "value": 650,
       "weight": 11,
+      "ammotype": "ammo_45acp",
       "description": "Heavy full-auto SMG with high magazine capacity.",
       "flavor": "An Offer You Can't Refuse",
       "tags": [
@@ -2107,6 +2096,7 @@
       "type": "smg",
       "value": 1200,
       "weight": 6,
+      "ammotype": "ammo_9mm",
       "description": "Compact SMG with strong armor penetration.",
       "flavor": "Germany Knows A Thing Or Two About Putting Guns In Tanks",
       "tags": [
@@ -2134,6 +2124,7 @@
       "type": "smg",
       "value": 1500,
       "weight": 6,
+      "ammotype": "ammo_9mm",
       "description": "High-tech SMG with improved ballistics.",
       "flavor": "Give It a Slap",
       "tags": [
@@ -2161,6 +2152,7 @@
       "type": "smg",
       "value": 4000,
       "weight": 8,
+      "ammotype": "ammo_gauss_round",
       "description": "Electromagnetic SMG with extreme penetration.",
       "flavor": "Newton's Gravedigger",
       "tags": [
@@ -2190,6 +2182,7 @@
       "type": "assault_rifle",
       "value": 900,
       "weight": 10,
+      "ammotype": "ammo_223",
       "description": "Rugged Kalashnikov-pattern rifle.",
       "flavor": "Right Arm Of The People",
       "tags": [
@@ -2217,6 +2210,7 @@
       "type": "assault_rifle",
       "value": 1200,
       "weight": 11,
+      "ammotype": "ammo_223",
       "description": "Pre-war US military rifle.",
       "flavor": "Right Arm Of The Free World",
       "tags": [
@@ -2300,6 +2294,7 @@
       "type": "assault_rifle",
       "value": 1800,
       "weight": 13,
+      "ammotype": "ammo_762",
       "description": "Powerful long-range battle rifle.",
       "flavor": "Belgian Wafflemaker",
       "tags": [
@@ -2328,6 +2323,7 @@
       "type": "assault_rifle",
       "value": 3500,
       "weight": 9,
+      "ammotype": "ammo_762",
       "description": "Advanced modular bullpup rifle with high accuracy.",
       "flavor": "Where Do You Even Get Parts For That?",
       "tags": [
@@ -2357,6 +2353,7 @@
       "type": "machine_gun",
       "value": 1500,
       "weight": 20,
+      "ammotype": "ammo_223",
       "description": "Squad-level light machine gun with strong sustained fire.",
       "flavor": "MOA: Point. Kill.",
       "tags": [
@@ -2385,6 +2382,7 @@
       "type": "machine_gun",
       "value": 2200,
       "weight": 23,
+      "ammotype": "ammo_762",
       "description": "Pre-war military GPMG with high reliability.",
       "flavor": "Anyone that runs is a Raider. Anyone that stands still is a well disciplined Raider.",
       "tags": [
@@ -2413,6 +2411,7 @@
       "type": "machine_gun",
       "value": 5000,
       "weight": 28,
+      "ammotype": "ammo_762",
       "description": "Unique precision machine gun with exceptional accuracy.",
       "flavor": "Something's Off About This Fire Rate...",
       "tags": [
@@ -2521,6 +2520,64 @@
         "skill": "Guns"
       },
       "requirements": "STR 10"
+    },
+    {
+      "id": "weap_dynamite",
+      "name": "Dynamite",
+      "category": "weapons",
+      "type": "explosive",
+      "value": 50,
+      "weight": 2,
+      "description": "Timed explosive.",
+      "flavor": "You're A Nobel Laureate too?",
+      "tags": [
+        "ammo",
+        "explosive",
+        "thrown"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "3d10",
+        "radius": "2 hexes"
+      }
+    },
+    {
+      "id": "weap_plastic_explosives",
+      "name": "Plastic Explosives",
+      "category": "weapons",
+      "type": "explosive",
+      "value": 300,
+      "weight": 2,
+      "description": "C-14 is an improved version of the classic C-4 plastic explosive. A gummy-like substance that can be rigged to detonate, plastique is useful because it can be molded to any shape.",
+      "flavor": "The Last Playdough You'll Ever Use",
+      "tags": [
+        "ammo",
+        "explosive",
+        "throwable"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "5d10",
+        "radius": "2 hexes"
+      }
+    },
+    {
+      "id": "weap_powder_charge",
+      "name": "Dynamite",
+      "category": "weapons",
+      "type": "explosive",
+      "value": 275,
+      "weight": 5,
+      "description": "An explosive device consisting of several sticks of dynamite, a detonator, and a timer to set it off. Setting dynamite takes a successful roll against the Explosives skill, while disarming uses the Traps skill. Dynamite does 1d20+30 points of damage to anything in its hex and all adjacent hexes when it goes off, and 1d6 points of concussion damage to anything within 4 hexes of the explosion.",
+      "flavor": "A Nobel Prize",
+      "tags": [
+        "equipment",
+        "explosive"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "1d20+30 (primary) + 1d6 concussion (4 hex radius)"
+      }
     }
   ],
   "armor": [
@@ -3786,21 +3843,22 @@
       ]
     },
     {
-      "id": "equip_lockpick",
+      "id": "equip_bobbypin",
       "name": "Bobby Pin",
       "category": "equipment",
       "type": "tool",
-      "value": 40,
+      "value": 5,
       "weight": 1,
-      "description": "Gives the user a +50% bonus to Lockpick ability for the purposes of picking basic locks. Some locks require one of these (or a key) to open.",
+      "description": "Gives the user a +15% bonus to Lockpick ability for the purposes of picking basic locks. Some locks require one of these (or a key) to open.",
       "flavor": "Perfect For Your Girlfriend And Her Box",
       "tags": [
         "equipment",
         "tool",
         "lockpick"
       ],
+      "IsInChargenStore": true,
       "bonuses": {
-        "lockpick": 50
+        "lockpick": 15
       }
     },
     {
@@ -3876,7 +3934,7 @@
       "type": "tool",
       "value": 150,
       "weight": 1,
-      "description": "This little kit contains everything the aspiring thief needs to break into just about anything protected by a traditional lock. Gives a +70% bonus to the Lockpicking skill when used.",
+      "description": "This little kit contains everything the aspiring thief needs to break into just about anything protected by a traditional lock. Gives a +50% bonus to the Lockpicking skill when used.",
       "flavor": "Under Litigation From MasterLock",
       "tags": [
         "equipment",
@@ -3885,7 +3943,7 @@
       ],
       "IsInChargenStore": false,
       "bonuses": {
-        "lockpick": 70
+        "lockpick": 50
       }
     },
     {
@@ -3921,23 +3979,6 @@
         "lockpick",
         "electronic"
       ]
-    },
-    {
-      "id": "equip_dynamite_kit",
-      "name": "Dynamite",
-      "category": "equipment",
-      "type": "explosive",
-      "value": 275,
-      "weight": 5,
-      "description": "An explosive device consisting of several sticks of dynamite, a detonator, and a timer to set it off. Setting dynamite takes a successful roll against the Traps skill. Dynamite does 1d20+30 points of damage to anything in its hex and all adjacent hexes when it goes off, and 1d6 points of concussion damage to anything within 4 hexes of the explosion.",
-      "flavor": "A Nobel Prize",
-      "tags": [
-        "equipment",
-        "explosive"
-      ],
-      "stats": {
-        "damage": "1d20+30 (primary) + 1d6 concussion (4 hex radius)"
-      }
     },
     {
       "id": "equip_medical_kit",
@@ -4010,7 +4051,10 @@
         "electronic",
         "hacking"
       ],
-      "IsInChargenStore": false
+      "IsInChargenStore": false,
+      "bonuses": {
+        "science": 25
+      }
     },
     {
       "id": "equip_pipboy_3000",
@@ -4028,7 +4072,29 @@
         "computer",
         "science"
       ],
-      "IsInChargenStore": false
+      "IsInChargenStore": false,
+      "bonuses": {
+        "science": 15
+      }
+    },
+    {
+      "id": "equip_lockpick_set",
+      "name": "Lockpick Set",
+      "category": "equipment",
+      "type": "tool",
+      "value": 50,
+      "weight": 1,
+      "description": "Gives the user a +30% bonus to Lockpick ability for the purposes of picking basic locks. Some locks require one of these (or a key) to open.",
+      "flavor": "Tumblers Today",
+      "tags": [
+        "equipment",
+        "tool",
+        "lockpick"
+      ],
+      "IsInChargenStore": true,
+      "bonuses": {
+        "lockpick": 30
+      }
     }
   ],
   "chems": [

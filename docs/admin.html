@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fallout TTRPG - Database Admin</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        :root {
+            --bg: #0f1720;
+            --card: #0b1220;
+            --accent: #60a5fa;
+            --muted: #9aa6b2;
+            --text: #e6eef6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, ui-sans-serif, system-ui, Arial, Helvetica, sans-serif;
+            background: linear-gradient(180deg, #071026 0%, #08131a 100%);
+            color: var(--text);
+            padding: 24px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 24px;
+            border-radius: 10px;
+            box-shadow: 0 6px 24px rgba(2, 6, 23, 0.6);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent);
+            margin-bottom: 24px;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .controls select,
+        .controls input {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            font-family: Inter, ui-sans-serif, system-ui, Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .controls select:hover,
+        .controls input:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(96, 165, 250, 0.5);
+        }
+
+        .controls select {
+            min-width: 200px;
+            cursor: pointer;
+        }
+
+        .controls select option,
+        .form-group select option {
+            background: rgba(15, 23, 32, 0.98);
+            color: var(--text);
+            padding: 8px;
+        }
+
+        .controls input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: var(--accent);
+            color: #022;
+            border: none;
+            font-family: Inter, ui-sans-serif, system-ui, Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: #7ab8ff;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
+        }
+
+        button.danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        button.danger:hover {
+            background: #dc2626;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .stat-box:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        .stat-box .label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-box .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .item-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            border-radius: 8px;
+        }
+
+        .item-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(96, 165, 250, 0.5);
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .item-card.selected {
+            border-color: var(--accent);
+            background: rgba(96, 165, 250, 0.1);
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+        }
+
+        .item-card h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .item-card .item-id {
+            color: var(--muted);
+            font-size: 11px;
+            margin-bottom: 8px;
+            opacity: 0.7;
+        }
+
+        .item-card .item-detail {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .item-card .item-detail .label {
+            color: var(--muted);
+            display: inline-block;
+            min-width: 80px;
+        }
+
+        .editor {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            background: rgba(15, 23, 32, 0.98);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            border-radius: 12px;
+        }
+
+        .editor.active {
+            display: block;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .editor h2 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text);
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            font-family: Inter, ui-sans-serif, system-ui, Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            min-height: 50px;
+            border-radius: 6px;
+        }
+
+        .tag {
+            background: var(--accent);
+            color: #022;
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .tag-add {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: rgba(15, 23, 32, 0.98);
+            border: 1px solid var(--accent);
+            color: var(--text);
+            z-index: 2000;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
+            display: none;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            border-color: #34d399;
+            background: rgba(52, 211, 153, 0.1);
+        }
+
+        .message.error {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .message.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .json-view {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 15px;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow: auto;
+            font-size: 12px;
+            white-space: pre;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .search-highlight {
+            background-color: #fbbf24;
+            color: #022;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            align-items: center;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px;
+            color: var(--muted);
+            font-size: 18px;
+        }
+
+        .skill-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px 0;
+        }
+
+        .skill-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--muted);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .skill-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        .skill-btn.active {
+            background: var(--accent);
+            color: #022;
+            border-color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>FALLOUT TTRPG DATABASE ADMIN</h1>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="label">AMMUNITION</div>
+                <div class="value" id="stat-ammunition">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">WEAPONS</div>
+                <div class="value" id="stat-weapons">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">ARMOR</div>
+                <div class="value" id="stat-armor">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">EQUIPMENT</div>
+                <div class="value" id="stat-equipment">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">CHEMS</div>
+                <div class="value" id="stat-chems">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">TOTAL ITEMS</div>
+                <div class="value" id="stat-total">0</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <select id="category-select">
+                <option value="all">All Categories</option>
+                <option value="ammunition">Ammunition</option>
+                <option value="weapons">Weapons</option>
+                <option value="armor">Armor</option>
+                <option value="equipment">Equipment</option>
+                <option value="chems">Chems</option>
+            </select>
+            <input type="text" id="search-input" placeholder="Search by name, ID, or tag...">
+            <button onclick="app.addNewItem()">+ Add New Item</button>
+            <button onclick="app.exportDatabase()">Export Database</button>
+            <button onclick="app.importDatabase()">Import Database</button>
+        </div>
+
+        <div class="bulk-actions">
+            <button onclick="app.bulkDelete()">Bulk Delete Selected</button>
+            <button onclick="app.selectAll()">Select All</button>
+            <button onclick="app.deselectAll()">Deselect All</button>
+            <span style="margin-left: auto; color: #888;">Selected: <span id="selected-count">0</span></span>
+        </div>
+
+        <div class="items-grid" id="items-container">
+            <!-- Items will be dynamically loaded here -->
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="app.closeEditor()"></div>
+
+    <!-- Editor Modal -->
+    <div class="editor" id="editor">
+        <h2 id="editor-title">Edit Item</h2>
+        <form id="item-form">
+            <div class="form-group">
+                <label>ID *</label>
+                <input type="text" id="field-id" required>
+            </div>
+            <div class="form-group">
+                <label>Name *</label>
+                <input type="text" id="field-name" required>
+            </div>
+            <div class="form-group">
+                <label>Category *</label>
+                <select id="field-category" required>
+                    <option value="ammunition">Ammunition</option>
+                    <option value="weapons">Weapons</option>
+                    <option value="armor">Armor</option>
+                    <option value="equipment">Equipment</option>
+                    <option value="chems">Chems</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Type</label>
+                <input type="text" id="field-type">
+            </div>
+            <div class="form-group">
+                <label>Value</label>
+                <input type="number" id="field-value" min="0">
+            </div>
+            <div class="form-group">
+                <label>Weight</label>
+                <input type="number" id="field-weight" min="0" step="any">
+            </div>
+            <div class="form-group">
+                <label>Skill</label>
+                <div class="skill-buttons" id="skill-buttons">
+                    <button type="button" class="skill-btn" data-skill="" onclick="app.selectSkill('')">None</button>
+                    <button type="button" class="skill-btn" data-skill="Guns" onclick="app.selectSkill('Guns')">Guns</button>
+                    <button type="button" class="skill-btn" data-skill="Energy Weapons" onclick="app.selectSkill('Energy Weapons')">Energy Weapons</button>
+                    <button type="button" class="skill-btn" data-skill="Unarmed" onclick="app.selectSkill('Unarmed')">Unarmed</button>
+                    <button type="button" class="skill-btn" data-skill="Melee Weapons" onclick="app.selectSkill('Melee Weapons')">Melee Weapons</button>
+                    <button type="button" class="skill-btn" data-skill="Throwing" onclick="app.selectSkill('Throwing')">Throwing</button>
+                </div>
+                <input type="hidden" id="field-skill" value="">
+            </div>
+            <div class="form-group">
+                <label>Ammo Type</label>
+                <select id="field-ammotype">
+                    <option value="">None</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="field-description"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Flavor Text</label>
+                <textarea id="field-flavor" rows="2" placeholder="Optional flavor text or quote..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Show in Character Gen Store</label>
+                <div style="display: flex; gap: 20px; padding: 8px 0;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="radio" name="chargen-store" id="field-store-true" value="true" checked>
+                        <span>Yes</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="radio" name="chargen-store" id="field-store-false" value="false">
+                        <span>No</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Tags</label>
+                <div class="tags-input" id="tags-container"></div>
+                <div class="tag-add">
+                    <input type="text" id="tag-input" placeholder="Add tag...">
+                    <button type="button" onclick="app.addTag()">Add Tag</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Additional Properties (JSON)</label>
+                <textarea id="field-json" placeholder='{"stats": {}, "modifiers": {}, etc...}'></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="danger" onclick="app.deleteItem()">Delete</button>
+                <button type="button" onclick="app.duplicateItem()" style="background: #8b5cf6;">Duplicate</button>
+                <button type="button" onclick="app.closeEditor()">Cancel</button>
+                <button type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Message Toast -->
+    <div class="message" id="message"></div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="file-input" accept=".json" style="display: none;" onchange="app.handleFileImport(event)">
+
+    <script>
+        const app = {
+            database: null,
+            currentCategory: 'all',
+            searchTerm: '',
+            selectedItems: new Set(),
+            editingItem: null,
+            editingCategory: null,
+
+            async init() {
+                await this.loadDatabase();
+                this.setupEventListeners();
+                this.render();
+            },
+
+            async loadDatabase() {
+                try {
+                    const response = await fetch('database.json');
+                    this.database = await response.json();
+                    this.updateStats();
+                    this.showMessage('Database loaded successfully', 'success');
+                } catch (error) {
+                    this.showMessage('Error loading database: ' + error.message, 'error');
+                }
+            },
+
+            setupEventListeners() {
+                document.getElementById('category-select').addEventListener('change', (e) => {
+                    this.currentCategory = e.target.value;
+                    this.render();
+                });
+
+                document.getElementById('search-input').addEventListener('input', (e) => {
+                    this.searchTerm = e.target.value.toLowerCase();
+                    this.render();
+                });
+
+                document.getElementById('item-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveItem();
+                });
+
+                document.getElementById('tag-input').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.addTag();
+                    }
+                });
+            },
+
+            updateStats() {
+                if (!this.database) return;
+
+                const counts = {
+                    ammunition: this.database.ammunition?.length || 0,
+                    weapons: this.database.weapons?.length || 0,
+                    armor: this.database.armor?.length || 0,
+                    equipment: this.database.equipment?.length || 0,
+                    chems: this.database.chems?.length || 0
+                };
+
+                counts.total = Object.values(counts).reduce((a, b) => a + b, 0);
+
+                Object.entries(counts).forEach(([key, value]) => {
+                    const el = document.getElementById(`stat-${key}`);
+                    if (el) el.textContent = value;
+                });
+            },
+
+            getItems() {
+                if (!this.database) return [];
+
+                let items = [];
+                const categories = this.currentCategory === 'all' 
+                    ? ['ammunition', 'weapons', 'armor', 'equipment', 'chems']
+                    : [this.currentCategory];
+
+                categories.forEach(category => {
+                    if (this.database[category]) {
+                        items.push(...this.database[category].map(item => ({
+                            ...item,
+                            _category: category
+                        })));
+                    }
+                });
+
+                // Apply search filter
+                if (this.searchTerm) {
+                    items = items.filter(item => {
+                        const searchStr = JSON.stringify(item).toLowerCase();
+                        return searchStr.includes(this.searchTerm);
+                    });
+                }
+
+                return items;
+            },
+
+            render() {
+                const container = document.getElementById('items-container');
+                const items = this.getItems();
+
+                if (items.length === 0) {
+                    container.innerHTML = '<div class="no-results">No items found</div>';
+                    return;
+                }
+
+                container.innerHTML = items.map(item => {
+                    const isSelected = this.selectedItems.has(`${item._category}_${item.id}`);
+                    return `
+                        <div class="item-card ${isSelected ? 'selected' : ''}" 
+                             onclick="app.selectItem(event, '${item._category}', '${item.id}')"
+                             ondblclick="app.editItem('${item._category}', '${item.id}')">
+                            <div class="item-id">${item.id}</div>
+                            <h3>${item.name}</h3>
+                            <div class="item-detail">
+                                <span class="label">Category:</span>
+                                ${item._category}
+                            </div>
+                            ${item.type ? `
+                                <div class="item-detail">
+                                    <span class="label">Type:</span>
+                                    ${item.type}
+                                </div>
+                            ` : ''}
+                            ${item.value !== undefined ? `
+                                <div class="item-detail">
+                                    <span class="label">Value:</span>
+                                    ${item.value}
+                                </div>
+                            ` : ''}
+                            ${item.weight !== undefined ? `
+                                <div class="item-detail">
+                                    <span class="label">Weight:</span>
+                                    ${item.weight}
+                                </div>
+                            ` : ''}
+                            ${item.description ? `
+                                <div class="item-detail" style="margin-top: 10px; font-style: italic; color: #888;">
+                                    ${item.description}
+                                </div>
+                            ` : ''}
+                            ${item.flavor ? `
+                                <div class="item-detail" style="margin-top: 8px; font-style: italic; color: #fbbf24; font-size: 13px;">
+                                    "${item.flavor}"
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+
+                this.updateSelectedCount();
+            },
+
+            selectItem(event, category, id) {
+                if (event.shiftKey || event.ctrlKey) {
+                    event.stopPropagation();
+                    const key = `${category}_${id}`;
+                    if (this.selectedItems.has(key)) {
+                        this.selectedItems.delete(key);
+                    } else {
+                        this.selectedItems.add(key);
+                    }
+                    this.render();
+                }
+            },
+
+            selectAll() {
+                const items = this.getItems();
+                items.forEach(item => {
+                    this.selectedItems.add(`${item._category}_${item.id}`);
+                });
+                this.render();
+            },
+
+            deselectAll() {
+                this.selectedItems.clear();
+                this.render();
+            },
+
+            updateSelectedCount() {
+                document.getElementById('selected-count').textContent = this.selectedItems.size;
+            },
+
+            editItem(category, id) {
+                const item = this.database[category].find(i => i.id === id);
+                if (!item) return;
+
+                this.editingItem = JSON.parse(JSON.stringify(item));
+                this.editingCategory = category;
+
+                // Populate form
+                document.getElementById('field-id').value = item.id;
+                document.getElementById('field-name').value = item.name;
+                document.getElementById('field-category').value = category;
+                document.getElementById('field-type').value = item.type || '';
+                document.getElementById('field-value').value = item.value !== undefined ? item.value : '';
+                document.getElementById('field-weight').value = item.weight !== undefined ? item.weight : '';
+                this.setSkill(item.stats?.skill || '');
+                this.populateAmmoTypes();
+                document.getElementById('field-ammotype').value = item.ammotype || '';
+                document.getElementById('field-description').value = item.description || '';
+                document.getElementById('field-flavor').value = item.flavor || '';
+
+                // Handle IsInChargenStore
+                const storeValue = item.IsInChargenStore !== false; // Default to true
+                document.getElementById('field-store-true').checked = storeValue;
+                document.getElementById('field-store-false').checked = !storeValue;
+
+                // Handle tags
+                this.renderTags(item.tags || []);
+
+                // Handle additional properties
+                const excludeFields = ['id', 'name', 'category', 'type', 'value', 'weight', 'ammotype', 'description', 'flavor', 'tags', 'IsInChargenStore', '_category'];
+                const additionalProps = {};
+                
+                // Extract stats without skill (since skill has its own field)
+                if (item.stats) {
+                    const statsWithoutSkill = { ...item.stats };
+                    delete statsWithoutSkill.skill;
+                    if (Object.keys(statsWithoutSkill).length > 0) {
+                        additionalProps.stats = statsWithoutSkill;
+                    }
+                }
+                
+                // Add other properties (excluding stats since we handled it above)
+                Object.keys(item).forEach(key => {
+                    if (!excludeFields.includes(key) && key !== 'stats') {
+                        additionalProps[key] = item[key];
+                    }
+                });
+                document.getElementById('field-json').value = JSON.stringify(additionalProps, null, 2);
+
+                document.getElementById('editor-title').textContent = 'Edit Item';
+                this.showEditor();
+            },
+
+            addNewItem() {
+                this.editingItem = null;
+                this.editingCategory = this.currentCategory !== 'all' ? this.currentCategory : 'equipment';
+
+                // Reset form
+                document.getElementById('field-id').value = '';
+                document.getElementById('field-name').value = '';
+                document.getElementById('field-category').value = this.editingCategory;
+                document.getElementById('field-type').value = '';
+                document.getElementById('field-value').value = '';
+                document.getElementById('field-weight').value = '';
+                this.setSkill('');
+                this.populateAmmoTypes();
+                document.getElementById('field-ammotype').value = '';
+                document.getElementById('field-description').value = '';
+                document.getElementById('field-flavor').value = '';
+                document.getElementById('field-json').value = '';
+                
+                // Reset IsInChargenStore to true (default)
+                document.getElementById('field-store-true').checked = true;
+                document.getElementById('field-store-false').checked = false;
+                
+                this.renderTags([]);
+
+                document.getElementById('editor-title').textContent = 'Add New Item';
+                this.showEditor();
+            },
+
+            renderTags(tags) {
+                const container = document.getElementById('tags-container');
+                container.innerHTML = tags.map(tag => `
+                    <div class="tag">
+                        ${tag}
+                        <span class="remove" onclick="app.removeTag('${tag}')">×</span>
+                    </div>
+                `).join('');
+                container.dataset.tags = JSON.stringify(tags);
+            },
+
+            addTag() {
+                const input = document.getElementById('tag-input');
+                const tag = input.value.trim();
+                if (!tag) return;
+
+                const container = document.getElementById('tags-container');
+                const tags = JSON.parse(container.dataset.tags || '[]');
+                
+                if (!tags.includes(tag)) {
+                    tags.push(tag);
+                    this.renderTags(tags);
+                }
+                input.value = '';
+            },
+
+            removeTag(tag) {
+                const container = document.getElementById('tags-container');
+                const tags = JSON.parse(container.dataset.tags || '[]');
+                const filtered = tags.filter(t => t !== tag);
+                this.renderTags(filtered);
+            },
+
+            populateAmmoTypes() {
+                const select = document.getElementById('field-ammotype');
+                select.innerHTML = '<option value="">None</option>';
+                
+                if (this.database && this.database.ammunition) {
+                    this.database.ammunition.forEach(ammo => {
+                        const option = document.createElement('option');
+                        option.value = ammo.id;
+                        option.textContent = `${ammo.name} (${ammo.id})`;
+                        select.appendChild(option);
+                    });
+                }
+            },
+
+            selectSkill(skill) {
+                // Update hidden input
+                document.getElementById('field-skill').value = skill;
+                
+                // Update button states
+                const buttons = document.querySelectorAll('.skill-btn');
+                buttons.forEach(btn => {
+                    if (btn.dataset.skill === skill) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            },
+
+            setSkill(skill) {
+                document.getElementById('field-skill').value = skill;
+                const buttons = document.querySelectorAll('.skill-btn');
+                buttons.forEach(btn => {
+                    if (btn.dataset.skill === skill) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            },
+
+            saveItem() {
+                const id = document.getElementById('field-id').value.trim();
+                const name = document.getElementById('field-name').value.trim();
+                const category = document.getElementById('field-category').value;
+                const type = document.getElementById('field-type').value.trim();
+                const value = document.getElementById('field-value').value;
+                const weight = document.getElementById('field-weight').value;
+                const skill = document.getElementById('field-skill').value;
+                const ammotype = document.getElementById('field-ammotype').value;
+                const description = document.getElementById('field-description').value.trim();
+                const flavor = document.getElementById('field-flavor').value.trim();
+                const isInChargenStore = document.getElementById('field-store-true').checked;
+                const tagsContainer = document.getElementById('tags-container');
+                const tags = JSON.parse(tagsContainer.dataset.tags || '[]');
+                const jsonStr = document.getElementById('field-json').value.trim();
+
+                if (!id || !name) {
+                    this.showMessage('ID and Name are required', 'error');
+                    return;
+                }
+
+                // Build item object
+                const item = {
+                    id: id,
+                    name: name,
+                    category: category
+                };
+
+                if (type) item.type = type;
+                if (value !== '') item.value = parseFloat(value);
+                if (weight !== '') item.weight = parseFloat(weight);
+                if (ammotype) item.ammotype = ammotype;
+                if (description) item.description = description;
+                if (flavor) item.flavor = flavor;
+                if (tags.length > 0) item.tags = tags;
+                
+                // Always set IsInChargenStore (explicitly true or false)
+                item.IsInChargenStore = isInChargenStore;
+
+                // Merge additional JSON properties FIRST
+                if (jsonStr) {
+                    try {
+                        const additionalProps = JSON.parse(jsonStr);
+                        Object.assign(item, additionalProps);
+                    } catch (error) {
+                        this.showMessage('Invalid JSON in additional properties: ' + error.message, 'error');
+                        return;
+                    }
+                }
+                
+                // Handle skill - store in stats object (AFTER merging JSON so it takes priority)
+                if (skill) {
+                    if (!item.stats) item.stats = {};
+                    item.stats.skill = skill;
+                }
+
+                // Save to database
+                if (this.editingItem) {
+                    // Update existing item
+                    const index = this.database[this.editingCategory].findIndex(i => i.id === this.editingItem.id);
+                    if (index !== -1) {
+                        // Remove from old category if category changed
+                        if (this.editingCategory !== category) {
+                            this.database[this.editingCategory].splice(index, 1);
+                            this.database[category].push(item);
+                        } else {
+                            this.database[category][index] = item;
+                        }
+                    }
+                } else {
+                    // Add new item
+                    if (!this.database[category]) {
+                        this.database[category] = [];
+                    }
+                    // Check for duplicate ID
+                    if (this.database[category].find(i => i.id === id)) {
+                        this.showMessage('Item with this ID already exists', 'error');
+                        return;
+                    }
+                    this.database[category].push(item);
+                }
+
+                this.updateStats();
+                this.render();
+                this.closeEditor();
+                this.showMessage('Item saved successfully', 'success');
+            },
+
+            deleteItem() {
+                if (!this.editingItem) return;
+
+                if (!confirm(`Are you sure you want to delete "${this.editingItem.name}"?`)) {
+                    return;
+                }
+
+                const index = this.database[this.editingCategory].findIndex(i => i.id === this.editingItem.id);
+                if (index !== -1) {
+                    this.database[this.editingCategory].splice(index, 1);
+                    this.updateStats();
+                    this.render();
+                    this.closeEditor();
+                    this.showMessage('Item deleted successfully', 'success');
+                }
+            },
+
+            duplicateItem() {
+                if (!this.editingItem) {
+                    this.showMessage('Cannot duplicate a new item. Save it first.', 'error');
+                    return;
+                }
+
+                // Get current form values (in case user made changes)
+                const id = document.getElementById('field-id').value.trim();
+                const name = document.getElementById('field-name').value.trim();
+                const category = document.getElementById('field-category').value;
+                
+                if (!id || !name) {
+                    this.showMessage('ID and Name are required to duplicate', 'error');
+                    return;
+                }
+
+                // Create a copy of the current item with modified ID
+                let newId = id + '_copy';
+                let counter = 1;
+                
+                // Ensure unique ID
+                while (this.database[category].find(i => i.id === newId)) {
+                    counter++;
+                    newId = id + '_copy' + counter;
+                }
+
+                // Build the duplicate item by reading all current form values
+                const type = document.getElementById('field-type').value.trim();
+                const value = document.getElementById('field-value').value;
+                const weight = document.getElementById('field-weight').value;
+                const skill = document.getElementById('field-skill').value;
+                const description = document.getElementById('field-description').value.trim();
+                const flavor = document.getElementById('field-flavor').value.trim();
+                const isInChargenStore = document.getElementById('field-store-true').checked;
+                const tagsContainer = document.getElementById('tags-container');
+                const tags = JSON.parse(tagsContainer.dataset.tags || '[]');
+                const jsonStr = document.getElementById('field-json').value.trim();
+
+                const duplicateItem = {
+                    id: newId,
+                    name: name + ' (Copy)',
+                    category: category
+                };
+
+                if (type) duplicateItem.type = type;
+                if (value !== '') duplicateItem.value = parseFloat(value);
+                if (weight !== '') duplicateItem.weight = parseFloat(weight);
+                if (description) duplicateItem.description = description;
+                if (flavor) duplicateItem.flavor = flavor;
+                if (tags.length > 0) duplicateItem.tags = [...tags];
+                duplicateItem.IsInChargenStore = isInChargenStore;
+
+                // Merge additional JSON properties
+                if (jsonStr) {
+                    try {
+                        const additionalProps = JSON.parse(jsonStr);
+                        Object.assign(duplicateItem, JSON.parse(JSON.stringify(additionalProps)));
+                    } catch (error) {
+                        this.showMessage('Invalid JSON in additional properties: ' + error.message, 'error');
+                        return;
+                    }
+                }
+
+                // Handle skill
+                if (skill) {
+                    if (!duplicateItem.stats) duplicateItem.stats = {};
+                    duplicateItem.stats.skill = skill;
+                }
+
+                // Add to database
+                if (!this.database[category]) {
+                    this.database[category] = [];
+                }
+                this.database[category].push(duplicateItem);
+
+                this.updateStats();
+                this.render();
+                this.closeEditor();
+                this.showMessage(`Item duplicated as "${newId}"`, 'success');
+
+                // Open the duplicate for editing
+                setTimeout(() => {
+                    this.editItem(category, newId);
+                }, 100);
+            },
+
+            bulkDelete() {
+                if (this.selectedItems.size === 0) {
+                    this.showMessage('No items selected', 'error');
+                    return;
+                }
+
+                if (!confirm(`Are you sure you want to delete ${this.selectedItems.size} items?`)) {
+                    return;
+                }
+
+                this.selectedItems.forEach(key => {
+                    const [category, id] = key.split('_');
+                    const index = this.database[category].findIndex(i => i.id === id);
+                    if (index !== -1) {
+                        this.database[category].splice(index, 1);
+                    }
+                });
+
+                this.selectedItems.clear();
+                this.updateStats();
+                this.render();
+                this.showMessage('Items deleted successfully', 'success');
+            },
+
+            showEditor() {
+                document.getElementById('editor').classList.add('active');
+                document.getElementById('overlay').classList.add('active');
+            },
+
+            closeEditor() {
+                document.getElementById('editor').classList.remove('active');
+                document.getElementById('overlay').classList.remove('active');
+            },
+
+            showMessage(text, type = 'success') {
+                const message = document.getElementById('message');
+                message.textContent = text;
+                message.className = `message ${type} active`;
+                setTimeout(() => {
+                    message.classList.remove('active');
+                }, 3000);
+            },
+
+            exportDatabase() {
+                const dataStr = JSON.stringify(this.database, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `database_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+                this.showMessage('Database exported successfully', 'success');
+            },
+
+            importDatabase() {
+                document.getElementById('file-input').click();
+            },
+
+            async handleFileImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                try {
+                    const text = await file.text();
+                    const imported = JSON.parse(text);
+                    
+                    if (!confirm('This will replace the current database. Continue?')) {
+                        return;
+                    }
+
+                    this.database = imported;
+                    this.updateStats();
+                    this.render();
+                    this.showMessage('Database imported successfully', 'success');
+                } catch (error) {
+                    this.showMessage('Error importing database: ' + error.message, 'error');
+                }
+
+                // Reset file input
+                event.target.value = '';
+            }
+        };
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+    </script>
+</body>
+</html>
