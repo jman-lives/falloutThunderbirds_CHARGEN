@@ -500,8 +500,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Starting Caps</label>
-                        <input type="number" id="pkg-caps" min="0" placeholder="150">
+                        <label>Starting Credits</label>
+                        <input type="number" id="pkg-credits" min="0" placeholder="150">
                     </div>
 
                     <h3 style="color: var(--accent); margin: 20px 0 12px;">Package Items</h3>
@@ -665,7 +665,7 @@
                     icon: '📦',
                     showInChargen: true,
                     items: [],
-                    caps: 0
+                    credits: 0
                 };
                 this.currentPackageIndex = -1;
                 this.selectedPackageItems = [];
@@ -691,7 +691,7 @@
                 document.getElementById('pkg-description').value = this.currentPackage.description || '';
                 document.getElementById('pkg-icon').value = this.currentPackage.icon || '📦';
                 document.getElementById('pkg-show-chargen').checked = this.currentPackage.showInChargen !== false;
-                document.getElementById('pkg-caps').value = this.currentPackage.caps || 0;
+                document.getElementById('pkg-credits').value = this.currentPackage.credits || 0;
 
                 this.renderSelectedItems();
             },
@@ -794,7 +794,7 @@
                 const description = document.getElementById('pkg-description').value.trim();
                 const icon = document.getElementById('pkg-icon').value.trim();
                 const showInChargen = document.getElementById('pkg-show-chargen').checked;
-                const caps = parseInt(document.getElementById('pkg-caps').value) || 0;
+                const credits = parseInt(document.getElementById('pkg-credits').value) || 0;
 
                 if (!id || !name) {
                     this.showMessage('ID and Name are required', 'error');
@@ -808,7 +808,7 @@
                     icon,
                     showInChargen,
                     items: this.selectedPackageItems,
-                    caps
+                    credits
                 };
 
                 if (this.currentPackageIndex === -1) {

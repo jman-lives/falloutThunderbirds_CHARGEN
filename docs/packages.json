@@ -36,7 +36,7 @@
           "quantity": 1
         }
       ],
-      "caps": 150
+      "credits": 150
     },
     {
       "id": "soldier",
@@ -78,7 +78,7 @@
           "quantity": 1
         }
       ],
-      "caps": 200
+      "credits": 200
     },
     {
       "id": "scavenger",
@@ -132,7 +132,7 @@
           "quantity": 1
         }
       ],
-      "caps": 250
+      "credits": 250
     },
     {
       "id": "vault_dweller",
@@ -178,7 +178,7 @@
           "quantity": 1
         }
       ],
-      "caps": 295
+      "credits": 295
     },
     {
       "id": "tribal",
@@ -216,7 +216,7 @@
           "quantity": 1
         }
       ],
-      "caps": 330
+      "credits": 330
     },
     {
       "id": "raider",
@@ -254,7 +254,7 @@
           "quantity": 1
         }
       ],
-      "caps": 135
+      "credits": 135
     },
     {
       "id": "caravan",
@@ -288,7 +288,7 @@
           "quantity": 1
         }
       ],
-      "caps": 315
+      "credits": 315
     }
   ]
 }

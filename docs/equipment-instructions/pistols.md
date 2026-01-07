@@ -75,7 +75,7 @@ Ammo Type:
 AP: S 4 / T 5
 Range: 30
 Capacity: 12
-Flavor: PArty like it's 1997
+Flavor: Party like it's 1997
 Notes: High stopping power.
 ```
 ## M1911A1

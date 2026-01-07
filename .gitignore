@@ -64,11 +64,9 @@ test_gain_perks_comprehensive.html
 test_gain_perks.html
 test_retroactive_skills.html
 verify_retroactive.js
-docs/admin.html
 local.json
 config.local.json
 dev-config.json
-docs/package-builder.html
 docs/normalize_db.py
 
 # Documentation & Implementation notes (local reference)

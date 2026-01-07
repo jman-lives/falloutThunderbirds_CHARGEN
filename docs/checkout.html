@@ -487,7 +487,7 @@
       }
 
       const itemCount = Object.keys(checkoutData.cart).length;
-      if (!confirm(`Confirm purchase of ${itemCount} item type(s) for ${totalCost.toLocaleString()} caps?`)) {
+      if (!confirm(`Confirm purchase of ${itemCount} item type(s) for ${totalCost.toLocaleString()} credits?`)) {
         return;
       }
 
@@ -520,9 +520,9 @@
         // Add equipment to character
         character.equipment = equipment;
         
-        // Initialize money field if it doesn't exist (default: 80,000 caps)
+        // Initialize money field if it doesn't exist (default: use the budget)
         if (character.money === undefined) {
-          character.money = 0;
+          character.money = checkoutData.budget;
         }
         
         // Deduct equipment cost from character's money

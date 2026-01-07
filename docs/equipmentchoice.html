@@ -407,12 +407,12 @@
 
       // Initialize money field if it doesn't exist
       if (character.money === undefined) {
-        character.money = 80000; // Default starting caps
+        character.money = 80000; // Default starting credits
       }
 
-      // Add caps from package to character's money
-      if (pkg.caps) {
-        character.money += pkg.caps;
+      // Add credits from package to character's money
+      if (pkg.credits) {
+        character.money += pkg.credits;
       }
 
       // Set equipment on character

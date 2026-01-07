@@ -551,7 +551,7 @@
         costRow.className = 'stat-row';
         costRow.innerHTML = `
           <span class="stat-label">Total Value:</span>
-          <span class="stat-value">${characterData.equipment.totalCost.toLocaleString()} caps</span>
+          <span class="stat-value">${characterData.equipment.totalCost.toLocaleString()} credits</span>
         `;
         summaryDiv.appendChild(costRow);
         
@@ -563,15 +563,15 @@
         `;
         summaryDiv.appendChild(weightRow);
 
-        // Show caps if from package
+        // Show credits if from package
         if (characterData.money !== undefined) {
-          const capsRow = document.createElement('div');
-          capsRow.className = 'stat-row';
-          capsRow.innerHTML = `
-            <span class="stat-label">💰 Caps:</span>
+          const creditsRow = document.createElement('div');
+          creditsRow.className = 'stat-row';
+          creditsRow.innerHTML = `
+            <span class="stat-label">💰 Credits:</span>
             <span class="stat-value highlight">${characterData.money.toLocaleString()}</span>
           `;
-          summaryDiv.appendChild(capsRow);
+          summaryDiv.appendChild(creditsRow);
         }
         
         equipmentList.appendChild(summaryDiv);
