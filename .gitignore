@@ -65,6 +65,11 @@ test_gain_perks.html
 test_retroactive_skills.html
 verify_retroactive.js
 docs/admin.html
+local.json
+config.local.json
+dev-config.json
+docs/package-builder.html
+docs/normalize_db.py
 
 # Documentation & Implementation notes (local reference)
 ADVANCEMENT_GUIDE.md
@@ -93,6 +98,11 @@ RETROACTIVE_SKILL_RECALC_IMPLEMENTATION.md
 TAG_SKILL_TEST.md
 TEST_SUITE_VISUAL_GUIDE.md
 UNCONDITIONAL_PERKS_AUDIT.md
+CHARGEN_LEVEL_LIMIT_FIX.md
+LEVEL_UP_LOGIC_ANALYSIS.md
+LEVEL_UP_LOGIC_FIX_IMPLEMENTATION.md
+PERK_REMOVAL_FIX_INSTRUCTIONS.md
+ROOT_CAUSE_ANALYSIS.md
 
 # SSH Keys (NEVER commit private keys)
 *.pem
@@ -102,6 +112,4 @@ id_ed25519*
 !id_ed25519_github.pub
 
 # Misc local overrides
-local.json
-config.local.json
-dev-config.json
+
