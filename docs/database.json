@@ -19,9 +19,9 @@
         "ballistic",
         "pistol"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "1d6",
-        "armorMod": "+0"
+        "damage": "1d6"
       }
     },
     {
@@ -38,9 +38,9 @@
         "ballistic",
         "pistol"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "1d10",
-        "armorMod": "+0"
+        "damage": "1d10"
       }
     },
     {
@@ -154,14 +154,14 @@
         "ballistic",
         "rifle"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "2d8",
-        "armorMod": "-1 AP"
+        "damage": "1d6"
       }
     },
     {
       "id": "ammo_762",
-      "name": "7.62mm NATO",
+      "name": "7.62 NATO",
       "category": "ammunition",
       "type": "ballistic",
       "value": 10,
@@ -173,9 +173,9 @@
         "ballistic",
         "rifle"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "2d10",
-        "armorMod": "-2 AP"
+        "damage": "1d10"
       }
     },
     {
@@ -370,6 +370,44 @@
       "stats": {
         "damage": "2d10",
         "armorMod": "-4 AP"
+      }
+    },
+    {
+      "id": "ammo_556",
+      "name": "5.56 NATO",
+      "category": "ammunition",
+      "type": "ballistic",
+      "value": 9,
+      "weight": 0.1,
+      "description": "Accurate rifle round; used in rifles, carbines, and even light machine guns.",
+      "flavor": "Perfect For Deer And Larger Game",
+      "tags": [
+        "ammo",
+        "ballistic",
+        "rifle"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "1d8"
+      }
+    },
+    {
+      "id": "ammo_12gauge_beanbag",
+      "name": "12-Gauge Bean Bag",
+      "category": "ammunition",
+      "type": "shotgun",
+      "value": 4,
+      "weight": 0.2,
+      "description": "Solid projectile; good penetration.",
+      "flavor": "The Original Donkey Punch",
+      "tags": [
+        "ammo",
+        "shotgun",
+        "slug"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "1d4"
       }
     }
   ],
@@ -1217,7 +1255,10 @@
       "type": "pistol",
       "value": 350,
       "weight": 4,
-      "ammotype": "ammo_357",
+      "ammotype": [
+        "ammo_357",
+        "ammo_9mm"
+      ],
       "description": "Strong penetration; slower reload.",
       "flavor": "Pick up a wheel gun!",
       "tags": [
@@ -1687,7 +1728,10 @@
       "type": "rifle",
       "value": 650,
       "weight": 10,
-      "ammotype": "ammo_223",
+      "ammotype": [
+        "ammo_556",
+        "ammo_223"
+      ],
       "description": "Standard military rifle in semiautomatic mode.",
       "flavor": "It Has A Carrying Handle!",
       "tags": [
@@ -1795,7 +1839,12 @@
       "type": "shotgun",
       "value": 75,
       "weight": 6,
-      "ammotype": "ammo_12gauge_shot",
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette",
+        "ammo_12gauge_beanbag"
+      ],
       "description": "Crude single-shot scattergun.",
       "flavor": "Let's Hunt Some Geckos",
       "tags": [
@@ -1822,7 +1871,12 @@
       "type": "shotgun",
       "value": 175,
       "weight": 7,
-      "ammotype": "ammo_12gauge_shot",
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette",
+        "ammo_12gauge_beanbag"
+      ],
       "description": "Extremely short-range double-barrel shotgun.",
       "flavor": "Get Off My Lawn!",
       "tags": [
@@ -1849,7 +1903,11 @@
       "type": "shotgun",
       "value": 350,
       "weight": 9,
-      "ammotype": "ammo_12gauge_shot",
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette"
+      ],
       "description": "Accurate hunting shotgun.",
       "flavor": "This is my boomstick!",
       "tags": [
@@ -1876,7 +1934,12 @@
       "type": "shotgun",
       "value": 550,
       "weight": 8,
-      "ammotype": "ammo_12gauge_shot",
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette",
+        "ammo_12gauge_beanbag"
+      ],
       "description": "Faster cycling than break-action.",
       "flavor": "I'll Be Back",
       "tags": [
@@ -1903,7 +1966,12 @@
       "type": "shotgun",
       "value": 450,
       "weight": 8,
-      "ammotype": "ammo_12gauge_shot",
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette",
+        "ammo_12gauge_beanbag"
+      ],
       "description": "Semiautomatic combat shotgun.",
       "flavor": "They're Coming Out Of The Walls!",
       "tags": [
@@ -1931,7 +1999,12 @@
       "type": "shotgun",
       "value": 700,
       "weight": 10,
-      "ammotype": "ammo_12gauge_shot",
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette",
+        "ammo_12gauge_beanbag"
+      ],
       "description": "High-capacity automatic shotgun.",
       "flavor": "Sweep The Streets!",
       "tags": [
@@ -1959,6 +2032,12 @@
       "type": "shotgun",
       "value": 1800,
       "weight": 14,
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette",
+        "ammo_12gauge_beanbag"
+      ],
       "description": "Fully automatic rotary shotgun.",
       "flavor": "Fuck the NFA",
       "tags": [
@@ -2182,7 +2261,10 @@
       "type": "assault_rifle",
       "value": 900,
       "weight": 10,
-      "ammotype": "ammo_223",
+      "ammotype": [
+        "ammo_556",
+        "ammo_223"
+      ],
       "description": "Rugged Kalashnikov-pattern rifle.",
       "flavor": "Right Arm Of The People",
       "tags": [
@@ -2210,7 +2292,10 @@
       "type": "assault_rifle",
       "value": 1200,
       "weight": 11,
-      "ammotype": "ammo_223",
+      "ammotype": [
+        "ammo_556",
+        "ammo_223"
+      ],
       "description": "Pre-war US military rifle.",
       "flavor": "Right Arm Of The Free World",
       "tags": [
@@ -2353,7 +2438,10 @@
       "type": "machine_gun",
       "value": 1500,
       "weight": 20,
-      "ammotype": "ammo_223",
+      "ammotype": [
+        "ammo_556",
+        "ammo_223"
+      ],
       "description": "Squad-level light machine gun with strong sustained fire.",
       "flavor": "MOA: Point. Kill.",
       "tags": [
