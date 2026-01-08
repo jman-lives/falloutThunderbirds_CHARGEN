@@ -263,16 +263,16 @@
             <div class="stat-value" id="char-level">—</div>
           </div>
           <div class="stat-block">
-            <div class="stat-label">Action Points</div>
-            <div class="stat-value" id="char-max-hp">—</div>
-          </div>
-          <div class="stat-block">
             <div class="stat-label">Sequence</div>
             <div class="stat-value" id="char-sequence">—</div>
           </div>
           <div class="stat-block">
             <div class="stat-label">Current Health</div>
             <div id="char-current-hp">—</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">Current Action Points</div>
+            <div id="char-current-ap">—</div>
           </div>
         </div>
 
@@ -458,6 +458,72 @@
               ▲
             </button>
           </div>
+        </div>
+      `;
+    }
+
+    function getAPBarColor(percentage) {
+      if (percentage > 66) {
+        return 'linear-gradient(90deg, #60a5fa, #3b82f6)';
+      } else if (percentage > 33) {
+        return 'linear-gradient(90deg, #fbbf24, #f59e0b)';
+      } else {
+        return 'linear-gradient(90deg, #f97316, #ea580c)';
+      }
+    }
+
+    function getAPColor(percentage) {
+      if (percentage > 66) {
+        return '#60a5fa';
+      } else if (percentage > 33) {
+        return '#fbbf24';
+      } else {
+        return '#f97316';
+      }
+    }
+
+    function renderAPTracker(currentAP, maxAP) {
+      const container = qs('char-current-ap');
+      // Ensure AP is never below 0 or above max
+      currentAP = Math.max(0, Math.min(currentAP, maxAP));
+      const percentage = (currentAP / maxAP) * 100;
+      const apColor = getAPColor(percentage);
+      
+      // Create dots for AP
+      let dots = '';
+      for (let i = 0; i < maxAP; i++) {
+        const filled = i < currentAP;
+        const dotColor = filled ? apColor : 'rgba(255,255,255,0.2)';
+        dots += `<div style="flex: 1; aspect-ratio: 1; min-width: 8px; max-width: 16px; border-radius: 50%; background: ${dotColor}; transition: all 0.3s ease;"></div>`;
+      }
+      
+      container.innerHTML = `
+        <div style="font-size: 1.2rem; font-weight: bold; color: ${apColor}; display: flex; flex-direction: column; gap: 8px;">
+          
+          <div>${currentAP}/${maxAP}</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 3px;">
+            ${dots}
+          </div>
+          <button 
+            type="button"
+            onclick="decreaseAP()"
+            style="width: 100%; padding: 4px; background-color: #d32f2f; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: all 0.2s;"
+            title="Decrease AP"
+            onmouseover="this.style.opacity='0.8'"
+            onmouseout="this.style.opacity='1'"
+          >
+            ▼
+          </button>
+          <button 
+            type="button"
+            onclick="resetAP()"
+            style="width: 100%; padding: 4px; background-color: #10b981; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 0.85rem; font-weight: bold; transition: all 0.2s;"
+            title="Reset to Max AP"
+            onmouseover="this.style.opacity='0.8'"
+            onmouseout="this.style.opacity='1'"
+          >
+            Reset AP
+          </button>
         </div>
       `;
     }
@@ -893,7 +959,7 @@
       {
         id: 'bleeding',
         name: 'Bleeding',
-        description: 'Wound is open and bleeding. Lose HP each turn.',
+        description: 'Wound is open and bleeding.',
         color: '#dc2626'
       },
       {
@@ -1742,6 +1808,19 @@
       renderGameSelectedPerks(characterData.selectedPerks || []);
     }
 
+    function decreaseAP() {
+      const stored = localStorage.getItem('characterData');
+      const characterData = JSON.parse(stored);
+      const maxActionPoints = characterData.stats?.Action_Points || 8;
+      
+      let currentAP = parseInt(localStorage.getItem('currentAP'));
+      if (currentAP === null || isNaN(currentAP)) currentAP = maxActionPoints;
+      const newAP = Math.max(0, currentAP - 1);
+      localStorage.setItem('currentAP', newAP);
+      
+      renderAPTracker(newAP, maxActionPoints);
+    }
+
     function increaseHP() {
       const stored = localStorage.getItem('characterData');
       const characterData = JSON.parse(stored);
@@ -1756,6 +1835,28 @@
       updateAdrenalineRush(newHP);
       updateGameAttributeDisplay();
       renderGameSelectedPerks(characterData.selectedPerks || []);
+    }
+
+    function increaseAP() {
+      const stored = localStorage.getItem('characterData');
+      const characterData = JSON.parse(stored);
+      const maxActionPoints = characterData.stats?.Action_Points || 8;
+      
+      let currentAP = parseInt(localStorage.getItem('currentAP'));
+      if (currentAP === null || isNaN(currentAP)) currentAP = maxActionPoints;
+      const newAP = Math.min(maxActionPoints, currentAP + 1);
+      localStorage.setItem('currentAP', newAP);
+      
+      renderAPTracker(newAP, maxActionPoints);
+    }
+
+    function resetAP() {
+      const stored = localStorage.getItem('characterData');
+      const characterData = JSON.parse(stored);
+      const maxActionPoints = characterData.stats?.Action_Points || 8;
+      
+      localStorage.setItem('currentAP', maxActionPoints);
+      renderAPTracker(maxActionPoints, maxActionPoints);
     }
 
     function updateAdrenalineRush(currentHP) {
@@ -1994,15 +2095,12 @@
         const levelValue = characterData.level || 1;
         qs('char-level').textContent = levelValue;
         
-        // Set Action Points
-        maxHP = characterData.stats?.Action_Points || 7;
-        qs('char-max-hp').textContent = maxHP;
-        
         // Set Sequence
         qs('char-sequence').textContent = characterData.stats?.Sequence || 0;
         
         // Set max HP for health tracking
         const maxHealthHP = characterData.stats?.Hit_Points || 15;
+        maxHP = maxHealthHP;
         
         // Check if current HP is saved, otherwise use max HP
         let currentHP = localStorage.getItem('currentHP');
@@ -2018,6 +2116,19 @@
         
         // Build health tracking UI
         renderHealthTracker(currentHP, maxHealthHP);
+
+        // Initialize AP tracking
+        const maxActionPoints = characterData.stats?.Action_Points || 8;
+        let currentAP = localStorage.getItem('currentAP');
+        if (currentAP === null) {
+          currentAP = maxActionPoints;
+          localStorage.setItem('currentAP', currentAP);
+        } else {
+          currentAP = parseInt(currentAP);
+        }
+        
+        // Build AP tracking UI
+        renderAPTracker(currentAP, maxActionPoints);
 
         // Display traits
         displayCharacterTraits(characterData.selectedTraits || []);
@@ -2038,7 +2149,8 @@
         displayStatusEffects();
 
       } catch (err) {
-        alert('Error loading character data.');
+        console.error('[LOAD CHARACTER ERROR]', err);
+        alert('Error loading character data: ' + err.message);
       }
     }
 
@@ -2089,6 +2201,7 @@
     function returnHome() {
       localStorage.removeItem('characterData');
       localStorage.removeItem('currentHP');
+      localStorage.removeItem('currentAP');
       window.location.href = 'index.html';
     }
 
@@ -2145,6 +2258,18 @@
       const targetedBtn = qs('targeted-attack-btn');
       const burstBtn = qs('burst-mode-toggle-btn');
       
+      // Check if character has Fast Shot trait
+      const stored = localStorage.getItem('characterData');
+      let hasFastShot = false;
+      if (stored) {
+        try {
+          const characterData = JSON.parse(stored);
+          hasFastShot = characterData.selectedTraits && characterData.selectedTraits.includes('fast_shot');
+        } catch (e) {
+          console.error('Error checking for fast_shot trait:', e);
+        }
+      }
+      
       if (items.length === 0) {
         // Default to Punch (index 0) or Kick (index 1)
         const defaultAttacks = ['Punch', 'Kick'];
@@ -2152,7 +2277,7 @@
         nameElement.textContent = defaultAttack;
         swapBtn.style.display = 'inline-block';
         reloadBtn.style.display = 'none';
-        targetedBtn.style.display = 'inline-block';
+        targetedBtn.style.display = hasFastShot ? 'none' : 'inline-block';
         burstBtn.style.display = 'none';
         localStorage.removeItem('burstModeActive');
         useBtn.textContent = activeItemIndex === 0 ? 'Swing' : 'Strike';
@@ -2187,8 +2312,8 @@
             localStorage.setItem('burstModeActive', 'true');
           }
           
-          // Hide targeted button when in burst mode
-          targetedBtn.style.display = isBurstMode || isBurstOnly ? 'none' : 'inline-block';
+          // Hide targeted button when in burst mode OR if character has Fast Shot trait
+          targetedBtn.style.display = (isBurstMode || isBurstOnly || hasFastShot) ? 'none' : 'inline-block';
           
           if (hasBurst) {
             // Only show toggle for weapons with multiple fire modes
@@ -2214,6 +2339,10 @@
           } else {
             reloadBtn.style.display = 'none';
             useBtn.textContent = isMeleeOrUnarmed ? 'Swing' : 'Use';
+            // Hide targeted button for 'Use' items (non-weapon items)
+            if (!isMeleeOrUnarmed) {
+              targetedBtn.style.display = 'none';
+            }
           }
         } else {
           targetedBtn.style.display = 'none';
@@ -2254,8 +2383,8 @@
           localStorage.setItem('burstModeActive', 'true');
         }
         
-        // Hide targeted button when in burst mode
-        targetedBtn.style.display = isBurstMode || isBurstOnly ? 'none' : 'inline-block';
+        // Hide targeted button when in burst mode OR if character has Fast Shot trait
+        targetedBtn.style.display = (isBurstMode || isBurstOnly || hasFastShot) ? 'none' : 'inline-block';
         
         if (hasBurst) {
           // Only show toggle for weapons with multiple fire modes
@@ -2281,6 +2410,10 @@
         } else {
           reloadBtn.style.display = 'none';
           useBtn.textContent = isMeleeOrUnarmed ? 'Swing' : 'Use';
+          // Hide targeted button for 'Use' items (non-weapon items)
+          if (!isMeleeOrUnarmed) {
+            targetedBtn.style.display = 'none';
+          }
         }
       } else {
         targetedBtn.style.display = 'none';
@@ -2424,8 +2557,31 @@
             if (category === 'weapons') {
               stats.apCost = item.stats?.ap || '—';
               stats.ammo = item.stats?.capacity || item.stats?.magazine || 'N/A';
-              stats.ammotype = item.stats?.ammoType || 'N/A';
-              stats.reloadap = item.stats?.reload || 'N/A';
+              
+              // Check if weapon has ammo type before processing
+              const hasAmmo = item.ammotype && (Array.isArray(item.ammotype) ? item.ammotype.length > 0 : true);
+              
+              // Handle ammotype as array or string
+              if (Array.isArray(item.ammotype)) {
+                stats.ammotype = item.ammotype.length > 0 ? item.ammotype.join(', ') : 'N/A';
+              } else {
+                stats.ammotype = item.ammotype || 'N/A';
+              }
+              
+              // Default reload AP to 2 if weapon has ammunition
+              stats.reloadap = item.stats?.reload || item.stats?.reloadAp || (hasAmmo ? '2' : 'N/A');
+              
+              // Debug logging for reload
+              if (item.name === 'Lever-Action Shotgun') {
+                console.log(`[RELOAD DEBUG] ${item.name}:`, {
+                  ammotype: item.ammotype,
+                  hasAmmo: hasAmmo,
+                  statsReload: item.stats?.reload,
+                  statsReloadAp: item.stats?.reloadAp,
+                  finalReloadap: stats.reloadap
+                });
+              }
+              
               stats.range = item.stats?.range || 'N/A';
               stats.skill = item.stats?.skill || 'Guns';
               stats.armor = '—';
