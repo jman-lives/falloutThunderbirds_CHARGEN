@@ -471,7 +471,7 @@
       "value": 2,
       "weight": 1,
       "description": "A homemade knife that resembles an icepick.\nA shiv is undetectable if your character is holding it; however, it does not get a bonus for melee damage. \nShivs can be constructed from the simplest of materials, are often used as basic assassination weapons.",
-      "flavor": "Where'd you dig this up?",
+      "flavor": "Where'd You Dig This From?",
       "tags": [
         "weapon",
         "melee",
@@ -522,7 +522,7 @@
       "value": 10,
       "weight": 1,
       "description": "A basic knife for cutting things. Or critters.\nKnives are about 15-25 cm long.\nThe best are made from metal alloys; the most primitive are carved from pieces of rock such as flint.",
-      "flavor": "That's not a knife...",
+      "flavor": "That's Not A Knife...",
       "tags": [
         "weapon",
         "melee",
@@ -546,7 +546,7 @@
       "value": 15,
       "weight": 4,
       "description": "Your basic polearm. A wooden pole with a sharpened piece of metal on the end.\nSpears are simple weapons to construct, being a long (2 meter) wooden pole with some kind of metal or stone head tied to one end.",
-      "flavor": "Much Cruder Than The 'H+H Tool Depot' spear",
+      "flavor": "Much Cruder Than The 'H+H Tool Depot' Spear",
       "tags": [
         "weapon",
         "melee",
@@ -620,7 +620,7 @@
       "value": 10,
       "weight": 10,
       "description": "Either iron or lead, this old section of plumbing makes a fine tool for breaking bones and beating heads. Although heavy and somewhat awkward, a piece of pipe hurts just as badly as a club.",
-      "flavor": "Colonel Mustard sends his regards.",
+      "flavor": "Colonel Mustard Sends His Regards.",
       "tags": [
         "weapon",
         "melee",
@@ -721,7 +721,7 @@
       "value": 180,
       "weight": 3,
       "description": "Hack your way through all manner of flora and fauna with this handy gardening implement. \nThe weapon of choice for the intrepid jungle explorer, or the novice backyard weed-whacker.",
-      "flavor": "The Right Arm of the Global South",
+      "flavor": "The Right Arm Of The Global South",
       "tags": [
         "weapon",
         "melee",
@@ -744,8 +744,8 @@
       "type": "melee",
       "value": 200,
       "weight": 10,
-      "description": "Tribal heavy club.",
-      "flavor": "Get the medicine man!",
+      "description": "A heavy tribal club emblazoned with glyphs and hand painted markings. Used by many warrior tribes of the Wasteland.",
+      "flavor": "Get The Medicine Man!",
       "tags": [
         "weapon",
         "melee",
@@ -755,7 +755,7 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "2d6 + MD",
+        "damage": "1d10 + MD",
         "ap": "S 4 / T 5",
         "range": 1,
         "skill": "Melee Weapons"
@@ -769,8 +769,8 @@
       "type": "melee",
       "value": 300,
       "weight": 12,
-      "description": "Heavy two-handed battle axe.",
-      "flavor": "And my axe!",
+      "description": "A heavy two-handed battle axe, used by tribes across the Wastes. Covered in small religious markings.",
+      "flavor": "And My Axe!",
       "tags": [
         "weapon",
         "melee",
@@ -912,7 +912,7 @@
       "value": 150,
       "weight": 5,
       "description": "The mace glove is a large, weighted, spiked metal ball attached to a glove, so the user can beat unsuspecting critters or raiders with more effectiveness.\nCertainly not an elegant weapon, but an efficient one.",
-      "flavor": "Somebody has scratched 'Iron Mike' into the head of the mace",
+      "flavor": "Somebody Has Scratched 'Iron Mike' Into The Head Of The Mace",
       "tags": [
         "weapon",
         "unarmed",
@@ -1230,7 +1230,7 @@
         "ammo_10mm"
       ],
       "description": "The Colt 6520's reliability and accessibility makes it very popular among wasteland denizens, for who sophisticated, high-maintenance weapons would be a liability to survival.",
-      "flavor": "Party like it's 1997",
+      "flavor": "Party Like It's 1997",
       "tags": [
         "weapon",
         "gun",
@@ -1342,7 +1342,7 @@
         "ammo_14mm"
       ],
       "description": "The Sig-Sauer 14mm automatic pistol fires the large 14mm slug.\nThese pistols are known for their excellent craftsmanship, although ammo is fairly scarce.",
-      "flavor": "Still safer than the P320",
+      "flavor": "Still Safer Than The P320",
       "tags": [
         "weapon",
         "gun",
@@ -1399,7 +1399,7 @@
         "ammo_toxin_needle"
       ],
       "description": "One of the most interesting pieces of Pre-War tech, the Needler pistol actually fires small hypodermic needles into the target, which inject a serum that causes a severe reaction in the surrounding skin.\nOf course, there may very well be slugs that inject all sorts of other nasty things out there.",
-      "flavor": "Did you clean those syringes?",
+      "flavor": "Did You Clean Those Syringes?",
       "tags": [
         "weapon",
         "gun",
@@ -2075,7 +2075,9 @@
       "type": "smg",
       "value": 150,
       "weight": 6,
-      "ammotype": "ammo_9mm",
+      "ammotype": [
+        "ammo_9mm"
+      ],
       "description": "Improvised automatic firearm.",
       "flavor": "You're Taking THAT?",
       "tags": [
@@ -2087,11 +2089,11 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage",
+        "damage": "Ammo Damage + 4",
         "ap": "S 5 / T 6 / B 8",
         "range": 15,
         "capacity": 16,
-        "burst": "6 rounds",
+        "burst": 8,
         "skill": "Guns"
       },
       "requirements": "STR 4"
@@ -2315,7 +2317,7 @@
         "ammo_556",
         "ammo_223"
       ],
-      "description": "Pre-war US military rifle.",
+      "description": "Manufactured by civilian defense contractor Stent Security Solutions, the R Series of combat assault rifles was used reliably following the discontinuation of the M series in the early 21st century. Chambered for 5.56mm ammunition, the R91 full-auto urban assault rifle is common throughout the Wasteland.",
       "flavor": "Right Arm Of The Free World",
       "tags": [
         "weapon",
@@ -2326,11 +2328,11 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 2",
+        "damage": "Ammo Damage + 12",
         "ap": "S 5 / T 6 / B 7",
         "range": 55,
         "capacity": 30,
-        "burst": "8 rounds",
+        "burst": 6,
         "skill": "Guns"
       },
       "requirements": "STR 6"
@@ -2437,7 +2439,7 @@
         "ammo_556",
         "ammo_223"
       ],
-      "description": "Squad-level light machine gun with strong sustained fire.",
+      "description": "A fully automatic machinegun chambered for 5.56mm rounds with a rapid rate of fire and a high magazine size and a favorite of heavy combat units Pre-War.",
       "flavor": "MOA: Point. Kill.",
       "tags": [
         "weapon",
@@ -2449,14 +2451,14 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage",
+        "damage": "Ammo Damage + 8",
         "ap": "S 6 / T 7 / B 8",
         "range": 45,
         "capacity": 50,
-        "burst": "10 rounds",
+        "burst": 10,
         "skill": "Guns"
       },
-      "requirements": "STR 7"
+      "requirements": "STR 6"
     },
     {
       "id": "weap_m60",
@@ -2677,7 +2679,7 @@
         "ammo_small_energy_cell"
       ],
       "description": "The Glock 86 Plasma Pistol. Designed by the Gaston Glock artificial intelligence. Shoots a small bolt of superheated plasma.",
-      "flavor": "Easy There Buck Rogers",
+      "flavor": "Hot. Green. Final.",
       "tags": [
         "weapon",
         "gun",
@@ -2722,6 +2724,96 @@
         "ap": "S 4 / T 5",
         "range": 15,
         "capacity": 10,
+        "skill": "Energy Weapons"
+      },
+      "requirements": "STR 3"
+    },
+    {
+      "id": "weap_laser_rifle",
+      "name": "Laser Rifle",
+      "category": "weapons",
+      "type": "rifle",
+      "value": 1700,
+      "weight": 7,
+      "ammotype": [
+        "ammo_microfusion_cell"
+      ],
+      "description": "A Wattz 2000 Laser Rifle. Uses micro fusion cells for more powerful lasers, and an extended barrel for additional range.",
+      "flavor": "Because Bullets Weren’t Personal Enough.",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "energy",
+        "rare",
+        "laser"
+      ],
+      "IsInChargenStore": false,
+      "stats": {
+        "damage": "2d12 + 23",
+        "ap": "S 5 / T 6",
+        "range": 35,
+        "capacity": 20,
+        "skill": "Energy Weapons"
+      },
+      "requirements": "STR 4"
+    },
+    {
+      "id": "weap_plasma_rifle",
+      "name": "Plasma Rifle",
+      "category": "weapons",
+      "type": "rifle",
+      "value": 2200,
+      "weight": 17,
+      "ammotype": [
+        "ammo_microfusion_cell"
+      ],
+      "description": "A Winchester Model P94 plasma rifle. An industrial-grade energy weapon, firing superheated bolts of plasma down a superconducting barrel. Powered by microfusion cells.",
+      "flavor": "Leaves Behind Proof.",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "energy",
+        "rare",
+        "laser"
+      ],
+      "IsInChargenStore": false,
+      "stats": {
+        "damage": "2d20 + 25",
+        "ap": "S 5 / T 6",
+        "range": 25,
+        "capacity": 10,
+        "skill": "Energy Weapons"
+      },
+      "requirements": "STR 6"
+    },
+    {
+      "id": "weap_pulse_rifle",
+      "name": "Pulse Rifle",
+      "category": "weapons",
+      "type": "rifle",
+      "value": 22000,
+      "weight": 14,
+      "ammotype": [
+        "ammo_microfusion_cell"
+      ],
+      "description": "The YK42B is an electrical pulse weapon that was developed by the Yuma Flats Energy Consortium. It is considered a far superior weapon to the YK32 Pulse Pistol, having a greater charge capacity and range.",
+      "flavor": "The Right Arm Of A Bright Tomorrow.",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "energy",
+        "rare",
+        "laser"
+      ],
+      "IsInChargenStore": false,
+      "stats": {
+        "damage": "2d12 + 54",
+        "ap": "S 5 / T 6",
+        "range": 30,
+        "capacity": 15,
         "skill": "Energy Weapons"
       },
       "requirements": "STR 3"
