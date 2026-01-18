@@ -549,10 +549,14 @@
                 <input type="hidden" id="field-skill" value="">
             </div>
             <div class="form-group">
-                <label>Ammo Type</label>
-                <select id="field-ammotype">
-                    <option value="">None</option>
-                </select>
+                <label>Ammo Types</label>
+                <div class="tags-input" id="ammotypes-container"></div>
+                <div class="tag-add">
+                    <select id="ammotype-select">
+                        <option value="">Select ammo type...</option>
+                    </select>
+                    <button type="button" onclick="app.addAmmoType()">Add Ammo Type</button>
+                </div>
             </div>
             <div class="form-group">
                 <label>Description</label>
@@ -801,7 +805,8 @@
                 document.getElementById('field-weight').value = item.weight !== undefined ? item.weight : '';
                 this.setSkill(item.stats?.skill || '');
                 this.populateAmmoTypes();
-                document.getElementById('field-ammotype').value = item.ammotype || '';
+                const ammotypes = Array.isArray(item.ammotype) ? item.ammotype : (item.ammotype ? [item.ammotype] : []);
+                this.renderAmmoTypes(ammotypes);
                 document.getElementById('field-description').value = item.description || '';
                 document.getElementById('field-flavor').value = item.flavor || '';
 
@@ -814,7 +819,7 @@
                 this.renderTags(item.tags || []);
 
                 // Handle additional properties
-                const excludeFields = ['id', 'name', 'category', 'type', 'value', 'weight', 'ammotype', 'description', 'flavor', 'tags', 'IsInChargenStore', '_category'];
+                const excludeFields = ['id', 'name', 'category', 'type', 'value', 'weight', 'ammotype', 'ammotypes', 'description', 'flavor', 'tags', 'IsInChargenStore', '_category'];
                 const additionalProps = {};
                 
                 // Extract stats without skill (since skill has its own field)
@@ -851,7 +856,7 @@
                 document.getElementById('field-weight').value = '';
                 this.setSkill('');
                 this.populateAmmoTypes();
-                document.getElementById('field-ammotype').value = '';
+                this.renderAmmoTypes([]);
                 document.getElementById('field-description').value = '';
                 document.getElementById('field-flavor').value = '';
                 document.getElementById('field-json').value = '';
@@ -900,8 +905,8 @@
             },
 
             populateAmmoTypes() {
-                const select = document.getElementById('field-ammotype');
-                select.innerHTML = '<option value="">None</option>';
+                const select = document.getElementById('ammotype-select');
+                select.innerHTML = '<option value="">Select ammo type...</option>';
                 
                 if (this.database && this.database.ammunition) {
                     this.database.ammunition.forEach(ammo => {
@@ -911,6 +916,40 @@
                         select.appendChild(option);
                     });
                 }
+            },
+
+            renderAmmoTypes(ammotypes) {
+                const container = document.getElementById('ammotypes-container');
+                container.dataset.ammotypes = JSON.stringify(ammotypes || []);
+                container.innerHTML = ammotypes.map(type => `
+                    <div class="tag">
+                        <span>${type}</span>
+                        <button type="button" onclick="app.removeAmmoType('${type}')" class="tag-remove">×</button>
+                    </div>
+                `).join('');
+            },
+
+            addAmmoType() {
+                const select = document.getElementById('ammotype-select');
+                const ammotype = select.value;
+                if (!ammotype) return;
+                
+                const container = document.getElementById('ammotypes-container');
+                const ammotypes = JSON.parse(container.dataset.ammotypes || '[]');
+                
+                if (!ammotypes.includes(ammotype)) {
+                    ammotypes.push(ammotype);
+                    this.renderAmmoTypes(ammotypes);
+                }
+                
+                select.value = '';
+            },
+
+            removeAmmoType(type) {
+                const container = document.getElementById('ammotypes-container');
+                const ammotypes = JSON.parse(container.dataset.ammotypes || '[]');
+                const filtered = ammotypes.filter(t => t !== type);
+                this.renderAmmoTypes(filtered);
             },
 
             selectSkill(skill) {
@@ -948,7 +987,8 @@
                 const value = document.getElementById('field-value').value;
                 const weight = document.getElementById('field-weight').value;
                 const skill = document.getElementById('field-skill').value;
-                const ammotype = document.getElementById('field-ammotype').value;
+                const ammotypesContainer = document.getElementById('ammotypes-container');
+                const ammotypes = JSON.parse(ammotypesContainer.dataset.ammotypes || '[]');
                 const description = document.getElementById('field-description').value.trim();
                 const flavor = document.getElementById('field-flavor').value.trim();
                 const isInChargenStore = document.getElementById('field-store-true').checked;
@@ -971,7 +1011,7 @@
                 if (type) item.type = type;
                 if (value !== '') item.value = parseFloat(value);
                 if (weight !== '') item.weight = parseFloat(weight);
-                if (ammotype) item.ammotype = ammotype;
+                if (ammotypes && ammotypes.length > 0) item.ammotype = ammotypes;
                 if (description) item.description = description;
                 if (flavor) item.flavor = flavor;
                 if (tags.length > 0) item.tags = tags;

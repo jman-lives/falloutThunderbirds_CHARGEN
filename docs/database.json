@@ -19,14 +19,16 @@
         "ballistic",
         "pistol"
       ],
+      "IsInChargenStore": true,
       "stats": {
         "damage": "1d6",
-        "armorMod": "+0"
+        "ac": 0,
+        "dr": 0
       }
     },
     {
       "id": "ammo_9mm",
-      "name": "9mm",
+      "name": "9mm JHP",
       "category": "ammunition",
       "type": "ballistic",
       "value": 2,
@@ -38,14 +40,16 @@
         "ballistic",
         "pistol"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "1d10",
-        "armorMod": "+0"
+        "damage": "1d6",
+        "ac": 0,
+        "dr": -10
       }
     },
     {
       "id": "ammo_10mm",
-      "name": "10mm",
+      "name": "10mm JHP",
       "category": "ammunition",
       "type": "ballistic",
       "value": 3,
@@ -57,9 +61,11 @@
         "ballistic",
         "pistol"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "1d12",
-        "armorMod": "+0"
+        "damage": "1d6",
+        "ac": 0,
+        "dr": -10
       }
     },
     {
@@ -76,9 +82,11 @@
         "ballistic",
         "pistol"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "1d12",
-        "armorMod": "+0"
+        "damage": "1d6",
+        "ac": 0,
+        "dr": -5
       }
     },
     {
@@ -96,9 +104,11 @@
         "pistol",
         "revolver"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "1d12+2",
-        "armorMod": "-1 AP"
+        "damage": "1d6",
+        "ac": -10,
+        "dr": -10
       }
     },
     {
@@ -116,14 +126,16 @@
         "pistol",
         "revolver"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "2d8",
-        "armorMod": "-2 AP"
+        "damage": "1d6",
+        "ac": -10,
+        "dr": 0
       }
     },
     {
       "id": "ammo_14mm",
-      "name": "14mm",
+      "name": "14mm JHP",
       "category": "ammunition",
       "type": "ballistic",
       "value": 15,
@@ -135,14 +147,16 @@
         "ballistic",
         "pistol"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "2d10",
-        "armorMod": "-3 AP"
+        "damage": "1d10",
+        "ac": 0,
+        "dr": -20
       }
     },
     {
       "id": "ammo_223",
-      "name": ".223 Remington",
+      "name": ".223 JHP",
       "category": "ammunition",
       "type": "ballistic",
       "value": 8,
@@ -154,14 +168,16 @@
         "ballistic",
         "rifle"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "2d8",
-        "armorMod": "-1 AP"
+        "damage": "1d10",
+        "ac": 0,
+        "dr": -10
       }
     },
     {
       "id": "ammo_762",
-      "name": "7.62mm NATO",
+      "name": "7.62 NATO",
       "category": "ammunition",
       "type": "ballistic",
       "value": 10,
@@ -173,9 +189,11 @@
         "ballistic",
         "rifle"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "2d10",
-        "armorMod": "-2 AP"
+        "damage": "1d10",
+        "ac": 0,
+        "dr": 0
       }
     },
     {
@@ -193,9 +211,11 @@
         "rifle",
         "heavy"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "3d10+5",
-        "armorMod": "-6 AP"
+        "damage": "1d6",
+        "ac": -10,
+        "dr": -20
       }
     },
     {
@@ -212,9 +232,11 @@
         "shotgun",
         "buckshot"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "1d8 per pellet",
-        "armorMod": "+2 AC vs armor"
+        "damage": "1d10",
+        "ac": 0,
+        "dr": 0
       }
     },
     {
@@ -231,9 +253,11 @@
         "shotgun",
         "slug"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "2d10",
-        "armorMod": "-2 AP"
+        "damage": "1d8",
+        "ac": 0,
+        "dr": 0
       }
     },
     {
@@ -250,9 +274,11 @@
         "shotgun",
         "flechette"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "1d6 × pellet count",
-        "armorMod": "+4 AC vs armor"
+        "damage": "1d12",
+        "ac": -10,
+        "dr": -20
       }
     },
     {
@@ -269,10 +295,8 @@
         "energy",
         "laser"
       ],
-      "stats": {
-        "damage": "Varies by weapon",
-        "capacity": 12
-      }
+      "IsInChargenStore": true,
+      "stats": {}
     },
     {
       "id": "ammo_microfusion_cell",
@@ -289,10 +313,8 @@
         "plasma",
         "laser"
       ],
-      "stats": {
-        "damage": "Varies by weapon",
-        "capacity": 24
-      }
+      "IsInChargenStore": true,
+      "stats": {}
     },
     {
       "id": "ammo_electron_charge_pack",
@@ -308,10 +330,8 @@
         "energy",
         "heavy"
       ],
-      "stats": {
-        "damage": "Varies",
-        "capacity": 30
-      }
+      "IsInChargenStore": true,
+      "stats": {}
     },
     {
       "id": "ammo_flechette_needle",
@@ -327,9 +347,11 @@
         "special",
         "needle"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "1d10",
-        "armorMod": "+2 AC vs armor"
+        "damage": "3d10",
+        "ac": 0,
+        "dr": 0
       }
     },
     {
@@ -347,9 +369,9 @@
         "needle",
         "poison"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "2d6",
-        "special": "Applies poison (severity varies)"
+        "damage": "1d6"
       }
     },
     {
@@ -367,9 +389,53 @@
         "gauss",
         "electromagnetic"
       ],
+      "IsInChargenStore": true,
       "stats": {
-        "damage": "2d10",
-        "armorMod": "-4 AP"
+        "damage": "1d10",
+        "ac": -20,
+        "dr": -20
+      }
+    },
+    {
+      "id": "ammo_556",
+      "name": "5.56 NATO",
+      "category": "ammunition",
+      "type": "ballistic",
+      "value": 9,
+      "weight": 0.1,
+      "description": "Accurate rifle round; used in rifles, carbines, and even light machine guns.",
+      "flavor": "Perfect For Deer And Larger Game",
+      "tags": [
+        "ammo",
+        "ballistic",
+        "rifle"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "1d8",
+        "ac": 0,
+        "dr": -20
+      }
+    },
+    {
+      "id": "ammo_12gauge_beanbag",
+      "name": "12-Gauge Bean Bag",
+      "category": "ammunition",
+      "type": "shotgun",
+      "value": 4,
+      "weight": 0.2,
+      "description": "Solid projectile; good penetration.",
+      "flavor": "The Original Donkey Punch",
+      "tags": [
+        "ammo",
+        "shotgun",
+        "slug"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "1d4",
+        "ac": 0,
+        "dr": 0
       }
     }
   ],
@@ -381,7 +447,7 @@
       "type": "melee",
       "value": 0,
       "weight": 1,
-      "description": "Basic improvised melee weapon.",
+      "description": "Your basic, run of the mill rock. There are only several trillion of them lying around the wastes.",
       "flavor": "Charlie Brown Special",
       "tags": [
         "weapon",
@@ -394,7 +460,8 @@
         "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Throwing"
-      }
+      },
+      "requirements": "STR 1"
     },
     {
       "id": "weap_shiv",
@@ -403,8 +470,8 @@
       "type": "melee",
       "value": 2,
       "weight": 1,
-      "description": "Small improvised blade; easily concealed.",
-      "flavor": "Where'd you dig this up?",
+      "description": "A homemade knife that resembles an icepick.\nA shiv is undetectable if your character is holding it; however, it does not get a bonus for melee damage. \nShivs can be constructed from the simplest of materials, are often used as basic assassination weapons.",
+      "flavor": "Where'd You Dig This From?",
       "tags": [
         "weapon",
         "melee",
@@ -415,11 +482,12 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "1d4 + MD",
+        "damage": "1d4",
         "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Melee Weapons"
-      }
+      },
+      "requirements": "STR 1"
     },
     {
       "id": "weap_wooden_club",
@@ -428,7 +496,7 @@
       "type": "melee",
       "value": 5,
       "weight": 5,
-      "description": "Crude blunt melee weapon.",
+      "description": "Humans have used these tools to kill prey and bash each other since we came down from the trees. \nIt is nothing more than a stick with some sharp points on it, or maybe a rusty nail or two driven through it to cause more pain and suffering to anyone unlucky enough to get hit with it.",
       "flavor": "Meet The Flinstones",
       "tags": [
         "weapon",
@@ -439,11 +507,12 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "1d6 + MD",
-        "ap": "S 4 / T 5",
+        "damage": "1d8 + MD",
+        "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Melee Weapons"
-      }
+      },
+      "requirements": "STR 3"
     },
     {
       "id": "weap_knife",
@@ -452,8 +521,8 @@
       "type": "melee",
       "value": 10,
       "weight": 1,
-      "description": "Standard survival knife.",
-      "flavor": "That's not a knife...",
+      "description": "A basic knife for cutting things. Or critters.\nKnives are about 15-25 cm long.\nThe best are made from metal alloys; the most primitive are carved from pieces of rock such as flint.",
+      "flavor": "That's Not A Knife...",
       "tags": [
         "weapon",
         "melee",
@@ -462,11 +531,12 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "1d6 + MD",
+        "damage": "1d10 + MD",
         "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Melee Weapons"
-      }
+      },
+      "requirements": "STR 2"
     },
     {
       "id": "weap_spear",
@@ -475,8 +545,8 @@
       "type": "melee",
       "value": 15,
       "weight": 4,
-      "description": "Basic thrusting weapon.",
-      "flavor": "Much Cruder Than The \"H+H Tool Depot\" spear",
+      "description": "Your basic polearm. A wooden pole with a sharpened piece of metal on the end.\nSpears are simple weapons to construct, being a long (2 meter) wooden pole with some kind of metal or stone head tied to one end.",
+      "flavor": "Much Cruder Than The 'H+H Tool Depot' Spear",
       "tags": [
         "weapon",
         "melee",
@@ -485,11 +555,12 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "1d8 + MD",
+        "damage": "(1d12+3) + MD",
         "ap": "S 4 / T 5",
-        "range": 1,
+        "range": 2,
         "skill": "Melee Weapons"
-      }
+      },
+      "requirements": "STR 4"
     },
     {
       "id": "weap_crowbar",
@@ -498,7 +569,7 @@
       "type": "melee",
       "value": 20,
       "weight": 4,
-      "description": "Tool and weapon; grants leverage in certain actions.",
+      "description": "A very solid and heavy piece of metal specially designed to exert leverage - or pound heads.\nCrowbars are fashioned from a piece of solid metal, twisted so that the user can exert force on an object and pry it upwards.\nThey are usually about 35 cm in length.",
       "flavor": "Copium vs Hopium",
       "tags": [
         "weapon",
@@ -509,21 +580,47 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "1d6 + MD",
+        "damage": "(1d12+ 3) + MD",
         "ap": "S 4 / T 5",
         "range": 1,
         "skill": "Melee Weapons"
-      }
+      },
+      "requirements": "STR 5"
     },
     {
-      "id": "weap_board",
-      "name": "Board",
+      "id": "weap_sharpened_pole",
+      "name": "Sharpened Pole",
       "category": "weapons",
       "type": "melee",
-      "value": 20,
-      "weight": 8,
-      "description": "Heavy plank of wood.",
-      "flavor": "Boy, Plank, how the heck did we ever end up here?",
+      "value": 5,
+      "weight": 3,
+      "description": "A basic piece of wood with a sharpened end, about 2 meters long.",
+      "flavor": "Keepaway!",
+      "tags": [
+        "weapon",
+        "melee",
+        "pierce",
+        "improvised",
+        "throwing"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "(1d4+1) + MD",
+        "ap": "S 3 / T 4",
+        "range": 2,
+        "skill": "Melee Weapons"
+      },
+      "requirements": "STR 3"
+    },
+    {
+      "id": "weap_pipe",
+      "name": "Pipe",
+      "category": "weapons",
+      "type": "melee",
+      "value": 10,
+      "weight": 10,
+      "description": "Either iron or lead, this old section of plumbing makes a fine tool for breaking bones and beating heads. Although heavy and somewhat awkward, a piece of pipe hurts just as badly as a club.",
+      "flavor": "Colonel Mustard Sends His Regards.",
       "tags": [
         "weapon",
         "melee",
@@ -537,55 +634,8 @@
         "ap": "S 4 / T 5",
         "range": 1,
         "skill": "Melee Weapons"
-      }
-    },
-    {
-      "id": "weap_sharpened_pole",
-      "name": "Sharpened Pole",
-      "category": "weapons",
-      "type": "melee",
-      "value": 25,
-      "weight": 5,
-      "description": "Crude spear equivalent.",
-      "flavor": "Keepaway!",
-      "tags": [
-        "weapon",
-        "melee",
-        "pierce",
-        "improvised",
-        "throwing"
-      ],
-      "IsInChargenStore": true,
-      "stats": {
-        "damage": "1d8 + MD",
-        "ap": "S 4 / T 5",
-        "range": 1,
-        "skill": "Melee Weapons"
-      }
-    },
-    {
-      "id": "weap_pipe",
-      "name": "Pipe",
-      "category": "weapons",
-      "type": "melee",
-      "value": 25,
-      "weight": 6,
-      "description": "Metal pipe; common improvised weapon.",
-      "flavor": "Colonel Mustard sends his regards.",
-      "tags": [
-        "weapon",
-        "melee",
-        "blunt",
-        "improvised",
-        "throwing"
-      ],
-      "IsInChargenStore": true,
-      "stats": {
-        "damage": "1d8 + MD",
-        "ap": "S 4 / T 5",
-        "range": 1,
-        "skill": "Melee Weapons"
-      }
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_combat_knife",
@@ -594,7 +644,7 @@
       "type": "melee",
       "value": 30,
       "weight": 2,
-      "description": "Military-grade knife.",
+      "description": "A military-issued knife designed for\nmelee combat.\nThe serrated edges tend to tear instead of cut, and wounds from this blade are a lot more painful than normal knife wounds.\nCombat knives were constructed from a carbon-based compound instead of a metal, making them more durable, less prone to dulling, and lighter than a normal knife.\nThey are usually 15 to 25 cm long.",
       "flavor": "...Now *This* Is A Knife!",
       "tags": [
         "weapon",
@@ -605,11 +655,12 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "1d8 + MD",
+        "damage": "(1d12+3) + MD",
         "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Melee Weapons"
-      }
+      },
+      "requirements": "STR 2"
     },
     {
       "id": "weap_sledgehammer",
@@ -618,7 +669,7 @@
       "type": "melee",
       "value": 80,
       "weight": 12,
-      "description": "Slow but powerful.",
+      "description": "A pole with a heavy metal chunk on the end, designed to crumble bones and damage vital organs.\nSledgehammers are about 70 cm long, and require two hands to use properly.",
       "flavor": "Demolition Man",
       "tags": [
         "weapon",
@@ -630,9 +681,9 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "2d6 + MD",
-        "ap": "S 5 / T 6",
-        "range": 1,
+        "damage": "3d4 + MD",
+        "ap": "S 4 / T 5",
+        "range": 2,
         "skill": "Melee Weapons"
       },
       "requirements": "STR 6"
@@ -644,8 +695,8 @@
       "type": "melee",
       "value": 150,
       "weight": 8,
-      "description": "Heavy chopping weapon.",
-      "flavor": "Popular at viking raids and hipster bars",
+      "description": "This is a basic hatchet. Good for breaking down wooden doors, or sinking into that nuke pooch.\nAnother common weapon that can be constructed from a piece of wood and any hunk of sharp metal or rock, axes are anywhere from 30 cm to 90 cm in length.",
+      "flavor": "Popular At Viking Raids And Hipster Bars",
       "tags": [
         "weapon",
         "melee",
@@ -655,11 +706,12 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "1d12 + MD",
-        "ap": "S 4 / T 5",
+        "damage": "1d8 + MD",
+        "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Melee Weapons"
-      }
+      },
+      "requirements": "STR 3"
     },
     {
       "id": "weap_machete",
@@ -668,8 +720,8 @@
       "type": "melee",
       "value": 180,
       "weight": 3,
-      "description": "Jungle-grade cutting blade.",
-      "flavor": "The Right Arm of the Global South",
+      "description": "Hack your way through all manner of flora and fauna with this handy gardening implement. \nThe weapon of choice for the intrepid jungle explorer, or the novice backyard weed-whacker.",
+      "flavor": "The Right Arm Of The Global South",
       "tags": [
         "weapon",
         "melee",
@@ -678,11 +730,12 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "1d8 + 2 + MD",
-        "ap": "S 3 / T 4",
+        "damage": "(1d10 + 7) + MD",
+        "ap": "S 4 / T 5",
         "range": 1,
         "skill": "Melee Weapons"
-      }
+      },
+      "requirements": "STR 4"
     },
     {
       "id": "weap_war_club",
@@ -691,8 +744,8 @@
       "type": "melee",
       "value": 200,
       "weight": 10,
-      "description": "Tribal heavy club.",
-      "flavor": "Get the medicine man!",
+      "description": "A heavy tribal club emblazoned with glyphs and hand painted markings. Used by many warrior tribes of the Wasteland.",
+      "flavor": "Get The Medicine Man!",
       "tags": [
         "weapon",
         "melee",
@@ -702,7 +755,7 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "2d6 + MD",
+        "damage": "1d10 + MD",
         "ap": "S 4 / T 5",
         "range": 1,
         "skill": "Melee Weapons"
@@ -716,8 +769,8 @@
       "type": "melee",
       "value": 300,
       "weight": 12,
-      "description": "Heavy two-handed battle axe.",
-      "flavor": "And my axe!",
+      "description": "A heavy two-handed battle axe, used by tribes across the Wastes. Covered in small religious markings.",
+      "flavor": "And My Axe!",
       "tags": [
         "weapon",
         "melee",
@@ -742,7 +795,7 @@
       "type": "unarmed",
       "value": 40,
       "weight": 1,
-      "description": "Increases punch force.",
+      "description": "A device that fits around the knuckles of a fighter, making punches hurt a lot more.\nIt distributes the force of the blow evenly over the puncher’s hand, allowing them to avoid breaking their fingers.",
       "flavor": "Knuckles: Dusted.",
       "tags": [
         "weapon",
@@ -755,7 +808,8 @@
         "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Unarmed"
-      }
+      },
+      "requirements": "STR 1"
     },
     {
       "id": "weap_tiger_claw",
@@ -764,7 +818,7 @@
       "type": "unarmed",
       "value": 75,
       "weight": 1,
-      "description": "Often poisoned; low base damage.",
+      "description": "A glove that fits over a portion of the knuckles and fingers, concealing sharp “claws”\nin the palm.\nA simple weapon, often used for ritualistic tribal combat rather than serious fighting. \nAssassins like to dip tiger claws in poison to make an easily concealable – and deadly– weapon.",
       "flavor": "How's This For Cat's Paw?",
       "tags": [
         "weapon",
@@ -777,7 +831,8 @@
         "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Unarmed"
-      }
+      },
+      "requirements": "STR 1"
     },
     {
       "id": "weap_sapper",
@@ -786,7 +841,7 @@
       "type": "unarmed",
       "value": 80,
       "weight": 4,
-      "description": "75% KO chance on head hit.",
+      "description": "A sap is a simple weapon designed to knock someone unconscious.\nIt is usually just a rock or some packed sand inside of an old tube of cloth, like a sock.\nSaps do not actually damage a target, and are only effective when targeting someone’s head (treat this as a targeted shot to the eyes).\nA successful hit causes the target to lose consciousness for 1d10 rounds.",
       "flavor": "Weeaboo!",
       "tags": [
         "weapon",
@@ -810,7 +865,7 @@
       "type": "unarmed",
       "value": 90,
       "weight": 2,
-      "description": "Light claw gloves.",
+      "description": "Shredders are gloves that have small, sharp claws attached to the fingers, allowing the user to scratch an opponent.\nNot very useful as a melee weapon, but coated with the right kind of poison, shredders can be extremely dangerous.",
       "flavor": "Damn You Turtles!",
       "tags": [
         "weapon",
@@ -823,7 +878,8 @@
         "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Unarmed"
-      }
+      },
+      "requirements": "STR 1"
     },
     {
       "id": "weap_lacerators",
@@ -832,7 +888,7 @@
       "type": "unarmed",
       "value": 100,
       "weight": 2,
-      "description": "Razor-blade glove.",
+      "description": "This nasty little glove represents some of the finest innovations raiders and tribals have made since the war. \nGloves covered with razor blades, lacerators will rip flesh into fine pieces with a simple swipe of the hand.",
       "flavor": "Perfect For The Modern Kitchen Or Wasteland Dust-Up",
       "tags": [
         "weapon",
@@ -845,7 +901,8 @@
         "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Unarmed"
-      }
+      },
+      "requirements": "STR 1"
     },
     {
       "id": "weap_mace_glove",
@@ -854,8 +911,8 @@
       "type": "unarmed",
       "value": 150,
       "weight": 5,
-      "description": "Heavy crushing glove.",
-      "flavor": "Somebody has scratched 'Iron Mike' into the head of the mace",
+      "description": "The mace glove is a large, weighted, spiked metal ball attached to a glove, so the user can beat unsuspecting critters or raiders with more effectiveness.\nCertainly not an elegant weapon, but an efficient one.",
+      "flavor": "Somebody Has Scratched 'Iron Mike' Into The Head Of The Mace",
       "tags": [
         "weapon",
         "unarmed",
@@ -878,7 +935,7 @@
       "type": "unarmed",
       "value": 250,
       "weight": 1,
-      "description": "Piercing knuckles.",
+      "description": "An improved version of the classic brass knuckles, the spiked knuckles do more damage, tearing into the flesh of your opponent in unarmed combat.\nLike the brass knuckles, they distribute damage evenly across the puncher’s fingers.",
       "flavor": "What The Fuck Is An Echidna?",
       "tags": [
         "weapon",
@@ -892,7 +949,8 @@
         "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Unarmed"
-      }
+      },
+      "requirements": "STR 1"
     },
     {
       "id": "weap_boxing_gloves",
@@ -901,7 +959,7 @@
       "type": "unarmed",
       "value": 250,
       "weight": 5,
-      "description": "Padded, non-lethal.",
+      "description": "Boxing gloves are gloves with some kind of pad over and around the fist, so that the wearer does not damage his or her hand, and the person getting punched doesn’t get cut.",
       "flavor": "Float- Then Sting",
       "tags": [
         "weapon",
@@ -915,7 +973,8 @@
         "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Unarmed"
-      }
+      },
+      "requirements": "STR 1"
     },
     {
       "id": "weap_plated_boxing_gloves",
@@ -924,7 +983,7 @@
       "type": "unarmed",
       "value": 300,
       "weight": 10,
-      "description": "Reinforced illegal gloves.",
+      "description": "These boxing gloves have had metal plates or ball bearings sown into them.",
       "flavor": "The Ref's Not Looking",
       "tags": [
         "weapon",
@@ -937,7 +996,8 @@
         "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Unarmed"
-      }
+      },
+      "requirements": "STR 1"
     },
     {
       "id": "weap_punch_dagger",
@@ -946,7 +1006,7 @@
       "type": "unarmed",
       "value": 300,
       "weight": 4,
-      "description": "Punch-aligned blade.",
+      "description": "The punch dagger certainly isn’t a subtle weapon; it is a large, serrated combat knife attached to a glove, combining the force of a punch with the tearing action of a toothed blade.",
       "flavor": "KnifeFist or FistKnife?",
       "tags": [
         "weapon",
@@ -960,7 +1020,8 @@
         "ap": "S 3 / T 4",
         "range": 1,
         "skill": "Unarmed"
-      }
+      },
+      "requirements": "STR 1"
     },
     {
       "id": "weap_punch_gun",
@@ -969,7 +1030,13 @@
       "type": "unarmed",
       "value": 600,
       "weight": 7,
-      "description": "Cartridge-enhanced punch.",
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette",
+        "ammo_12gauge_beanbag"
+      ],
+      "description": "This unusual weapon is a glove with a trigger in the fist, allowing the user to fire a single shotgun shell at the same time a punch is thrown.\nAlthough they are somewhat awkward, as the must be reloaded after every use, an enterprising individual could do quite well with one of these tools during a surprise attack. \nThe punch gun holds 1 shotgun shell. Note that the incredibly short barrel on the gun renders this weapon ineffective at all but the closest ranges.",
       "flavor": "Champagne?",
       "tags": [
         "weapon",
@@ -993,7 +1060,7 @@
       "type": "unarmed",
       "value": 900,
       "weight": 9,
-      "description": "Micro‑piston assisted strikes.",
+      "description": "A late Pre-War invention, the impact glove uses a unique piston device similar to ones used by the much more powerful Big Frigger line of power fists.\nThe difference is that the impact glove uses a miniscule energy cell that does not need to be recharged, and is significantly less powerful. It is still a decent weapon, and can enhance anyone’s hand-to-hand fighting experience.",
       "flavor": "The Kyle Special",
       "tags": [
         "weapon",
@@ -1007,7 +1074,8 @@
         "ap": "S 4 / T 5",
         "range": 1,
         "skill": "Unarmed"
-      }
+      },
+      "requirements": "STR 1"
     },
     {
       "id": "weap_adamantine_claws",
@@ -1016,8 +1084,8 @@
       "type": "unarmed",
       "value": 1000,
       "weight": 3,
-      "description": "Retractable blade claws.",
-      "flavor": "Somethin' don't smell quite right about you, bub.",
+      "description": "These gloves feature blades that are designed to slash and disembowel even the strongest critters.",
+      "flavor": "Somethin' Don't Smell Right About You, Bub.",
       "tags": [
         "weapon",
         "unarmed",
@@ -1040,7 +1108,10 @@
       "type": "unarmed",
       "value": 1800,
       "weight": 10,
-      "description": "Powered servo punch weapon.",
+      "ammotype": [
+        "ammo_small_energy_cell"
+      ],
+      "description": "The \"Big Frigger\" Power Fist from BeatCo. is onsidered by many to be the ultimate weapon to use in unarmed combat.\nA Power Fist is a metal glove that fits over the hand and uses small motors to enhance the power of a punch.\nThe glove will “sense” when the user throws a punch and automatically adjusts for greater damage, using energy even if the punch doesn’t connect.",
       "flavor": "You Should See The Other Guy",
       "tags": [
         "weapon",
@@ -1054,8 +1125,10 @@
         "damage": "(2d8 + 10) + MD",
         "ap": "S 4 / T 5",
         "range": 1,
+        "capacity": 25,
         "skill": "Unarmed"
-      }
+      },
+      "requirements": "STR 1"
     },
     {
       "id": "weap_zip_gun",
@@ -1064,8 +1137,15 @@
       "type": "pistol",
       "value": 25,
       "weight": 3,
-      "ammotype": "ammo_9mm",
-      "description": "Crude improvised firearm.",
+      "ammotype": [
+        "ammo_9mm",
+        "ammo_10mm",
+        "ammo_45acp",
+        "ammo_357",
+        "ammo_44",
+        "ammo_22lr"
+      ],
+      "description": "The zip gun is a single-shot, handmade pistol.\nCrafted from spare parts, zip guns are rather unreliable and shoot basic handgun ammunition. They have a very small range, and are prone to jamming and breaking easily.",
       "flavor": "Aim The Barrel And Pray",
       "tags": [
         "weapon",
@@ -1081,33 +1161,8 @@
         "capacity": 1,
         "ammoType": "",
         "skill": "Guns"
-      }
-    },
-    {
-      "id": "weap_derringer",
-      "name": "Derringer",
-      "category": "weapons",
-      "type": "pistol",
-      "value": 60,
-      "weight": 2,
-      "ammotype": "ammo_22lr",
-      "description": "Small concealable double-shot pistol.",
-      "flavor": "Hold your cards close",
-      "tags": [
-        "weapon",
-        "gun",
-        "pistol",
-        "concealable"
-      ],
-      "IsInChargenStore": true,
-      "stats": {
-        "damage": "Ammo Damage",
-        "ap": "S 4 / T 5",
-        "range": 10,
-        "capacity": 2,
-        "ammoType": "",
-        "skill": "Guns"
-      }
+      },
+      "requirements": "STR 3"
     },
     {
       "id": "weap_22_pistol",
@@ -1116,23 +1171,26 @@
       "type": "pistol",
       "value": 100,
       "weight": 2,
-      "ammotype": "ammo_22lr",
-      "description": "Light recoil, low damage.",
+      "ammotype": [
+        "ammo_22lr"
+      ],
+      "description": "Produced in the 20th Century as an inexpensive solution to gun ownership, the tiny .22 pistol fires the relatively small .22 caliber slug.\nThese guns simply don’t have the stopping power of larger pistols, and a shot from one is more likely to upset the target than cause massive amounts of damage. It is, however, integrally suppressed.",
       "flavor": "Pest Control",
       "tags": [
         "weapon",
         "gun",
-        "pistol"
+        "pistol",
+        "suppressed"
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage",
+        "damage": "Ammo Damage + 4",
         "ap": "S 4 / T 5",
         "range": 20,
         "capacity": 10,
-        "ammoType": "",
         "skill": "Guns"
-      }
+      },
+      "requirements": "STR 3"
     },
     {
       "id": "weap_9mm_pistol",
@@ -1141,8 +1199,10 @@
       "type": "pistol",
       "value": 200,
       "weight": 3,
-      "ammotype": "ammo_9mm",
-      "description": "Common semiautomatic sidearm.",
+      "ammotype": [
+        "ammo_9mm"
+      ],
+      "description": "The Belgian-made Browning high-powered pistol became a popular handgun in North America in the early part of the 21st century.",
       "flavor": "How Do You Solve A Problem Like Maria?",
       "tags": [
         "weapon",
@@ -1151,13 +1211,13 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage",
-        "ap": "S 4 / T 5",
-        "range": 25,
+        "damage": "Ammo Damage + 6",
+        "ap": "S 5 / T 6",
+        "range": 17,
         "capacity": 10,
-        "ammoType": "",
         "skill": "Guns"
-      }
+      },
+      "requirements": "STR 3"
     },
     {
       "id": "weap_10mm_pistol",
@@ -1166,9 +1226,11 @@
       "type": "pistol",
       "value": 300,
       "weight": 4,
-      "ammotype": "ammo_10mm",
-      "description": "High stopping power.",
-      "flavor": "Party like it's 1997",
+      "ammotype": [
+        "ammo_10mm"
+      ],
+      "description": "The Colt 6520's reliability and accessibility makes it very popular among wasteland denizens, for who sophisticated, high-maintenance weapons would be a liability to survival.",
+      "flavor": "Party Like It's 1997",
       "tags": [
         "weapon",
         "gun",
@@ -1176,13 +1238,13 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage",
-        "ap": "S 4 / T 5",
-        "range": 30,
+        "damage": "Ammo Damage + 6",
+        "ap": "S 5 / T 6",
+        "range": 19,
         "capacity": 12,
-        "ammoType": "",
         "skill": "Guns"
-      }
+      },
+      "requirements": "STR 3"
     },
     {
       "id": "weap_m1911a1",
@@ -1191,9 +1253,11 @@
       "type": "pistol",
       "value": 300,
       "weight": 4,
-      "ammotype": "ammo_45acp",
-      "description": "High stopping power.",
-      "flavor": "Two World Wars!",
+      "ammotype": [
+        "ammo_45acp"
+      ],
+      "description": "The M1911A1 was a popular military sidearm before the War.\nNot a unique pistol, but a powerful one.",
+      "flavor": "Three World Wars!",
       "tags": [
         "weapon",
         "gun",
@@ -1202,13 +1266,13 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage",
-        "ap": "S 4 / T 5",
-        "range": 30,
-        "capacity": 12,
-        "ammoType": "",
+        "damage": "Ammo Damage + 7",
+        "ap": "S 5 / T 6",
+        "range": 17,
+        "capacity": 7,
         "skill": "Guns"
-      }
+      },
+      "requirements": "STR 3"
     },
     {
       "id": "weap_357_revolver",
@@ -1217,9 +1281,12 @@
       "type": "pistol",
       "value": 350,
       "weight": 4,
-      "ammotype": "ammo_357",
-      "description": "Strong penetration; slower reload.",
-      "flavor": "Pick up a wheel gun!",
+      "ammotype": [
+        "ammo_357",
+        "ammo_9mm"
+      ],
+      "description": "One of the oldest revolvers, Smith and Wesson made the first .357 Magnums in the late 1800s, although the name “Magnum” (Latin for “Big”) was around for at least 10 years before.",
+      "flavor": "Pick Up A Wheel Gun!",
       "tags": [
         "weapon",
         "gun",
@@ -1228,13 +1295,13 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage + 2",
-        "ap": "S 5 / T 6",
-        "range": 25,
-        "capacity": "6 (revolver)",
-        "ammoType": "",
+        "damage": "Ammo Damage + 8",
+        "ap": "S 4 / T 5",
+        "range": 19,
+        "capacity": 6,
         "skill": "Guns"
-      }
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_44_revolver",
@@ -1243,9 +1310,11 @@
       "type": "pistol",
       "value": 500,
       "weight": 5,
-      "ammotype": "ammo_44",
-      "description": "Powerful high-recoil handgun.",
-      "flavor": "Do you feel lucky, punk?",
+      "ammotype": [
+        "ammo_44"
+      ],
+      "description": "The .44 Magnum revolver is a double-action, swing-out cylinder revolver, with a high damage output compared to other one-handed revolvers.",
+      "flavor": "Do You Feel Lucky, Punk?",
       "tags": [
         "weapon",
         "gun",
@@ -1254,13 +1323,13 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage + 4",
-        "ap": "S 5 / T 6",
-        "range": 30,
-        "capacity": "6 (revolver)",
-        "ammoType": "",
+        "damage": "Ammo Damage + 11",
+        "ap": "S 4 / T 5",
+        "range": 6,
+        "capacity": 6,
         "skill": "Guns"
-      }
+      },
+      "requirements": "STR 5"
     },
     {
       "id": "weap_14mm_pistol",
@@ -1269,9 +1338,11 @@
       "type": "pistol",
       "value": 1200,
       "weight": 6,
-      "ammotype": "ammo_14mm",
-      "description": "Extremely powerful semiautomatic pistol.",
-      "flavor": "Still safer than the P320",
+      "ammotype": [
+        "ammo_14mm"
+      ],
+      "description": "The Sig-Sauer 14mm automatic pistol fires the large 14mm slug.\nThese pistols are known for their excellent craftsmanship, although ammo is fairly scarce.",
+      "flavor": "Still Safer Than The P320",
       "tags": [
         "weapon",
         "gun",
@@ -1280,14 +1351,13 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 6",
+        "damage": "Ammo Damage + 12",
         "ap": "S 5 / T 6",
-        "range": 40,
+        "range": 18,
         "capacity": 6,
-        "ammoType": "",
         "skill": "Guns"
       },
-      "requirements": "STR 5"
+      "requirements": "STR 4"
     },
     {
       "id": "weap_223_pistol",
@@ -1296,8 +1366,11 @@
       "type": "pistol",
       "value": 1500,
       "weight": 7,
-      "ammotype": "ammo_223",
-      "description": "Cut-down rifle action; very high penetration.",
+      "ammotype": [
+        "ammo_556",
+        "ammo_223"
+      ],
+      "description": "This pistol began its days as a .223 rifle and has since been modified.\nThese are rather unique, and are made with love and skill.",
       "flavor": "Wake up. Time to die!",
       "tags": [
         "weapon",
@@ -1307,11 +1380,10 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 8",
+        "damage": "Ammo Damage + 20",
         "ap": "S 5 / T 6",
-        "range": 45,
+        "range": 30,
         "capacity": 5,
-        "ammoType": "",
         "skill": "Guns"
       },
       "requirements": "STR 6"
@@ -1323,9 +1395,11 @@
       "type": "pistol",
       "value": 2000,
       "weight": 4,
-      "ammotype": "ammo_toxin_needle",
-      "description": "Fires darts; specialized toxin rounds available.",
-      "flavor": "Did you clean those syringes?",
+      "ammotype": [
+        "ammo_toxin_needle"
+      ],
+      "description": "One of the most interesting pieces of Pre-War tech, the Needler pistol actually fires small hypodermic needles into the target, which inject a serum that causes a severe reaction in the surrounding skin.\nOf course, there may very well be slugs that inject all sorts of other nasty things out there.",
+      "flavor": "Did You Clean Those Syringes?",
       "tags": [
         "weapon",
         "gun",
@@ -1334,13 +1408,13 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "1d10 (flechette) / 2d6 (tox)",
+        "damage": "Ammo Damage",
         "ap": "S 4 / T 5",
-        "range": 25,
-        "capacity": 10,
-        "ammoType": "",
+        "range": 24,
+        "capacity": 8,
         "skill": "Guns"
-      }
+      },
+      "requirements": "STR 3"
     },
     {
       "id": "weap_alien_blaster",
@@ -1349,9 +1423,11 @@
       "type": "pistol",
       "value": 5000,
       "weight": 2,
-      "ammotype": "ammo_small_energy_cell",
-      "description": "Extremely rare, high-damage energy pistol.",
-      "flavor": "I want to believe",
+      "ammotype": [
+        "ammo_small_energy_cell"
+      ],
+      "description": "No one is sure where this weapon comes from, and there have been several unconfirmed reports from nomads that they fell from the skies inside of large metal disks; disks that also contained the bodies of something not human.",
+      "flavor": "I Want To Believe",
       "tags": [
         "weapon",
         "gun",
@@ -1362,13 +1438,13 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "3d10 (energy)",
-        "ap": "S 3 / T 4",
-        "range": 35,
-        "capacity": "6 (energy cell)",
-        "ammoType": "",
+        "damage": "5d10+30",
+        "ap": "S 4 / T 5",
+        "range": 10,
+        "capacity": 10,
         "skill": "Energy Weapons"
-      }
+      },
+      "requirements": "STR 3"
     },
     {
       "id": "weap_laser_pistol",
@@ -1377,8 +1453,10 @@
       "type": "pistol",
       "value": 700,
       "weight": 2,
-      "ammotype": "ammo_small_energy_cell",
-      "description": "Wattz 2000 Laser Pistol. Packs a hot punch.",
+      "ammotype": [
+        "ammo_small_energy_cell"
+      ],
+      "description": "The Wattz 1600 Laser Pistol is perhaps the simplest of the energy weapons.\nIt fires concentrated light at a target, exciting the molecules at the point of impact and causing considerable damage.\nFavored by assassins and gangsters because of its relatively inexpensive price and small size.",
       "flavor": "Easy There Buck Rogers",
       "tags": [
         "weapon",
@@ -1390,12 +1468,13 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "1d6 (energy)",
+        "damage": "1d12 + 10",
         "ap": "S 5 / T 6",
-        "range": 15,
-        "capacity": "30",
+        "range": 35,
+        "capacity": 12,
         "skill": "Energy Weapons"
-      }
+      },
+      "requirements": "STR 4"
     },
     {
       "id": "weap_throwing_knife",
@@ -1636,8 +1715,10 @@
       "type": "rifle",
       "value": 50,
       "weight": 6,
-      "ammotype": "ammo_10mm",
-      "description": "Crude single-shot rifle.",
+      "ammotype": [
+        "ammo_10mm"
+      ],
+      "description": "A handmade rifle, crafted from a scrap 10mm pistol and a long piece of pipe.\nThese simply weapons are common among tribals with some technical skills.",
       "flavor": "Perfect For Shooting Womp Rats At Toshi Station",
       "tags": [
         "weapon",
@@ -1647,13 +1728,13 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage",
-        "ap": "S 6 / T 7",
-        "range": 25,
+        "damage": "Ammo Damage + 6",
+        "ap": "S 5 / T 6",
+        "range": 20,
         "capacity": 1,
         "skill": "Guns"
       },
-      "requirements": "STR 4"
+      "requirements": "STR 5"
     },
     {
       "id": "weap_hunting_rifle",
@@ -1662,8 +1743,10 @@
       "type": "rifle",
       "value": 350,
       "weight": 8,
-      "ammotype": "ammo_762",
-      "description": "Standard bolt-action hunting rifle.",
+      "ammotype": [
+        "ammo_762"
+      ],
+      "description": "A bolt-action rifle set in wooden furniture with attached iron sights chambered for .308 rounds. Though the weapon has a high damage output, its cycling action limits the speed at which it can put rounds in a target at close range.",
       "flavor": "Not fast. Not flashy. Not forgiving.",
       "tags": [
         "weapon",
@@ -1672,9 +1755,9 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage",
+        "damage": "Ammo Damage + 9",
         "ap": "S 5 / T 6",
-        "range": 40,
+        "range": 35,
         "capacity": 5,
         "skill": "Guns"
       },
@@ -1687,8 +1770,11 @@
       "type": "rifle",
       "value": 650,
       "weight": 10,
-      "ammotype": "ammo_223",
-      "description": "Standard military rifle in semiautomatic mode.",
+      "ammotype": [
+        "ammo_556",
+        "ammo_223"
+      ],
+      "description": "A pre-War model of lightweight, air-cooled, magazine-fed, gas-operated rifle. Its simplistic assembly design allows for each unit to be easily broken down for cleaning or replacing with a new unit as well as for mass production in times of large-scale military response.",
       "flavor": "It Has A Carrying Handle!",
       "tags": [
         "weapon",
@@ -1698,9 +1784,9 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage",
+        "damage": "Ammo Damage + 8",
         "ap": "S 5 / T 6",
-        "range": 45,
+        "range": 40,
         "capacity": 24,
         "skill": "Guns"
       },
@@ -1713,8 +1799,10 @@
       "type": "rifle",
       "value": 1800,
       "weight": 12,
-      "ammotype": "ammo_762",
-      "description": "Precision long-range rifle; ideal for targeted shots.",
+      "ammotype": [
+        "ammo_762"
+      ],
+      "description": "A semi-automatic rifle chambered for 7.62 rounds that deals high damage per shot and comes pre-installed with a 3.5x-magnification scope and has much less spread than that of other rifles.",
       "flavor": "Psalm 144",
       "tags": [
         "weapon",
@@ -1725,13 +1813,13 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 4",
-        "ap": "S 5 / T 6",
-        "range": 60,
+        "damage": "Ammo Damage + 14",
+        "ap": "S 6 / T 7",
+        "range": 50,
         "capacity": 6,
         "skill": "Guns"
       },
-      "requirements": "STR 6"
+      "requirements": "STR 5"
     },
     {
       "id": "weap_50cal_rifle",
@@ -1740,8 +1828,10 @@
       "type": "rifle",
       "value": 3000,
       "weight": 20,
-      "ammotype": "ammo_50bmg",
-      "description": "Heavy rifle capable of piercing armor; high recoil.",
+      "ammotype": [
+        "ammo_50bmg"
+      ],
+      "description": "Utilizing an ergonomic, metallic skeleton design with a free-floating barrel, the .50 Hécate II is a bolt-action, high caliber precision weapon intended for use against materiel and hard targets. For balance, the rifle includes a tapered barrel and a large muzzle brake to reduce recoil to manageable levels. Unlike most rifles, the AMR was designed from the ground up to be used at long and extreme ranges: It lacks any kind of sights, featuring instead a mounting rail for high powered scopes and a forward bipod mount.",
       "flavor": "Isn't This A Little Overkill?",
       "tags": [
         "weapon",
@@ -1752,7 +1842,7 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 8",
+        "damage": "Ammo Damage + 30",
         "ap": "S 6 / T 7",
         "range": 70,
         "capacity": 5,
@@ -1767,9 +1857,11 @@
       "type": "rifle",
       "value": 6000,
       "weight": 12,
-      "ammotype": "ammo_gauss_round",
-      "description": "Electromagnetic rifle with exceptional penetration.",
-      "flavor": "Fucking Magnets",
+      "ammotype": [
+        "ammo_gauss_round"
+      ],
+      "description": "The final product of endless research in railgun technology, the M72 Gauss Rifle comes from the laboratories of Germany. It uses an electromagnetic field to propel rounds at tremendous speed. A shot can go through just about any material, including flesh.\nStone, concrete, rock and thick metal are just about the only things that can stop a shot from this gun.\nThere is a telltale spiral trail of ionized particles visible for a couple seconds after this gun is fired.",
+      "flavor": "Newton's Gravedigger",
       "tags": [
         "weapon",
         "gun",
@@ -1780,23 +1872,28 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "3d10 (magnetic accelerator)",
-        "ap": "S 4 / T 5",
-        "range": 65,
-        "capacity": 8,
+        "damage": "Ammo Damage + 33",
+        "ap": "S 5 / T 6",
+        "range": 50,
+        "capacity": 20,
         "skill": "Guns"
       },
       "requirements": "STR 6"
     },
     {
       "id": "weap_single_barrel_shotgun",
-      "name": "Single Barrel Shotgun",
+      "name": "Single-Barrel Shotgun",
       "category": "weapons",
       "type": "shotgun",
       "value": 75,
       "weight": 6,
-      "ammotype": "ammo_12gauge_shot",
-      "description": "Crude single-shot scattergun.",
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette",
+        "ammo_12gauge_beanbag"
+      ],
+      "description": "The Winchester Model 37 was a popular single-barrel shotgun in America before the War. It uses a top-cocking lever, breakdown type of action with an automatic shell ejector.",
       "flavor": "Let's Hunt Some Geckos",
       "tags": [
         "weapon",
@@ -1805,12 +1902,11 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage × 6",
-        "ap": "S 6 / T 7",
-        "range": 10,
+        "damage": "Ammo Damage + 6",
+        "ap": "S 5 / T 6",
+        "range": 17,
         "capacity": 1,
         "spread": "Wide",
-        "ammoType": "20 Gauge",
         "skill": "Guns"
       },
       "requirements": "STR 4"
@@ -1822,8 +1918,13 @@
       "type": "shotgun",
       "value": 175,
       "weight": 7,
-      "ammotype": "ammo_12gauge_shot",
-      "description": "Extremely short-range double-barrel shotgun.",
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette",
+        "ammo_12gauge_beanbag"
+      ],
+      "description": "Someone took the time to chop the last few inches off the barrel and stock of this shotgun. Now, the wide spread of this hand-cannon's short-barreled shots makes it perfect for short-range crowd control.",
       "flavor": "Get Off My Lawn!",
       "tags": [
         "weapon",
@@ -1832,26 +1933,29 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage × 6 (per barrel)",
-        "ap": "S 6 / T 7",
-        "range": 10,
-        "capacity": "2 (break action)",
+        "damage": "Ammo Damage + 14",
+        "ap": "S 5 / T 6",
+        "range": 7,
+        "capacity": 2,
         "spread": "Very wide",
-        "ammoType": "12 Gauge",
         "skill": "Guns"
       },
-      "requirements": "STR 5"
+      "requirements": "STR 4"
     },
     {
-      "id": "weap_12gauge_hunting_shotgun",
-      "name": "12-Gauge Hunting Shotgun",
+      "id": "weap_hunting_shotgun",
+      "name": "Hunting Shotgun",
       "category": "weapons",
       "type": "shotgun",
       "value": 350,
       "weight": 9,
-      "ammotype": "ammo_12gauge_shot",
-      "description": "Accurate hunting shotgun.",
-      "flavor": "This is my boomstick!",
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette"
+      ],
+      "description": "One of dozens of shotguns that were common the world over before the War, a pump-action shotgun is a single-shot, semiautomatic weapon where the next shell is loaded into the chamber by pumping a mechanism along the bottom of the barrel.\nMany makes and models exist, but they are all almost the same.",
+      "flavor": "This Is My Boomstick!",
       "tags": [
         "weapon",
         "gun",
@@ -1859,42 +1963,13 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage × 6",
-        "ap": "S 6 / T 7",
-        "range": 30,
-        "capacity": "2 (break action)",
-        "spread": "Tight",
-        "ammoType": "12 Gauge",
-        "skill": "Guns"
-      },
-      "requirements": "STR 5"
-    },
-    {
-      "id": "weap_lever_action_shotgun",
-      "name": "Lever-Action Shotgun",
-      "category": "weapons",
-      "type": "shotgun",
-      "value": 550,
-      "weight": 8,
-      "ammotype": "ammo_12gauge_shot",
-      "description": "Faster cycling than break-action.",
-      "flavor": "I'll Be Back",
-      "tags": [
-        "weapon",
-        "gun",
-        "shotgun"
-      ],
-      "IsInChargenStore": true,
-      "stats": {
-        "damage": "Ammo Damage × 6",
-        "ap": "S 6 / T 7",
-        "range": 25,
+        "damage": "Ammo Damage +12",
+        "ap": "S 5 / T 6",
+        "range": 15,
         "capacity": 5,
-        "spread": "Moderate",
-        "ammoType": "12 Gauge",
         "skill": "Guns"
       },
-      "requirements": "STR 5"
+      "requirements": "STR 4"
     },
     {
       "id": "weap_combat_shotgun",
@@ -1903,8 +1978,13 @@
       "type": "shotgun",
       "value": 450,
       "weight": 8,
-      "ammotype": "ammo_12gauge_shot",
-      "description": "Semiautomatic combat shotgun.",
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette",
+        "ammo_12gauge_beanbag"
+      ],
+      "description": "A Winchester City-Killer 12 gauge combat shotgun, bullpup variant. In excellent condition, it has the optional \"Desert Warfare\" environmental sealant modification for extra reliability.\nThanks to their internal mechanism, Combat Shotguns fire single shots and a 3-shot burst.",
       "flavor": "They're Coming Out Of The Walls!",
       "tags": [
         "weapon",
@@ -1914,12 +1994,11 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage × 6",
-        "ap": "S 6 / T 7",
-        "range": 20,
+        "damage": "Ammo Damage + 15",
+        "ap": "S 5 / T 6",
+        "range": 22,
         "capacity": 12,
         "spread": "Moderate",
-        "ammoType": "12 Gauge",
         "skill": "Guns"
       },
       "requirements": "STR 5"
@@ -1931,8 +2010,13 @@
       "type": "shotgun",
       "value": 700,
       "weight": 10,
-      "ammotype": "ammo_12gauge_shot",
-      "description": "High-capacity automatic shotgun.",
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette",
+        "ammo_12gauge_beanbag"
+      ],
+      "description": "The H&K CAWS, short for Close Assault Weapons System, shotgun is a useful tool for close-range combat. The bullpup layout gives the weapon a short, easily handle-able length while still retaining enough barrel for its high velocity shells.",
       "flavor": "Sweep The Streets!",
       "tags": [
         "weapon",
@@ -1942,12 +2026,11 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage × 6",
-        "ap": "S 6 / T 7",
-        "range": 25,
+        "damage": "Ammo Damage +15",
+        "ap": "S 6 / T 6 / B 6",
+        "range": 30,
         "capacity": 20,
         "spread": "Moderate",
-        "ammoType": "12 Gauge",
         "skill": "Guns"
       },
       "requirements": "STR 6"
@@ -1959,7 +2042,13 @@
       "type": "shotgun",
       "value": 1800,
       "weight": 14,
-      "description": "Fully automatic rotary shotgun.",
+      "ammotype": [
+        "ammo_12gauge_shot",
+        "ammo_12gauge_slug",
+        "ammo_12gauge_flechette",
+        "ammo_12gauge_beanbag"
+      ],
+      "description": "The Jackhammer, despite its name, is an easy to control shotgun, even when fired on full automatic. The popular bullpup design, which places the magazine behind the trigger, makes the weapon well balanced & easy to control.",
       "flavor": "Fuck the NFA",
       "tags": [
         "weapon",
@@ -1971,14 +2060,13 @@
       "IsInChargenStore": false,
       "stats": {
         "damage": "Ammo Damage × 6",
-        "ap": "S 6 / T 7",
-        "range": 30,
-        "capacity": "10 (drum)",
+        "ap": "S 5 / T 6 / B 6",
+        "range": 35,
+        "capacity": 10,
         "spread": "Tight",
-        "ammoType": "12 Gauge",
         "skill": "Guns"
       },
-      "requirements": "STR 7"
+      "requirements": "STR 5"
     },
     {
       "id": "weap_zip_smg",
@@ -1987,7 +2075,9 @@
       "type": "smg",
       "value": 150,
       "weight": 6,
-      "ammotype": "ammo_9mm",
+      "ammotype": [
+        "ammo_9mm"
+      ],
       "description": "Improvised automatic firearm.",
       "flavor": "You're Taking THAT?",
       "tags": [
@@ -1999,11 +2089,11 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage",
+        "damage": "Ammo Damage + 4",
         "ap": "S 5 / T 6 / B 8",
         "range": 15,
         "capacity": 16,
-        "burst": "6 rounds",
+        "burst": 8,
         "skill": "Guns"
       },
       "requirements": "STR 4"
@@ -2015,8 +2105,10 @@
       "type": "smg",
       "value": 300,
       "weight": 6,
-      "ammotype": "ammo_9mm",
-      "description": "Common lightweight SMG.",
+      "ammotype": [
+        "ammo_9mm"
+      ],
+      "description": "The \"Grease Gun\" filled National Guard armories after the Army replaced it with newer weapons. \nThey are not uncommon in the post-War world, largely because of that stockpiling, and that most weapons storage facilities that housed more modern weapons also happened to be in the blast zones.",
       "flavor": "Greased Lightning!",
       "tags": [
         "weapon",
@@ -2026,11 +2118,11 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage",
-        "ap": "S 5 / T 6 / B 7",
+        "damage": "Ammo Damage + 10",
+        "ap": "S 4 / T 5 / B 5",
         "range": 20,
         "capacity": 30,
-        "burst": "10 rounds",
+        "burst": 10,
         "skill": "Guns"
       },
       "requirements": "STR 4"
@@ -2042,8 +2134,10 @@
       "type": "smg",
       "value": 500,
       "weight": 7,
-      "ammotype": "ammo_10mm",
-      "description": "Strong stopping power with notable recoil.",
+      "ammotype": [
+        "ammo_10mm"
+      ],
+      "description": "H&K MP9 submachinegun is a medium-sized SMG, capable of single shot and burst mode.",
       "flavor": "An Old Friend",
       "tags": [
         "weapon",
@@ -2053,14 +2147,14 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage",
-        "ap": "S 5 / T 6 / B 7",
+        "damage": "Ammo Damage + 6",
+        "ap": "S 5 / T 6 / B 6",
         "range": 25,
         "capacity": 30,
-        "burst": "10 rounds",
+        "burst": 10,
         "skill": "Guns"
       },
-      "requirements": "STR 5"
+      "requirements": "STR 4"
     },
     {
       "id": "weap_tommy_gun",
@@ -2069,8 +2163,10 @@
       "type": "smg",
       "value": 650,
       "weight": 11,
-      "ammotype": "ammo_45acp",
-      "description": "Heavy full-auto SMG with high magazine capacity.",
+      "ammotype": [
+        "ammo_45acp"
+      ],
+      "description": "The \"Tommy Gun\" submachine gun was originally designed by General John Thompson after the first World War, the Tommy Gun became the staple of law enforcement officers as well as organized crime.",
       "flavor": "An Offer You Can't Refuse",
       "tags": [
         "weapon",
@@ -2080,11 +2176,11 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage",
-        "ap": "S 5 / T 6 / B 7",
-        "range": 30,
-        "capacity": "50 (drum)",
-        "burst": "10 rounds",
+        "damage": "Ammo Damage + 2",
+        "ap": "S 5 / T 6 / B 6",
+        "range": 32,
+        "capacity": 50,
+        "burst": 10,
         "skill": "Guns"
       },
       "requirements": "STR 6"
@@ -2096,8 +2192,10 @@
       "type": "smg",
       "value": 1200,
       "weight": 6,
-      "ammotype": "ammo_9mm",
-      "description": "Compact SMG with strong armor penetration.",
+      "ammotype": [
+        "ammo_9mm"
+      ],
+      "description": "The H&K P90c was just coming into use at the time of the War.\nThe weapon's bullpup layout and compact design make it easy to control.\nThe durable P90c is prized for its reliability and high firepower in a ruggedly compact package.",
       "flavor": "Germany Knows A Thing Or Two About Putting Guns In Tanks",
       "tags": [
         "weapon",
@@ -2108,24 +2206,26 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 2",
-        "ap": "S 4 / T 5 / B 6",
-        "range": 35,
-        "capacity": 50,
-        "burst": "12 rounds",
+        "damage": "Ammo Damage + 12",
+        "ap": "S 4 / T 5 / B 5",
+        "range": 30,
+        "capacity": 24,
+        "burst": 12,
         "skill": "Guns"
       },
-      "requirements": "STR 5"
+      "requirements": "STR 4"
     },
     {
-      "id": "weap_hk_mp9",
-      "name": "HK MP9",
+      "id": "weap_hk_mp5",
+      "name": "H&K MP5",
       "category": "weapons",
       "type": "smg",
       "value": 1500,
       "weight": 6,
-      "ammotype": "ammo_9mm",
-      "description": "High-tech SMG with improved ballistics.",
+      "ammotype": [
+        "ammo_9mm"
+      ],
+      "description": "The H&K MP5 is a 9mm submachine gun of German design, developed in the 1960s and used by police and militaries across the world.",
       "flavor": "Give It a Slap",
       "tags": [
         "weapon",
@@ -2136,44 +2236,44 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 3",
-        "ap": "S 4 / T 5 / B 6",
-        "range": 40,
-        "capacity": 32,
-        "burst": "12 rounds",
+        "damage": "Ammo Damage + 7",
+        "ap": "S 4 / T 5 / B 5",
+        "range": 30,
+        "capacity": 30,
+        "burst": 5,
         "skill": "Guns"
       },
       "requirements": "STR 5"
     },
     {
-      "id": "weap_gauss_smg",
-      "name": "Gauss SMG",
+      "id": "weap_gauss_pistol",
+      "name": "Gauss Pistol",
       "category": "weapons",
-      "type": "smg",
+      "type": "pistol",
       "value": 4000,
       "weight": 8,
-      "ammotype": "ammo_gauss_round",
-      "description": "Electromagnetic SMG with extreme penetration.",
-      "flavor": "Newton's Gravedigger",
+      "ammotype": [
+        "ammo_gauss_round"
+      ],
+      "description": "Praised for its range and stopping power, the PPK-12 Gauss Pistol is of German design. \nThis \"Lil' Railgun\" uses an electromagnetic field to propel slugs at tremendous speed and power through a target, any armor, and just about everything else. \nThe PPK-12 looks like a normal automatic pistol, except for the unusual electromagnetic fins along the barrel.\nWhen fired, the Gauss Pistol leaves an unmistakable spiral trail of ionized particles through the air.",
+      "flavor": "Fucking Magnets",
       "tags": [
         "weapon",
         "gun",
-        "smg",
-        "automatic",
         "energy",
         "gauss",
-        "rare"
+        "rare",
+        "pistol"
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "2d10 (magnetic accelerator)",
-        "ap": "S 4 / T 5 / B 6",
+        "damage": "Ammo Damage + 22",
+        "ap": "S 4 / T 5 ",
         "range": 50,
-        "capacity": "20 (microfusion)",
-        "burst": "6 rounds",
+        "capacity": 12,
         "skill": "Guns"
       },
-      "requirements": "STR 6"
+      "requirements": "STR 4"
     },
     {
       "id": "weap_ak112",
@@ -2182,8 +2282,11 @@
       "type": "assault_rifle",
       "value": 900,
       "weight": 10,
-      "ammotype": "ammo_223",
-      "description": "Rugged Kalashnikov-pattern rifle.",
+      "ammotype": [
+        "ammo_556",
+        "ammo_223"
+      ],
+      "description": "An AK-112 Assault Rifle. An old military model, out of use around the time of the war. Can fire single-shot or burst, using the high velocity 5mm rounds.",
       "flavor": "Right Arm Of The People",
       "tags": [
         "weapon",
@@ -2194,14 +2297,14 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage + 1",
-        "ap": "S 5 / T 6 / B 7",
-        "range": 50,
-        "capacity": 30,
-        "burst": "6 rounds",
+        "damage": "Ammo Damage + 8",
+        "ap": "S 5 / T 6 / B 6",
+        "range": 45,
+        "capacity": 24,
+        "burst": 12,
         "skill": "Guns"
       },
-      "requirements": "STR 6"
+      "requirements": "STR 5"
     },
     {
       "id": "weap_r91",
@@ -2210,8 +2313,11 @@
       "type": "assault_rifle",
       "value": 1200,
       "weight": 11,
-      "ammotype": "ammo_223",
-      "description": "Pre-war US military rifle.",
+      "ammotype": [
+        "ammo_556",
+        "ammo_223"
+      ],
+      "description": "Manufactured by civilian defense contractor Stent Security Solutions, the R Series of combat assault rifles was used reliably following the discontinuation of the M series in the early 21st century. Chambered for 5.56mm ammunition, the R91 full-auto urban assault rifle is common throughout the Wasteland.",
       "flavor": "Right Arm Of The Free World",
       "tags": [
         "weapon",
@@ -2222,42 +2328,14 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 2",
+        "damage": "Ammo Damage + 12",
         "ap": "S 5 / T 6 / B 7",
         "range": 55,
         "capacity": 30,
-        "burst": "8 rounds",
+        "burst": 6,
         "skill": "Guns"
       },
       "requirements": "STR 6"
-    },
-    {
-      "id": "weap_hk_g11",
-      "name": "H&K G11",
-      "category": "weapons",
-      "type": "assault_rifle",
-      "value": 2500,
-      "weight": 9,
-      "description": "Fires caseless ammo; extremely high burst rate.",
-      "flavor": "You Look Like Captain Cosmos With That Thing",
-      "tags": [
-        "weapon",
-        "gun",
-        "assault_rifle",
-        "automatic",
-        "military",
-        "caseless"
-      ],
-      "IsInChargenStore": false,
-      "stats": {
-        "damage": "Ammo Damage + 2",
-        "ap": "S 4 / T 5 / B 6",
-        "range": 60,
-        "capacity": 45,
-        "burst": "15 rounds",
-        "skill": "Guns"
-      },
-      "requirements": "STR 5"
     },
     {
       "id": "weap_hk_g11e",
@@ -2266,7 +2344,7 @@
       "type": "assault_rifle",
       "value": 3200,
       "weight": 9,
-      "description": "Improved precision and action.",
+      "description": "This gun fires a caseless cartridge consisting of a block of propellant with a bullet buried inside.\nThe resultant weight and space savings allow this weapon to have a very high magazine capacity.",
       "flavor": "Space Age Meets Hot Lead",
       "tags": [
         "weapon",
@@ -2278,11 +2356,11 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 3",
-        "ap": "S 4 / T 5 / B 6",
-        "range": 65,
+        "damage": "Ammo Damage + 12",
+        "ap": "S 5 / T 6 / B 6",
+        "range": 35,
         "capacity": 50,
-        "burst": "15 rounds",
+        "burst": 10,
         "skill": "Guns"
       },
       "requirements": "STR 5"
@@ -2294,8 +2372,10 @@
       "type": "assault_rifle",
       "value": 1800,
       "weight": 13,
-      "ammotype": "ammo_762",
-      "description": "Powerful long-range battle rifle.",
+      "ammotype": [
+        "ammo_762"
+      ],
+      "description": "The FN FAL has been more widely used by armed forces than any other rifle in history. It’s a reliable weapon for any terrain or situation, and its fine construction of only the best materials ensures a working weapon every time.",
       "flavor": "Belgian Wafflemaker",
       "tags": [
         "weapon",
@@ -2307,14 +2387,14 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 3",
-        "ap": "S 5 / T 6 / B 7",
-        "range": 70,
+        "damage": "Ammo Damage + 8",
+        "ap": "S 5 / T 6 / B 6",
+        "range": 35,
         "capacity": 20,
-        "burst": "5 rounds",
+        "burst": 10,
         "skill": "Guns"
       },
-      "requirements": "STR 7"
+      "requirements": "STR 5"
     },
     {
       "id": "weap_xl70e3",
@@ -2323,8 +2403,10 @@
       "type": "assault_rifle",
       "value": 3500,
       "weight": 9,
-      "ammotype": "ammo_762",
-      "description": "Advanced modular bullpup rifle with high accuracy.",
+      "ammotype": [
+        "ammo_762"
+      ],
+      "description": "This was an experimental weapon before the war, and is pretty rare. Rumors are that it was issued to the Royal Canadian Mounted Police.",
       "flavor": "Where Do You Even Get Parts For That?",
       "tags": [
         "weapon",
@@ -2337,11 +2419,11 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 2",
-        "ap": "S 4 / T 5 / B 6",
-        "range": 65,
-        "capacity": 30,
-        "burst": "10 rounds",
+        "damage": "Ammo Damage + 12",
+        "ap": "S 5 / T 6 / B 6",
+        "range": 35,
+        "capacity": 24,
+        "burst": 8,
         "skill": "Guns"
       },
       "requirements": "STR 5"
@@ -2353,8 +2435,11 @@
       "type": "machine_gun",
       "value": 1500,
       "weight": 20,
-      "ammotype": "ammo_223",
-      "description": "Squad-level light machine gun with strong sustained fire.",
+      "ammotype": [
+        "ammo_556",
+        "ammo_223"
+      ],
+      "description": "A fully automatic machinegun chambered for 5.56mm rounds with a rapid rate of fire and a high magazine size and a favorite of heavy combat units Pre-War.",
       "flavor": "MOA: Point. Kill.",
       "tags": [
         "weapon",
@@ -2366,14 +2451,14 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage",
+        "damage": "Ammo Damage + 8",
         "ap": "S 6 / T 7 / B 8",
         "range": 45,
         "capacity": 50,
-        "burst": "10 rounds",
+        "burst": 10,
         "skill": "Guns"
       },
-      "requirements": "STR 7"
+      "requirements": "STR 6"
     },
     {
       "id": "weap_m60",
@@ -2382,9 +2467,11 @@
       "type": "machine_gun",
       "value": 2200,
       "weight": 23,
-      "ammotype": "ammo_762",
-      "description": "Pre-war military GPMG with high reliability.",
-      "flavor": "Anyone that runs is a Raider. Anyone that stands still is a well disciplined Raider.",
+      "ammotype": [
+        "ammo_762"
+      ],
+      "description": "A belt-fed machine gun that is usually tripod in a situation where the gunner can strafe bullets over a wide range.",
+      "flavor": "Anyone That Stands Still Is A Well-Disciplined Raider.",
       "tags": [
         "weapon",
         "gun",
@@ -2395,24 +2482,26 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 1",
-        "ap": "S 6 / T 7 / B 8",
-        "range": 55,
-        "capacity": "100 (belt)",
-        "burst": "12 rounds",
+        "damage": "Ammo Damage + 15",
+        "ap": "B 7",
+        "range": "5(80)",
+        "capacity": 60,
+        "burst": 20,
         "skill": "Guns"
       },
-      "requirements": "STR 8"
+      "requirements": "STR 7"
     },
     {
       "id": "weap_bozar",
-      "name": "Bozar (Hybrid LMG/Sniper Platform)",
+      "name": "Bozar",
       "category": "weapons",
       "type": "machine_gun",
       "value": 5000,
       "weight": 28,
-      "ammotype": "ammo_762",
-      "description": "Unique precision machine gun with exceptional accuracy.",
+      "ammotype": [
+        "ammo_762"
+      ],
+      "description": "The Bozar is the ultimate refinement of the sniper’s art. Although somewhat finicky and prone to jamming if not kept scrupulously clean, the big weapon’s accuracy more than makes up for its extra maintenance requirements.\nThis gun looks like a large sniper rifle, and was originally designed for SEALs and Special Forces to take out small vehicles like tanks.",
       "flavor": "Something's Off About This Fire Rate...",
       "tags": [
         "weapon",
@@ -2425,23 +2514,23 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 4",
-        "ap": "S 5 / T 6 / B 7",
-        "range": 70,
+        "damage": "Ammo Damage + 25",
+        "ap": "B 6",
+        "range": 75,
         "capacity": 30,
-        "burst": "8 rounds",
+        "burst": 15,
         "skill": "Guns"
       },
-      "requirements": "STR 8"
+      "requirements": "STR 6"
     },
     {
-      "id": "weap_vindicator_minigun",
+      "id": "weap_cz53_minigun",
       "name": "Vindicator Minigun",
       "category": "weapons",
       "type": "machine_gun",
       "value": 8000,
       "weight": 35,
-      "description": "Rotary-barrel minigun with immense suppressive fire.",
+      "description": "The Rockwell CZ-53 Personal Minigun is a multi-barreled chaingun firing 5mm ammunition at over 60,000 rounds per minute. Ouch.",
       "flavor": "Ooh It Spins!",
       "tags": [
         "weapon",
@@ -2454,14 +2543,14 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "Ammo Damage + 2",
-        "ap": "B 8",
-        "range": 60,
-        "capacity": 500,
-        "burst": "25 rounds",
+        "damage": "Ammo Damage + 15",
+        "ap": "B 6",
+        "range": 35,
+        "capacity": 120,
+        "burst": "20 rounds",
         "skill": "Guns"
       },
-      "requirements": "STR 9"
+      "requirements": "STR 7"
     },
     {
       "id": "weap_avenger_minigun",
@@ -2470,7 +2559,7 @@
       "type": "machine_gun",
       "value": 9500,
       "weight": 38,
-      "description": "Improved minigun with tighter grouping.",
+      "description": "Rockwell designed the Avenger as the replacement for their aging CZ-53 Personal Minigun.\nThe Avenger’s design improvements include improved gel-fin cooling and chromium-plated\nbarrel-bores. This gives it a greater range and lethality.",
       "flavor": "Who Took The Gun Off The Vertibird?",
       "tags": [
         "weapon",
@@ -2483,23 +2572,23 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 3",
-        "ap": "B 8",
-        "range": 65,
-        "capacity": 500,
-        "burst": "30 rounds",
+        "damage": "Ammo Damage + 10",
+        "ap": "B 6",
+        "range": 40,
+        "capacity": 120,
+        "burst": "40 rounds",
         "skill": "Guns"
       },
-      "requirements": "STR 9"
+      "requirements": "STR 7"
     },
     {
-      "id": "weap_cz53_minigun",
-      "name": "CZ53 Personal Minigun",
+      "id": "weap_vindicator_minigun",
+      "name": "Vindicator Minigun",
       "category": "weapons",
       "type": "machine_gun",
       "value": 11000,
       "weight": 40,
-      "description": "High-end pre-war rotary weapon; top-tier damage output.",
+      "description": "The German Rheinmetal AG Company created the Vindicator, the ultimate minigun.\nThe Vindicator throws 90,000 caseless shells per minute down its 6 carbon-polymer barrels. As the pinnacle of Teutonic engineering, it is the ultimate hand-held weapon.",
       "flavor": "When Pink Mist Isn't Enough",
       "tags": [
         "weapon",
@@ -2512,14 +2601,14 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "Ammo Damage + 4",
-        "ap": "B 8",
-        "range": 70,
-        "capacity": 500,
-        "burst": "35 rounds",
+        "damage": "Ammo Damage + 14",
+        "ap": "B 6",
+        "range": 30,
+        "capacity": 100,
+        "burst": "25 rounds",
         "skill": "Guns"
       },
-      "requirements": "STR 10"
+      "requirements": "STR 7"
     },
     {
       "id": "weap_dynamite",
@@ -2555,7 +2644,7 @@
         "explosive",
         "throwable"
       ],
-      "IsInChargenStore": true,
+      "IsInChargenStore": false,
       "stats": {
         "damage": "5d10",
         "radius": "2 hexes"
@@ -2563,13 +2652,13 @@
     },
     {
       "id": "weap_powder_charge",
-      "name": "Dynamite",
+      "name": "Powder Charge",
       "category": "weapons",
       "type": "explosive",
       "value": 275,
       "weight": 5,
       "description": "An explosive device consisting of several sticks of dynamite, a detonator, and a timer to set it off. Setting dynamite takes a successful roll against the Explosives skill, while disarming uses the Traps skill. Dynamite does 1d20+30 points of damage to anything in its hex and all adjacent hexes when it goes off, and 1d6 points of concussion damage to anything within 4 hexes of the explosion.",
-      "flavor": "A Nobel Prize",
+      "flavor": "That's The Sound Of The Men Working On The Chain Gang",
       "tags": [
         "equipment",
         "explosive"
@@ -2578,6 +2667,156 @@
       "stats": {
         "damage": "1d20+30 (primary) + 1d6 concussion (4 hex radius)"
       }
+    },
+    {
+      "id": "weap_plasma_pistol",
+      "name": "Plasma Pistol",
+      "category": "weapons",
+      "type": "pistol",
+      "value": 900,
+      "weight": 5,
+      "ammotype": [
+        "ammo_small_energy_cell"
+      ],
+      "description": "The Glock 86 Plasma Pistol. Designed by the Gaston Glock artificial intelligence. Shoots a small bolt of superheated plasma.",
+      "flavor": "Hot. Green. Final.",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "energy",
+        "rare",
+        "laser"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "1d20 + 10",
+        "ap": "S 5 / T 6",
+        "range": 20,
+        "capacity": 16,
+        "skill": "Energy Weapons"
+      },
+      "requirements": "STR 4"
+    },
+    {
+      "id": "weap_pulse_pistol",
+      "name": "Pulse Pistol",
+      "category": "weapons",
+      "type": "pistol",
+      "value": 12500,
+      "weight": 5,
+      "ammotype": [
+        "ammo_small_energy_cell"
+      ],
+      "description": "The YK32 Pulse Pistol is an electrical pulse weapon that was developed by the Yuma Flats Energy Consortium. Though powerful, the YK32 was never considered a practical weapon due to its inefficient energy usage and bulky design.",
+      "flavor": "I Claim This Planet In The Name Of Mars. Isn't That Lovely?",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "energy",
+        "rare",
+        "laser"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "1d12 + 32",
+        "ap": "S 4 / T 5",
+        "range": 15,
+        "capacity": 10,
+        "skill": "Energy Weapons"
+      },
+      "requirements": "STR 3"
+    },
+    {
+      "id": "weap_laser_rifle",
+      "name": "Laser Rifle",
+      "category": "weapons",
+      "type": "rifle",
+      "value": 1700,
+      "weight": 7,
+      "ammotype": [
+        "ammo_microfusion_cell"
+      ],
+      "description": "A Wattz 2000 Laser Rifle. Uses micro fusion cells for more powerful lasers, and an extended barrel for additional range.",
+      "flavor": "Because Bullets Weren’t Personal Enough.",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "energy",
+        "rare",
+        "laser"
+      ],
+      "IsInChargenStore": false,
+      "stats": {
+        "damage": "2d12 + 23",
+        "ap": "S 5 / T 6",
+        "range": 35,
+        "capacity": 20,
+        "skill": "Energy Weapons"
+      },
+      "requirements": "STR 4"
+    },
+    {
+      "id": "weap_plasma_rifle",
+      "name": "Plasma Rifle",
+      "category": "weapons",
+      "type": "rifle",
+      "value": 2200,
+      "weight": 17,
+      "ammotype": [
+        "ammo_microfusion_cell"
+      ],
+      "description": "A Winchester Model P94 plasma rifle. An industrial-grade energy weapon, firing superheated bolts of plasma down a superconducting barrel. Powered by microfusion cells.",
+      "flavor": "Leaves Behind Proof.",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "energy",
+        "rare",
+        "laser"
+      ],
+      "IsInChargenStore": false,
+      "stats": {
+        "damage": "2d20 + 25",
+        "ap": "S 5 / T 6",
+        "range": 25,
+        "capacity": 10,
+        "skill": "Energy Weapons"
+      },
+      "requirements": "STR 6"
+    },
+    {
+      "id": "weap_pulse_rifle",
+      "name": "Pulse Rifle",
+      "category": "weapons",
+      "type": "rifle",
+      "value": 22000,
+      "weight": 14,
+      "ammotype": [
+        "ammo_microfusion_cell"
+      ],
+      "description": "The YK42B is an electrical pulse weapon that was developed by the Yuma Flats Energy Consortium. It is considered a far superior weapon to the YK32 Pulse Pistol, having a greater charge capacity and range.",
+      "flavor": "The Right Arm Of A Bright Tomorrow.",
+      "tags": [
+        "weapon",
+        "gun",
+        "pistol",
+        "energy",
+        "rare",
+        "laser"
+      ],
+      "IsInChargenStore": false,
+      "stats": {
+        "damage": "2d12 + 54",
+        "ap": "S 5 / T 6",
+        "range": 30,
+        "capacity": 15,
+        "skill": "Energy Weapons"
+      },
+      "requirements": "STR 3"
     }
   ],
   "armor": [

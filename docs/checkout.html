@@ -346,7 +346,7 @@
 
         const cartData = JSON.parse(cartJSON);
         checkoutData.cart = cartData.items;
-        checkoutData.budget = cartData.budgetUsed ? (cartData.budgetUsed + cartData.budgetRemaining) : 80000;
+        checkoutData.budget = cartData.budgetUsed ? (cartData.budgetUsed + cartData.budgetRemaining) : 1700;
 
         // Load config
         const configRes = await fetch('prod-config.json');
