@@ -458,7 +458,8 @@
       "stats": {
         "damage": "1d4 + MD",
         "ap": "S 3 / T 4",
-        "range": 1,
+        "thrownAP": "S 3 / T 5",
+        "range": "1 / 10",
         "skill": "Throwing"
       },
       "requirements": "STR 1"
@@ -484,7 +485,8 @@
       "stats": {
         "damage": "1d4",
         "ap": "S 3 / T 4",
-        "range": 1,
+        "thrownAP": "S 4 / T 5",
+        "range": "1 / 4",
         "skill": "Melee Weapons"
       },
       "requirements": "STR 1"
@@ -509,7 +511,8 @@
       "stats": {
         "damage": "1d8 + MD",
         "ap": "S 3 / T 4",
-        "range": 1,
+        "thrownAP": "S 4 / T 5",
+        "range": "1 / 5",
         "skill": "Melee Weapons"
       },
       "requirements": "STR 3"
@@ -533,7 +536,8 @@
       "stats": {
         "damage": "1d10 + MD",
         "ap": "S 3 / T 4",
-        "range": 1,
+        "thrownAP": "S 4 / 5",
+        "range": "1 / 5",
         "skill": "Melee Weapons"
       },
       "requirements": "STR 2"
@@ -557,7 +561,8 @@
       "stats": {
         "damage": "(1d12+3) + MD",
         "ap": "S 4 / T 5",
-        "range": 2,
+        "thrownAP": "S 5 / T 6",
+        "range": "2 / 5",
         "skill": "Melee Weapons"
       },
       "requirements": "STR 4"
@@ -582,7 +587,8 @@
       "stats": {
         "damage": "(1d12+ 3) + MD",
         "ap": "S 4 / T 5",
-        "range": 1,
+        "thrownAP": "S 5 / T 6",
+        "range": "1 / 5",
         "skill": "Melee Weapons"
       },
       "requirements": "STR 5"
@@ -607,7 +613,8 @@
       "stats": {
         "damage": "(1d4+1) + MD",
         "ap": "S 3 / T 4",
-        "range": 2,
+        "thrownAP": "S 4 / T 5",
+        "range": "2 / 10",
         "skill": "Melee Weapons"
       },
       "requirements": "STR 3"
@@ -632,7 +639,8 @@
       "stats": {
         "damage": "1d10 + MD",
         "ap": "S 4 / T 5",
-        "range": 1,
+        "thrownAP": "S 5 / T 6",
+        "range": "1 / 5",
         "skill": "Melee Weapons"
       },
       "requirements": "STR 5"
@@ -657,7 +665,8 @@
       "stats": {
         "damage": "(1d12+3) + MD",
         "ap": "S 3 / T 4",
-        "range": 1,
+        "thrownAP": "S 4 / T 5",
+        "range": "1 / 6",
         "skill": "Melee Weapons"
       },
       "requirements": "STR 2"
@@ -683,7 +692,7 @@
       "stats": {
         "damage": "3d4 + MD",
         "ap": "S 4 / T 5",
-        "range": 2,
+        "range": "2 / 5",
         "skill": "Melee Weapons"
       },
       "requirements": "STR 6"
@@ -708,7 +717,8 @@
       "stats": {
         "damage": "1d8 + MD",
         "ap": "S 3 / T 4",
-        "range": 1,
+        "thrownAP": "S 4 / T 5",
+        "range": "1 / 5",
         "skill": "Melee Weapons"
       },
       "requirements": "STR 3"
@@ -732,7 +742,7 @@
       "stats": {
         "damage": "(1d10 + 7) + MD",
         "ap": "S 4 / T 5",
-        "range": 1,
+        "range": "1 / 5",
         "skill": "Melee Weapons"
       },
       "requirements": "STR 4"
@@ -757,7 +767,8 @@
       "stats": {
         "damage": "1d10 + MD",
         "ap": "S 4 / T 5",
-        "range": 1,
+        "thrownAP": "S 5 / T 6",
+        "range": "1 / 5",
         "skill": "Melee Weapons"
       },
       "requirements": "STR 5"
@@ -783,7 +794,8 @@
       "stats": {
         "damage": "2d8 + MD",
         "ap": "S 4 / T 5",
-        "range": 1,
+        "thrownAP": "S 5 / T 6",
+        "range": "1 / 5",
         "skill": "Melee Weapons"
       },
       "requirements": "STR 6"
@@ -1493,11 +1505,13 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "1d6 + MD (melee) / 1d6 (thrown)",
+        "damage": "1d6 + MD",
         "ap": "S 4 / T 5",
-        "range": 15,
+        "thrownAP": "S 4 / T 5",
+        "range": "1 /STR * 2",
         "skill": "Throwing"
-      }
+      },
+      "requirements": "STR 2"
     },
     {
       "id": "weap_throwing_spike",
@@ -1513,11 +1527,11 @@
         "thrown",
         "pierce"
       ],
-      "IsInChargenStore": true,
+      "IsInChargenStore": false,
       "stats": {
-        "damage": "1d8 (thrown)",
-        "ap": "S 4 / T 5",
-        "range": 20,
+        "damage": "1d6",
+        "ap": "S 3 / T 4",
+        "range": 15,
         "skill": "Throwing"
       }
     },
@@ -1538,7 +1552,9 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "2d10 + 10 (explosive)",
+        "damage": "1d12 + 22",
+        "splash": "1 hex, 1d6",
+        "concussive": "2 hex, 1d3",
         "ap": "S 5",
         "range": 15,
         "skill": "Throwing"
@@ -1562,9 +1578,10 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "1d10 fire + burning (1d6 for 1d3 rounds)",
+        "damage": "1d12 + 8",
+        "splash": "3 hex, 1d6 for 1d8 turns",
         "ap": "S 5",
-        "range": 10,
+        "range": 12,
         "skill": "Throwing"
       }
     },
@@ -1586,10 +1603,11 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "3d10 + 10 (plasma)",
+        "damage": "5d10 + 40",
+        "splash": "1 hex, 1/3 of damage",
+        "concussive": "2 hex, 1d6",
         "ap": "S 5",
         "range": 15,
-        "armorPiercing": "-4",
         "skill": "Throwing"
       }
     },
@@ -1600,7 +1618,7 @@
       "type": "thrown",
       "value": 350,
       "weight": 1,
-      "description": "Electromagnetic; devastating to machines.",
+      "description": "Electromagnetic; devastating to machines. Does NOT affect Organics.",
       "flavor": "Will Stancil Keeps These On a Deadman's Switch",
       "tags": [
         "weapon",
@@ -1611,7 +1629,7 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "5d10 vs robots / 1d10 vs organics (EMP)",
+        "damage": "5d10 +100",
         "ap": "S 5",
         "range": 15,
         "skill": "Throwing"
@@ -1633,9 +1651,10 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "1d12 (thrown)",
-        "ap": "S 4 / T 5",
-        "range": 25,
+        "damage": "(1d12 + 3) + MD",
+        "ap": "S 5 / T 6",
+        "thrownAP": "S 5 / T 6",
+        "range": "2 / 8",
         "skill": "Throwing"
       }
     },
@@ -1656,9 +1675,10 @@
       ],
       "IsInChargenStore": true,
       "stats": {
-        "damage": "1d12 + 2 (thrown)",
+        "damage": "1d12 + 5",
         "ap": "S 4 / T 5",
-        "range": 25,
+        "thrownAP": "S 4 / T 5",
+        "range": "2 / 9",
         "skill": "Throwing"
       }
     },
@@ -1680,8 +1700,9 @@
       "IsInChargenStore": true,
       "stats": {
         "damage": "1d3",
-        "ap": "S 3 / T 4",
-        "range": 20,
+        "ap": "S 2 / T 3",
+        "thrownAP": "S 3 / T 4",
+        "range": "1 / 10",
         "skill": "Throwing"
       }
     },
@@ -1692,7 +1713,7 @@
       "type": "thrown",
       "value": 40,
       "weight": 1,
-      "description": "May return to thrower with successful Agility check (GM discretion).",
+      "description": "Although boomerangs are commonly associated with the Australian Outback, similar devices have been found the world over.\nContrary to popular belief, hunting boomerangs (the kind that hurt) do not return to the user. \nThey are a cleverly designed wooden airfoil with a handle on one end, and can cause a surprising amount of damage for their relative size.\nMay return to thrower with successful Agility check (GM discretion).",
       "flavor": "Return To Sender",
       "tags": [
         "weapon",
@@ -1702,9 +1723,10 @@
       ],
       "IsInChargenStore": false,
       "stats": {
-        "damage": "1d6",
+        "damage": "2d10 + MD",
         "ap": "S 4 / T 5",
-        "range": 20,
+        "thrownAP": "S 4 / T 5",
+        "range": "1 / 20",
         "skill": "Throwing"
       }
     },

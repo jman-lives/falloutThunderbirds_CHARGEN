@@ -265,17 +265,8 @@
         <button type="button" class="modal-close" id="close-modal">&times;</button>
       </div>
       <div class="package-list" id="package-list">
-        <div class="package-item" data-package="survivor">
-          <div class="package-name">🛡️ Survivor Package</div>
-          <div class="package-description">Basic armor, a 10mm pistol, and essential supplies for survival.</div>
-        </div>
-        <div class="package-item" data-package="soldier">
-          <div class="package-name">⚔️ Soldier Package</div>
-          <div class="package-description">Combat armor, rifle, and ammo for the experienced fighter.</div>
-        </div>
-        <div class="package-item" data-package="scavenger">
-          <div class="package-name">🎒 Scavenger Package</div>
-          <div class="package-description">Light armor, diverse weapons, and tools for exploration.</div>
+        <div style="text-align: center; color: var(--muted); padding: 32px;">
+          Loading packages...
         </div>
       </div>
     </div>
@@ -312,7 +303,14 @@
     // Load database
     async function loadDatabase() {
       try {
-        const response = await fetch('database.json');
+        // Add cache-busting parameter to ensure we get the latest version
+        const cacheBuster = '?v=' + new Date().getTime();
+        const response = await fetch('database.json' + cacheBuster);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         databaseData = data;
         console.log('%c[DATABASE LOADED]', 'color: #4CAF50; font-weight: bold;', data);
@@ -325,14 +323,23 @@
     // Load packages from JSON
     async function loadPackages() {
       try {
-        const response = await fetch('packages.json');
+        // Add cache-busting parameter to ensure we get the latest version
+        const cacheBuster = '?v=' + new Date().getTime();
+        const response = await fetch('packages.json' + cacheBuster);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         packagesData = data;
         console.log('%c[PACKAGES LOADED]', 'color: #4CAF50; font-weight: bold;', data);
+        console.log('%c[TOTAL PACKAGES]', 'color: #4CAF50; font-weight: bold;', data.packages.length);
         populatePackages();
       } catch (error) {
         console.error('Error loading packages:', error);
-        alert('Failed to load equipment packages. Please refresh the page.');
+        const packageList = document.getElementById('package-list');
+        packageList.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 32px;">Failed to load packages. Error: ' + error.message + '</div>';
       }
     }
 
@@ -356,21 +363,36 @@
       const packageList = document.getElementById('package-list');
       packageList.innerHTML = '';
 
+      if (!packagesData || !packagesData.packages) {
+        packageList.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 32px;">No packages data available</div>';
+        return;
+      }
+
       // Filter packages that should be shown in chargen
       const chargenPackages = packagesData.packages.filter(pkg => pkg.showInChargen !== false);
 
-      chargenPackages.forEach(pkg => {
+      console.log('%c[FILTERED PACKAGES]', 'color: #4CAF50; font-weight: bold;', chargenPackages.length, 'packages to display');
+      
+      if (chargenPackages.length === 0) {
+        packageList.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 32px;">No packages available for character creation</div>';
+        return;
+      }
+
+      chargenPackages.forEach((pkg, index) => {
+        console.log(`  ${index + 1}. ${pkg.id} - ${pkg.name}`);
         const item = document.createElement('div');
         item.className = 'package-item';
         item.setAttribute('data-package', pkg.id);
         item.innerHTML = `
-          <div class="package-name">${pkg.icon} ${pkg.name}</div>
-          <div class="package-description">${pkg.description}</div>
+          <div class="package-name">${pkg.icon || '📦'} ${pkg.name}</div>
+          <div class="package-description">${pkg.description || 'No description available'}</div>
         `;
         
         item.addEventListener('click', () => selectPackage(pkg));
         packageList.appendChild(item);
       });
+
+      console.log('%c[PACKAGES POPULATED]', 'color: #4CAF50; font-weight: bold;', chargenPackages.length, 'packages added to UI');
     }
 
     // Apply package to character
