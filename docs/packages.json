@@ -28,10 +28,6 @@
           "quantity": 3
         },
         {
-          "id": "chem_radaway",
-          "quantity": 2
-        },
-        {
           "id": "equip_water_canteen",
           "quantity": 1
         }
@@ -92,10 +88,6 @@
           "quantity": 1
         },
         {
-          "id": "weap_44_revolver",
-          "quantity": 1
-        },
-        {
           "id": "weap_hunting_rifle",
           "quantity": 1
         },
@@ -104,20 +96,12 @@
           "quantity": 1
         },
         {
-          "id": "ammo_44",
-          "quantity": 30
-        },
-        {
           "id": "ammo_762",
           "quantity": 40
         },
         {
           "id": "chem_stimpak",
           "quantity": 4
-        },
-        {
-          "id": "chem_radaway",
-          "quantity": 2
         },
         {
           "id": "equip_lockpick_set",
@@ -137,7 +121,7 @@
     {
       "id": "vault_dweller",
       "name": "Vault Dweller Package",
-      "description": "You take a sip from your trusty Vault canteen.",
+      "description": "Finally, Some Fresh Air.",
       "icon": "⚙️",
       "showInChargen": true,
       "items": [
@@ -176,6 +160,10 @@
         {
           "id": "armor_vault_suit",
           "quantity": 1
+        },
+        {
+          "id": "equip_pipboy_3000",
+          "quantity": 1
         }
       ],
       "credits": 295
@@ -189,11 +177,11 @@
       "items": [
         {
           "id": "equip_rope",
-          "quantity": 1
+          "quantity": 2
         },
         {
           "id": "chem_healing_powder",
-          "quantity": 7
+          "quantity": 8
         },
         {
           "id": "chem_voodoo",
@@ -201,7 +189,7 @@
         },
         {
           "id": "weap_rock",
-          "quantity": 1
+          "quantity": 2
         },
         {
           "id": "weap_war_club",
@@ -221,7 +209,7 @@
     {
       "id": "raider",
       "name": "Raider Package",
-      "description": "",
+      "description": "I AM DANGEROUS",
       "icon": "💀",
       "showInChargen": true,
       "items": [
@@ -259,7 +247,7 @@
     {
       "id": "caravan",
       "name": "Caravan Guard Package",
-      "description": "Damn Brahmin crap everywhere",
+      "description": "Damn Brahmin Crap Everywhere",
       "icon": "🐂",
       "showInChargen": true,
       "items": [
@@ -289,6 +277,404 @@
         }
       ],
       "credits": 315
+    },
+    {
+      "id": "space_cowboy",
+      "name": "Space Cowboy Package",
+      "description": "Home On The Range- With A Plasma Pistol",
+      "icon": "🚀",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "weap_plasma_pistol",
+          "quantity": 1
+        },
+        {
+          "id": "ammo_small_energy_cell",
+          "quantity": 29
+        },
+        {
+          "id": "equip_rope",
+          "quantity": 1
+        },
+        {
+          "id": "chem_stimpak",
+          "quantity": 1
+        },
+        {
+          "id": "armor_prewar_clothes",
+          "quantity": 1
+        }
+      ],
+      "credits": 0
+    },
+    {
+      "id": "scientist",
+      "name": "Scientist Package",
+      "description": "I FREAKING LOVE SCIENCE",
+      "icon": "⚗️",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "armor_radiation_suit",
+          "quantity": 1
+        },
+        {
+          "id": "weap_shiv",
+          "quantity": 1
+        },
+        {
+          "id": "weap_laser_pistol",
+          "quantity": 1
+        },
+        {
+          "id": "ammo_small_energy_cell",
+          "quantity": 30
+        },
+        {
+          "id": "chem_mentats",
+          "quantity": 1
+        },
+        {
+          "id": "chem_stimpak",
+          "quantity": 2
+        }
+      ],
+      "credits": 0
+    },
+    {
+      "id": "junkie",
+      "name": "Junkie Package",
+      "description": "Don't Kill My Buzz",
+      "icon": "💉",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "armor_wastelander",
+          "quantity": 1
+        },
+        {
+          "id": "chem_psycho",
+          "quantity": 1
+        },
+        {
+          "id": "chem_jet",
+          "quantity": 6
+        },
+        {
+          "id": "chem_buffout",
+          "quantity": 1
+        },
+        {
+          "id": "chem_antidote",
+          "quantity": 1
+        },
+        {
+          "id": "chem_mentats",
+          "quantity": 1
+        },
+        {
+          "id": "chem_healing_powder",
+          "quantity": 4
+        },
+        {
+          "id": "weap_machete",
+          "quantity": 1
+        },
+        {
+          "id": "weap_zip_gun",
+          "quantity": 1
+        },
+        {
+          "id": "ammo_22lr",
+          "quantity": 20
+        }
+      ],
+      "credits": 12
+    },
+    {
+      "id": "medic",
+      "name": "Medic Package",
+      "description": "One Stitch, Two Stitch...",
+      "icon": "💊",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "equip_medical_kit",
+          "quantity": 1
+        },
+        {
+          "id": "chem_stimpak",
+          "quantity": 4
+        },
+        {
+          "id": "chem_super_stimpak",
+          "quantity": 1
+        },
+        {
+          "id": "weap_knife",
+          "quantity": 1
+        },
+        {
+          "id": "weap_9mm_pistol",
+          "quantity": 1
+        },
+        {
+          "id": "ammo_9mm",
+          "quantity": 33
+        },
+        {
+          "id": "armor_wastelander",
+          "quantity": 1
+        }
+      ],
+      "credits": 0
+    },
+    {
+      "id": "doctor",
+      "name": "Wasteland Doctor Package",
+      "description": "Dammit Jim, I'm A Doctor, Not A Mechanic",
+      "icon": "🩺",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "armor_prewar_clothes",
+          "quantity": 1
+        },
+        {
+          "id": "chem_stimpak",
+          "quantity": 3
+        },
+        {
+          "id": "chem_super_stimpak",
+          "quantity": 1
+        },
+        {
+          "id": "equip_doctors_bag",
+          "quantity": 1
+        },
+        {
+          "id": "equip_scalpel",
+          "quantity": 1
+        },
+        {
+          "id": "weap_10mm_pistol",
+          "quantity": 1
+        },
+        {
+          "id": "ammo_10mm",
+          "quantity": 24
+        }
+      ],
+      "credits": 0
+    },
+    {
+      "id": "mechanic",
+      "name": "Mechanic Package",
+      "description": "Ain't Got No Gas In It",
+      "icon": "🔧",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "armor_leather_jacket",
+          "quantity": 1
+        },
+        {
+          "id": "weap_crowbar",
+          "quantity": 1
+        },
+        {
+          "id": "weap_sawed_off_shotgun",
+          "quantity": 1
+        },
+        {
+          "id": "ammo_12gauge_shot",
+          "quantity": 18
+        },
+        {
+          "id": "equip_tool_set",
+          "quantity": 1
+        },
+        {
+          "id": "chem_stimpak",
+          "quantity": 4
+        },
+        {
+          "id": "chem_afterburner_gum",
+          "quantity": 1
+        }
+      ],
+      "credits": 300
+    },
+    {
+      "id": "scoundrel",
+      "name": "Scoundrel Package",
+      "description": "Light Fingers, Lighter Trigger Pull",
+      "icon": "🔐",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "chem_stimpak",
+          "quantity": 1
+        },
+        {
+          "id": "equip_bobbypin",
+          "quantity": 1
+        },
+        {
+          "id": "equip_claw_hammer",
+          "quantity": 1
+        },
+        {
+          "id": "equip_expanded_lockpick_set",
+          "quantity": 1
+        },
+        {
+          "id": "weap_44_revolver",
+          "quantity": 1
+        },
+        {
+          "id": "ammo_44",
+          "quantity": 18
+        },
+        {
+          "id": "armor_leather",
+          "quantity": 1
+        }
+      ],
+      "credits": 150
+    },
+    {
+      "id": "drugdealer",
+      "name": "Drug Dealer Package",
+      "description": "Say My Name",
+      "icon": "🚬",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "armor_leather_jacket",
+          "quantity": 1
+        },
+        {
+          "id": "weap_pipe",
+          "quantity": 1
+        },
+        {
+          "id": "weap_9mm_smg",
+          "quantity": 1
+        },
+        {
+          "id": "ammo_9mm",
+          "quantity": 90
+        },
+        {
+          "id": "chem_buffout",
+          "quantity": 1
+        },
+        {
+          "id": "chem_mentats",
+          "quantity": 1
+        },
+        {
+          "id": "chem_psycho",
+          "quantity": 1
+        },
+        {
+          "id": "chem_voodoo",
+          "quantity": 1
+        },
+        {
+          "id": "chem_jet",
+          "quantity": 6
+        }
+      ],
+      "credits": 800
+    },
+    {
+      "id": "priest",
+      "name": "Priest Package",
+      "description": "Moses Started Out As A Basket Case",
+      "icon": "🛐",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "armor_robe",
+          "quantity": 1
+        },
+        {
+          "id": "weap_wooden_club",
+          "quantity": 1
+        },
+        {
+          "id": "chem_healing_powder",
+          "quantity": 15
+        },
+        {
+          "id": "equip_rope",
+          "quantity": 1
+        },
+        {
+          "id": "equip_flare",
+          "quantity": 1
+        },
+        {
+          "id": "weap_rock",
+          "quantity": 1
+        }
+      ],
+      "credits": 0
+    },
+    {
+      "id": "brotherhood_reject",
+      "name": "Brotherhood Reject Package",
+      "description": "No Codex, No Problem",
+      "icon": "⚡",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "ammo_microfusion_cell",
+          "quantity": 25
+        },
+        {
+          "id": "armor_combat_leather_jacket",
+          "quantity": 1
+        },
+        {
+          "id": "weap_laser_rifle",
+          "quantity": 1
+        }
+      ],
+      "credits": 0
+    },
+    {
+      "id": "boxer",
+      "name": "Boxer Package",
+      "description": "The Sweet Science",
+      "icon": "🥊",
+      "showInChargen": true,
+      "items": [
+        {
+          "id": "armor_robe",
+          "quantity": 1
+        },
+        {
+          "id": "weap_boxing_gloves",
+          "quantity": 1
+        },
+        {
+          "id": "chem_buffout",
+          "quantity": 2
+        },
+        {
+          "id": "chem_stimpak",
+          "quantity": 1
+        },
+        {
+          "id": "equip_lighter",
+          "quantity": 1
+        }
+      ],
+      "credits": 800
     }
   ]
 }
