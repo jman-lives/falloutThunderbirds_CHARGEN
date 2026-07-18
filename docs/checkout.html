@@ -324,15 +324,36 @@
       character: null
     };
 
+    function normalizeCharacterForCheckout(character, source = 'checkout') {
+      const normalized = { ...(character || {}) };
+      const stats = normalized.stats || {};
+      const gameState = normalized.gameState && typeof normalized.gameState === 'object' ? normalized.gameState : {};
+      normalized.gameState = {
+        version: 2,
+        currentHP: Number.isFinite(parseInt(gameState.currentHP)) ? parseInt(gameState.currentHP) : (stats.Hit_Points || 15),
+        currentAP: Number.isFinite(parseInt(gameState.currentAP)) ? parseInt(gameState.currentAP) : (stats.Action_Points || 8),
+        activeItemIndex: Number.isFinite(parseInt(gameState.activeItemIndex)) ? parseInt(gameState.activeItemIndex) : 0,
+        equipmentSelection: gameState.equipmentSelection || normalized.gameEquipmentSelection || null,
+        savedAt: new Date().toISOString(),
+        source
+      };
+      return normalized;
+    }
+
     async function loadCheckoutData() {
       try {
         // Load character data from localStorage
-        const characterJSON = localStorage.getItem('falloutCharacter');
-        if (characterJSON) {
+        const keys = ['characterData', 'falloutCharacter'];
+        for (const key of keys) {
+          const characterJSON = localStorage.getItem(key);
+          if (!characterJSON) continue;
           try {
-            checkoutData.character = JSON.parse(characterJSON);
+            checkoutData.character = normalizeCharacterForCheckout(JSON.parse(characterJSON), 'checkout-load');
+            localStorage.setItem('falloutCharacter', JSON.stringify(checkoutData.character));
+            localStorage.setItem('characterData', JSON.stringify(checkoutData.character));
+            break;
           } catch (e) {
-            console.warn('Failed to parse character data from localStorage:', e);
+            console.warn('Failed to parse character data from localStorage key:', key, e);
           }
         }
 
@@ -508,10 +529,13 @@
       // Ensure we have character data - load from localStorage if needed
       let character = checkoutData.character;
       if (!character) {
-        const storedChar = localStorage.getItem('falloutCharacter');
-        if (storedChar) {
-          character = JSON.parse(storedChar);
+        const keys = ['characterData', 'falloutCharacter'];
+        for (const key of keys) {
+          const storedChar = localStorage.getItem(key);
+          if (!storedChar) continue;
+          character = normalizeCharacterForCheckout(JSON.parse(storedChar), 'checkout-load');
           checkoutData.character = character;
+          break;
         }
       }
 
@@ -519,6 +543,8 @@
       if (character) {
         // Add equipment to character
         character.equipment = equipment;
+        character = normalizeCharacterForCheckout(character, 'checkout-confirm');
+        character.gameState.savedAt = new Date().toISOString();
         
         // Initialize money field if it doesn't exist (default: use the budget)
         if (character.money === undefined) {
@@ -530,6 +556,7 @@
         
         // Save updated character back to localStorage
         localStorage.setItem('falloutCharacter', JSON.stringify(character));
+        localStorage.setItem('characterData', JSON.stringify(character));
         
         console.log('%c[CHECKOUT COMPLETE]', 'color: #4CAF50; font-weight: bold;', {
           character: character,

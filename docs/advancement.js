@@ -252,6 +252,15 @@ const RACIAL_LIMITS = {
     intelligence: { min: 2, max: 10 },
     agility: { min: 1, max: 6 },
     luck: { min: 5, max: 12 }
+  },
+  'Super Mutants': {
+    strength: { min: 5, max: 13 },
+    perception: { min: 1, max: 11 },
+    endurance: { min: 4, max: 11 },
+    charisma: { min: 1, max: 7 },
+    intelligence: { min: 1, max: 11 },
+    agility: { min: 1, max: 8 },
+    luck: { min: 1, max: 10 }
   }
 };
 

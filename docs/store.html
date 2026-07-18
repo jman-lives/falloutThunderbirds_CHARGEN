@@ -730,17 +730,31 @@
 
     // Load character data from localStorage
     function loadCharacter() {
-      const stored = localStorage.getItem('falloutCharacter');
-      if (stored) {
+      const keys = ['characterData', 'falloutCharacter'];
+      for (const key of keys) {
+        const stored = localStorage.getItem(key);
+        if (!stored) continue;
         try {
           const character = JSON.parse(stored);
+          const stats = character.stats || {};
+          const gameState = character.gameState && typeof character.gameState === 'object' ? character.gameState : {};
+          character.gameState = {
+            version: 2,
+            currentHP: Number.isFinite(parseInt(gameState.currentHP)) ? parseInt(gameState.currentHP) : (stats.Hit_Points || 15),
+            currentAP: Number.isFinite(parseInt(gameState.currentAP)) ? parseInt(gameState.currentAP) : (stats.Action_Points || 8),
+            activeItemIndex: Number.isFinite(parseInt(gameState.activeItemIndex)) ? parseInt(gameState.activeItemIndex) : 0,
+            equipmentSelection: gameState.equipmentSelection || character.gameEquipmentSelection || null,
+            savedAt: new Date().toISOString(),
+            source: 'store-load'
+          };
+          localStorage.setItem('falloutCharacter', JSON.stringify(character));
+          localStorage.setItem('characterData', JSON.stringify(character));
           console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', character);
           console.log('%c[CHAR NAME: ' + (character.name || 'UNKNOWN') + ']', 'color: #4CAF50;');
           storeData.character = character;
           return character;
         } catch (e) {
           console.error('%c[ERROR PARSING CHARACTER DATA]', 'color: #ff0000; font-weight: bold;', e);
-          return null;
         }
       }
       console.warn('%c[NO CHARACTER DATA IN STORAGE]', 'color: #ff9800; font-weight: bold;');
@@ -1025,6 +1039,10 @@
         ? `<div class="item-tags">${item.tags.map((tag, idx) => `<span class="item-tag${idx === 0 ? ' secondary' : ''}">${tag}</span>`).join('')}</div>`
         : '';
 
+      const descriptionText = item.description || item.flavor || 'No description available.';
+      const effectsText = formatItemEffects(item);
+      const effectsHTML = effectsText ? `<div class="item-description" style="color: #4CAF50; margin-top: 6px; margin-bottom: 8px;">${effectsText}</div>` : '';
+
       card.innerHTML = `
         <div class="item-header">
           <h3 class="item-name">${item.name || 'Unknown Item'}</h3>
@@ -1032,6 +1050,8 @@
         </div>
         <div class="item-weight">Weight: ${item.weight || 0} lbs</div>
         ${tagsHTML}
+        <div class="item-description">${descriptionText}</div>
+        ${effectsHTML}
         <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 0;">
           <button class="item-btn item-btn-info" onclick="showItemDetails('${(item.name || '').replace(/'/g, "\\'")}')">ℹ️ View Details</button>
         </div>
@@ -1048,6 +1068,32 @@
       `;
 
       return card;
+    }
+
+    function formatItemEffects(item) {
+      const effects = [];
+
+      if (item.bonuses && typeof item.bonuses === 'object') {
+        Object.entries(item.bonuses).forEach(([key, value]) => {
+          if (typeof value !== 'number' || value === 0) return;
+          const sign = value > 0 ? '+' : '';
+          const skillName = key
+            .replace(/_/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase());
+          effects.push(`${sign}${value} ${skillName}`);
+        });
+      }
+
+      if (item.stats && typeof item.stats === 'object') {
+        if (typeof item.stats.ac === 'number') {
+          effects.push(`+${item.stats.ac} Armor Class`);
+        }
+        if (item.stats.dt_dr) {
+          effects.push(`DT/DR ${item.stats.dt_dr}`);
+        }
+      }
+
+      return effects.length > 0 ? `Effects: ${effects.join(' | ')}` : '';
     }
 
     function addToCart(itemName) {
@@ -1171,8 +1217,13 @@
       `;
       document.getElementById('modal-item-info').innerHTML = infoHTML;
       
-      // Description
-      document.getElementById('modal-item-description').textContent = item.description || 'No description available.';
+      // Description + effects
+      const effectsText = formatItemEffects(item);
+      const descriptionParts = [item.description || item.flavor || 'No description available.'];
+      if (effectsText) {
+        descriptionParts.push(effectsText);
+      }
+      document.getElementById('modal-item-description').textContent = descriptionParts.join(' ');
       
       // Flavor text
       const flavorSection = document.getElementById('modal-flavor-section');

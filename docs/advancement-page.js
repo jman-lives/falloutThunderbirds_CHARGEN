@@ -3,6 +3,79 @@
 
 function qs(id){return document.getElementById(id)}
 
+const GAME_STATE_VERSION = 2;
+
+function loadStoredCharacterFromAnyKey() {
+  const keys = ['characterData', 'falloutCharacter'];
+  for (const key of keys) {
+    const raw = localStorage.getItem(key);
+    if (!raw) continue;
+    try {
+      return JSON.parse(raw);
+    } catch (err) {
+      console.warn('Failed to parse character from key:', key, err);
+    }
+  }
+  return null;
+}
+
+function buildForwardCompatibleCharacter(character, source = 'advancement-page') {
+  const normalized = { ...(character || {}) };
+  const stats = normalized.stats || {};
+  const gameState = normalized.gameState && typeof normalized.gameState === 'object' ? normalized.gameState : {};
+
+  normalized.gameState = {
+    version: GAME_STATE_VERSION,
+    currentHP: Number.isFinite(parseInt(gameState.currentHP)) ? parseInt(gameState.currentHP) : (stats.Hit_Points || 15),
+    currentAP: Number.isFinite(parseInt(gameState.currentAP)) ? parseInt(gameState.currentAP) : (stats.Action_Points || 8),
+    activeItemIndex: Number.isFinite(parseInt(gameState.activeItemIndex)) ? parseInt(gameState.activeItemIndex) : 0,
+    equipmentSelection: gameState.equipmentSelection || normalized.gameEquipmentSelection || null,
+    savedAt: new Date().toISOString(),
+    source
+  };
+
+  return normalized;
+}
+
+function persistCharacterToAllStores(character, source = 'advancement-page') {
+  const normalized = buildForwardCompatibleCharacter(character, source);
+  localStorage.setItem('falloutCharacter', JSON.stringify(normalized));
+  localStorage.setItem('characterData', JSON.stringify(normalized));
+  return normalized;
+}
+
+function buildCharacterSheetForExport(character, source = 'advancement-page') {
+  const normalized = buildForwardCompatibleCharacter(character, source);
+  return {
+    player: normalized.player || '',
+    name: normalized.name || '',
+    race: normalized.race || '',
+    age: normalized.age || '',
+    gender: normalized.gender || '',
+    attributes: normalized.attributes || {},
+    tagSkills: normalized.tagSkills || {},
+    skills: normalized.skills || {},
+    level: normalized.level || 1,
+    totalXP: normalized.totalXP || 0,
+    selectedPerks: normalized.selectedPerks || [],
+    stats: normalized.stats || {},
+    notes: normalized.notes || null,
+    selectedTraits: normalized.selectedTraits || [],
+    reputation: normalized.reputation || [],
+    createdAt: normalized.createdAt || new Date().toISOString(),
+    equipment: normalized.equipment || null,
+    money: normalized.money !== undefined ? normalized.money : 80000,
+    skillIncreases: normalized.skillIncreases || {},
+    skillPointsSpent: normalized.skillPointsSpent || {},
+    skillsConfirmed: normalized.skillsConfirmed || false,
+    perksConfirmed: normalized.perksConfirmed || false,
+    perkEffects: normalized.perkEffects || {},
+    gameState: normalized.gameState,
+    savedAt: new Date().toISOString(),
+    version: normalized.version || '1.0'
+  };
+}
+
 // Skill display name mappings
 const SKILL_DISPLAY_NAMES = {
   guns: 'Guns',
@@ -55,14 +128,9 @@ let prodConfig = {};
 
 // Log character data from localStorage at page load
 function logCharacterFromStorage() {
-  const character = localStorage.getItem('falloutCharacter');
-  if (character) {
-    try {
-      const charData = JSON.parse(character);
-      console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', charData);
-    } catch (e) {
-      console.warn('Failed to parse character data from localStorage:', e);
-    }
+  const charData = loadStoredCharacterFromAnyKey();
+  if (charData) {
+    console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', charData);
   } else {
     console.log('%c[NO CHARACTER IN STORAGE]', 'color: #FF9800; font-weight: bold;');
   }
@@ -131,35 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const downloadBtn = qs('download');
   if (downloadBtn) {
     downloadBtn.addEventListener('click', () => {
-      // Create a complete character sheet JSON with all data - same format as review.html
-      const characterSheet = {
-        // Include all character data
-        player: characterData.player || '',
-        name: characterData.name || '',
-        race: characterData.race || '',
-        age: characterData.age || '',
-        gender: characterData.gender || '',
-        attributes: characterData.attributes || {},
-        tagSkills: characterData.tagSkills || {},
-        skills: characterData.skills || {},
-        level: characterData.level || 1,
-        totalXP: characterData.totalXP || 0,
-        selectedPerks: characterData.selectedPerks || [],
-        stats: characterData.stats || {},
-        notes: characterData.notes || null,
-        selectedTraits: characterData.selectedTraits || [],
-        createdAt: characterData.createdAt || new Date().toISOString(),
-        equipment: characterData.equipment || null,
-        money: characterData.money !== undefined ? characterData.money : 80000,
-        skillIncreases: characterData.skillIncreases || {},
-        skillPointsSpent: characterData.skillPointsSpent || {},
-        skillsConfirmed: characterData.skillsConfirmed || false,
-        perksConfirmed: characterData.perksConfirmed || false,
-        perkEffects: characterData.perkEffects || {},
-        // Add metadata
-        savedAt: new Date().toISOString(),
-        version: '1.0'
-      };
+      const characterSheet = buildCharacterSheetForExport(characterData, 'advancement-download');
       // Generate filename - same format as review.html for consistency
       const charName = characterData.name || 'character';
       const dateStamp = new Date().toISOString().split('T')[0];
@@ -265,7 +305,8 @@ async function loadCharacterData() {
   if (stored) {
     // We have stored data, use it
     try {
-      characterData = JSON.parse(stored);
+      characterData = buildForwardCompatibleCharacter(JSON.parse(stored));
+      persistCharacterToAllStores(characterData, 'advancement-load');
       
       // Recalculate level from totalXP if it exists
       if (characterData.totalXP !== undefined && typeof getLevelFromXP === 'function') {
@@ -287,8 +328,8 @@ async function loadCharacterData() {
       const devConfig = await response.json();
       
       if (devConfig.autoLoadTestCharacter) {
-        characterData = generateTestCharacter();
-        localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
+        characterData = buildForwardCompatibleCharacter(generateTestCharacter());
+        persistCharacterToAllStores(characterData, 'advancement-autotest');
       } else {
         characterData = {};
       }
@@ -307,8 +348,8 @@ async function loadTestCharacterIfConfigured_DEPRECATED() {
     const devConfig = await response.json();
     
     if (devConfig.autoLoadTestCharacter) {
-      characterData = generateTestCharacter();
-      localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
+      characterData = buildForwardCompatibleCharacter(generateTestCharacter());
+      persistCharacterToAllStores(characterData, 'advancement-autotest');
     } else {
     }
   } catch (e) {
@@ -445,11 +486,10 @@ function generateTestCharacter() {
 
 // Save character data to localStorage
 function saveCharacterData() {
-  localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
+  characterData = persistCharacterToAllStores(characterData, 'advancement-save');
   
   // If this was a level up session, clear the temporary characterData key
   if (localStorage.getItem('isLevelUpSession') === 'true') {
-    localStorage.removeItem('characterData');
     localStorage.removeItem('isLevelUpSession');
   }
 }
@@ -1483,7 +1523,8 @@ function getTimestamp() {
 }
 
 function downloadJSON(obj, filename){
-  const blob = new Blob([JSON.stringify(obj,null,2)],{type:'application/json'})
+  const normalized = buildCharacterSheetForExport(obj, 'advancement-download-json')
+  const blob = new Blob([JSON.stringify(normalized,null,2)],{type:'application/json'})
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -1525,7 +1566,7 @@ function handleFileLoad(file){
   const reader = new FileReader()
   reader.onload = e => {
     try{
-      characterData = JSON.parse(e.target.result)
+      characterData = buildForwardCompatibleCharacter(JSON.parse(e.target.result), 'advancement-import')
       saveCharacterData();
       updateDisplay();
       renderOutput(characterData);
