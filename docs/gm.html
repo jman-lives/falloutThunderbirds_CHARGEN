@@ -1,0 +1,1704 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GM Screen — Fallout: Thunderbirds</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ── Layout ─────────────────────────────────────────── */
+    body { padding: 0; align-items: stretch; min-height: 100vh; }
+
+    #gm-root {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* ── Top Bar ──────────────────────────────────────────  */
+    #topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      background: rgba(0,0,0,0.45);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    #topbar h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ef4444, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      flex: 1;
+    }
+
+    .tb-btn {
+      padding: 7px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #fff;
+    }
+    .tb-btn:hover { transform: translateY(-1px); opacity: 0.9; }
+    .tb-btn-upload  { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+    .tb-btn-dice    { background: linear-gradient(135deg, #a78bfa, #7c3aed); }
+    .tb-btn-back    { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); font-size: 0.8rem; }
+
+    /* ── Dice Roller Panel ────────────────────────────────  */
+    #dice-panel {
+      background: rgba(0,0,0,0.35);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 12px 20px;
+      display: none;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    #dice-panel.open { display: flex; }
+
+    .dice-btn {
+      padding: 6px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1px solid rgba(139,92,246,0.5);
+      border-radius: 6px;
+      background: rgba(139,92,246,0.15);
+      color: #a78bfa;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .dice-btn:hover { background: rgba(139,92,246,0.35); border-color: #a78bfa; }
+
+    #dice-modifier-wrap { display: flex; align-items: center; gap: 6px; }
+    #dice-modifier-wrap label { font-size: 0.8rem; color: var(--muted); }
+    #dice-modifier { width: 56px; padding: 5px 8px; font-size: 0.85rem; }
+
+    #dice-result {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fbbf24;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    #dice-history {
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    #dice-history span { color: var(--text); }
+
+    /* ── Tab Layout ───────────────────────────────────────  */
+    #tab-bar {
+      display: flex;
+      gap: 2px;
+      padding: 0 16px;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .tab-btn {
+      padding: 10px 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.03em;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active {
+      color: var(--text);
+      border-bottom-color: var(--accent);
+    }
+    .tab-count {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 999px;
+      background: rgba(96,165,250,0.15);
+      color: #60a5fa;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+
+    #tab-panels { flex: 1; min-height: 0; overflow: hidden; }
+    .tab-panel {
+      display: none;
+      padding: 20px;
+      height: 100%;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+    .tab-panel.active { display: block; }
+
+    /* Combat tab — two-column */
+    #combat-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 20px;
+      align-items: start;
+    }
+    #combat-right {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+    }
+
+    /* ── Section headers ──────────────────────────────────  */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .section-toggle {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+    .section-toggle:hover { color: var(--text); }
+
+    /* ── Upload Drop Zone ─────────────────────────────────  */
+    #drop-zone {
+      border: 2px dashed rgba(96,165,250,0.3);
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    #drop-zone.drag-over {
+      border-color: #60a5fa;
+      background: rgba(96,165,250,0.08);
+      color: var(--text);
+    }
+    #drop-zone p { margin: 6px 0; }
+    #file-input { display: none; }
+
+    /* ── Character Accordion ──────────────────────────────  */
+    #char-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .char-row {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .char-row:hover { border-color: rgba(96,165,250,0.25); }
+
+    .char-summary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      flex-wrap: wrap;
+      user-select: none;
+    }
+
+    .char-chevron {
+      color: var(--muted);
+      font-size: 0.75rem;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .char-row.open .char-chevron { transform: rotate(90deg); }
+
+    .char-name {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+    }
+    .char-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .char-stats-pill {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .stat-pill {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .stat-pill.hp   { border-color: rgba(52,211,153,0.4);  color: #34d399; }
+    .stat-pill.ac   { border-color: rgba(96,165,250,0.4);  color: #60a5fa; }
+    .stat-pill.ap   { border-color: rgba(251,191,36,0.4);  color: #fbbf24; }
+    .stat-pill.seq  { border-color: rgba(239,68,68,0.4);   color: #ef4444; }
+
+    .special-pills {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .sp-pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .sp-pill b { color: var(--text); }
+
+    .char-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .btn-remove {
+      background: none;
+      border: none;
+      color: rgba(239,68,68,0.5);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+    .btn-remove:hover { color: #ef4444; }
+    .btn-follower {
+      background: none;
+      border: none;
+      color: rgba(96,165,250,0.7);
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+    .btn-follower:hover { color: #60a5fa; }
+
+    /* ── Condition Badges ─────────────────────────────────  */
+    .condition-badges {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .cond-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .cond-poisoned    { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid #34d399; }
+    .cond-irradiated  { background: rgba(250,204,21,0.15); color: #facc15; border: 1px solid #facc15; }
+    .cond-bleeding    { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid #ef4444; }
+    .cond-unconscious { background: rgba(148,163,184,0.15);color: #94a3b8; border: 1px solid #94a3b8; }
+    .cond-stunned     { background: rgba(251,146,60,0.15); color: #fb923c; border: 1px solid #fb923c; }
+    .cond-crippled    { background: rgba(239,68,68,0.15);  color: #fca5a5; border: 1px solid #fca5a5; }
+    .cond-dead        { background: rgba(0,0,0,0.5);       color: #6b7280; border: 1px solid #6b7280; }
+    .cond-custom      { background: rgba(167,139,250,0.15);color: #a78bfa; border: 1px solid #a78bfa; }
+
+    /* ── Expanded Detail ──────────────────────────────────  */
+    .char-detail {
+      display: none;
+      padding: 0 14px 14px 14px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .char-row.open .char-detail { display: block; }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .detail-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+    .detail-card-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 8px;
+    }
+
+    /* SPECIAL block */
+    .special-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .special-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255,255,255,0.03);
+      border-radius: 4px;
+      padding: 6px 2px;
+    }
+    .special-cell .label { font-size: 0.6rem; color: var(--muted); font-weight: 600; }
+    .special-cell .value { font-size: 1.1rem; font-weight: 700; color: #60a5fa; }
+
+    /* Secondary Stats */
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      font-size: 0.82rem;
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-row .lbl { color: var(--muted); }
+    .stat-row .val { font-weight: 600; color: var(--text); }
+    .stat-row.seq .val { color: #ef4444; font-size: 0.95rem; }
+
+    /* Skills */
+    .skills-section { margin-bottom: 6px; }
+    .skills-cat-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+      margin-top: 8px;
+    }
+    .skill-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 0;
+      font-size: 0.8rem;
+    }
+    .skill-line .sname { color: var(--text); display: flex; align-items: center; gap: 5px; }
+    .skill-line .sval  { font-weight: 600; color: #34d399; }
+    .tag-badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #fbbf24;
+      background: rgba(251,191,36,0.12);
+      border: 1px solid rgba(251,191,36,0.3);
+      border-radius: 3px;
+      padding: 0px 4px;
+    }
+
+    .player-timer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      width: 100%;
+      margin-top: 2px;
+      padding: 5px 7px;
+      border: 1px solid rgba(251,191,36,0.22);
+      border-radius: 6px;
+      background: rgba(251,191,36,0.06);
+    }
+    .player-timer.running {
+      border-color: rgba(52,211,153,0.35);
+      background: rgba(52,211,153,0.08);
+    }
+    .player-timer.paused {
+      border-color: rgba(96,165,250,0.32);
+      background: rgba(96,165,250,0.08);
+    }
+    .player-timer-label {
+      font-size: 0.64rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    .player-timer-display {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #fbbf24;
+      min-width: 50px;
+      text-align: center;
+    }
+    .player-timer.running .player-timer-display { color: #34d399; }
+    .player-timer.paused .player-timer-display { color: #60a5fa; }
+    .player-timer-controls {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+    .player-timer-btn {
+      font-size: 0.68rem;
+      font-weight: 700;
+      border-radius: 5px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      min-width: 28px;
+      height: 24px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+    }
+    .player-timer-btn:hover {
+      border-color: rgba(251,191,36,0.45);
+      color: #fbbf24;
+    }
+
+    /* Perks & Traits */
+    .perk-list, .trait-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    .trait-tag {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(167,139,250,0.1);
+      border: 1px solid rgba(167,139,250,0.25);
+      color: #c4b5fd;
+    }
+    .perk-tag {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(96,165,250,0.1);
+      border: 1px solid rgba(96,165,250,0.25);
+      color: #93c5fd;
+    }
+
+    /* Equipment */
+    .equip-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+    .equip-table td {
+      padding: 3px 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .equip-table td:last-child { text-align: right; color: var(--muted); }
+    .equip-footer {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 6px;
+      display: flex;
+      gap: 16px;
+    }
+    .equip-footer span b { color: var(--text); }
+
+    /* Condition toggle panel */
+    .cond-panel { margin-top: 10px; }
+    .cond-panel-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .cond-toggles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .cond-toggle-btn {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .cond-toggle-btn.active { border-color: currentColor; }
+    .cond-toggle-btn.ct-poisoned    { --c: #34d399; }
+    .cond-toggle-btn.ct-irradiated  { --c: #facc15; }
+    .cond-toggle-btn.ct-bleeding    { --c: #ef4444; }
+    .cond-toggle-btn.ct-unconscious { --c: #94a3b8; }
+    .cond-toggle-btn.ct-stunned     { --c: #fb923c; }
+    .cond-toggle-btn.ct-crippled-arm-l,
+    .cond-toggle-btn.ct-crippled-arm-r,
+    .cond-toggle-btn.ct-crippled-leg-l,
+    .cond-toggle-btn.ct-crippled-leg-r { --c: #fca5a5; }
+    .cond-toggle-btn.ct-dead { --c: #6b7280; }
+    .cond-toggle-btn.active { background: rgba(var(--c-rgb,255,255,255),0.12); color: var(--c); border-color: var(--c); }
+
+    .cond-custom-wrap {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .cond-custom-wrap input {
+      flex: 1;
+      font-size: 0.78rem;
+      padding: 4px 8px;
+    }
+    .cond-custom-wrap button {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      background: rgba(167,139,250,0.2);
+      border: 1px solid rgba(167,139,250,0.4);
+      color: #a78bfa;
+      border-radius: 6px;
+    }
+
+    /* ── NPC Table ────────────────────────────────────────  */
+    #npc-section {}
+
+    #npc-ref-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    #npc-ref-input {
+      font-size: 0.82rem;
+      padding: 4px 8px;
+      width: 140px;
+      border-radius: 5px;
+    }
+
+    /* ── NPC Cards ──────────────────────────────────────  */
+    #npc-list { display: flex; flex-direction: column; gap: 6px; }
+
+    .npc-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-left: 3px solid rgba(250,204,21,0.5);
+      border-radius: 7px;
+      overflow: hidden;
+      transition: border-left-color 0.2s;
+    }
+    .npc-card[data-status="hostile"]  { border-left-color: #ef4444; }
+    .npc-card[data-status="neutral"]  { border-left-color: #facc15; }
+    .npc-card[data-status="friendly"] { border-left-color: #34d399; }
+
+    .npc-card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px 4px 10px;
+      flex-wrap: wrap;
+    }
+    .npc-card-name {
+      flex: 1;
+      min-width: 80px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text);
+      background: none;
+      border: none;
+      border-bottom: 1px solid transparent;
+      padding: 2px 4px;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    .npc-card-name:focus { border-bottom-color: rgba(96,165,250,0.45); }
+    .npc-card-name::placeholder { color: var(--muted); font-weight: 400; }
+
+    .npc-faction-wrap { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .npc-faction-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    .nft-ncr         { border-color:rgba(96,165,250,0.5);  color:#60a5fa; background:rgba(96,165,250,0.1);  }
+    .nft-bos         { border-color:rgba(20,184,166,0.5);  color:#2dd4bf; background:rgba(20,184,166,0.1);  }
+    .nft-raiders     { border-color:rgba(239,68,68,0.5);   color:#f87171; background:rgba(239,68,68,0.1);   }
+    .nft-vault       { border-color:rgba(250,204,21,0.5);  color:#facc15; background:rgba(250,204,21,0.1);  }
+    .nft-mutants     { border-color:rgba(74,222,128,0.5);  color:#4ade80; background:rgba(74,222,128,0.1);  }
+    .nft-enclave     { border-color:rgba(167,139,250,0.5); color:#a78bfa; background:rgba(167,139,250,0.1); }
+    .nft-followers   { border-color:rgba(251,146,60,0.5);  color:#fb923c; background:rgba(251,146,60,0.1);  }
+    .nft-talon       { border-color:rgba(148,163,184,0.5); color:#94a3b8; background:rgba(148,163,184,0.1); }
+    .nft-gunners     { border-color:rgba(163,230,53,0.5);  color:#a3e635; background:rgba(163,230,53,0.1);  }
+    .nft-institute   { border-color:rgba(139,92,246,0.5);  color:#8b5cf6; background:rgba(139,92,246,0.1);  }
+    .nft-minutemen   { border-color:rgba(251,191,36,0.5);  color:#fbbf24; background:rgba(251,191,36,0.1);  }
+    .nft-legion      { border-color:rgba(220,38,38,0.5);   color:#dc2626; background:rgba(220,38,38,0.1);   }
+
+    .npc-faction-select {
+      font-size: 0.7rem;
+      padding: 2px 5px;
+      background: #ffffff;
+      border: 1px solid rgba(15,23,32,0.35);
+      border-radius: 4px;
+      color: #111827;
+      max-width: 110px;
+    }
+    .npc-faction-select:focus { outline: none; border-color: rgba(96,165,250,0.4); }
+
+    /* Force readable native dropdowns across Linux/browser themes. */
+    #gm-root select,
+    #gm-root select:focus,
+    #gm-root select:hover {
+      color-scheme: light !important;
+      color: #111827 !important;
+      -webkit-text-fill-color: #111827 !important;
+      background-color: #ffffff !important;
+      border-color: rgba(15,23,32,0.45) !important;
+    }
+    #gm-root select option,
+    #gm-root select optgroup {
+      color-scheme: light !important;
+      color: #111827 !important;
+      -webkit-text-fill-color: #111827 !important;
+      background-color: #ffffff !important;
+    }
+
+    .npc-card-stats {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 4px 10px 8px 10px;
+      flex-wrap: wrap;
+    }
+    .npc-stat-blk {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .npc-stat-label {
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    .npc-stat-input {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 4px;
+      color: var(--text);
+      padding: 3px 6px;
+      font-size: 0.8rem;
+      font-family: inherit;
+    }
+    .npc-stat-input:focus { outline: none; border-color: rgba(96,165,250,0.4); }
+    .npc-stat-input-sm { width: 52px; text-align: center; }
+    .npc-stat-input-md { width: 96px; }
+    .npc-stat-input-lg { width: 130px; }
+
+    /* HP bar */
+    .npc-hp-inputs { display: flex; align-items: center; gap: 3px; }
+    .npc-hp-bar-wrap {
+      height: 4px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+    .npc-hp-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.25s, background-color 0.25s;
+    }
+
+    /* SEQ big number */
+    .npc-seq-input {
+      width: 52px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ef4444;
+      text-align: center;
+    }
+
+    .npc-dist-wrap { display: flex; align-items: center; gap: 4px; }
+    .npc-dist-ref  { font-size: 0.68rem; color: var(--muted); white-space: nowrap; }
+    .npc-notes-blk { flex: 1; min-width: 90px; }
+
+    .npc-input {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 4px;
+      color: var(--text);
+      padding: 4px 6px;
+      font-size: 0.78rem;
+      width: 100%;
+    }
+    .npc-input:focus { outline: none; border-color: rgba(96,165,250,0.4); }
+    .hp-sep { color: var(--muted); font-size: 0.8rem; }
+
+    .status-btn {
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .status-hostile  { background: rgba(239,68,68,0.2);  color: #ef4444;  border: 1px solid #ef4444; }
+    .status-neutral  { background: rgba(250,204,21,0.2); color: #facc15;  border: 1px solid #facc15; }
+    .status-friendly { background: rgba(52,211,153,0.2); color: #34d399;  border: 1px solid #34d399; }
+
+    #add-npc-btn,
+    #add-critter-btn,
+    #add-robot-btn {
+      background: rgba(96,165,250,0.1);
+      border: 1px dashed rgba(96,165,250,0.3);
+      color: #60a5fa;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0 14px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      line-height: 1;
+      vertical-align: middle;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    #add-npc-btn:hover,
+    #add-critter-btn:hover,
+    #add-robot-btn:hover { background: rgba(96,165,250,0.2); border-color: #60a5fa; }
+
+    .encounter-action-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .encounter-action-row button {
+      margin-top: 0;
+    }
+    #follower-pool-wrap {
+      margin-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 12px;
+    }
+    .follower-pool-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+    #follower-pool-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .follower-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      font-size: 0.8rem;
+    }
+    .follower-name {
+      font-weight: 700;
+      color: var(--text);
+      min-width: 0;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .follower-meta {
+      color: var(--muted);
+      font-size: 0.72rem;
+      white-space: nowrap;
+    }
+    .follower-add-btn {
+      padding: 3px 8px;
+      border-radius: 5px;
+      border: 1px solid rgba(52,211,153,0.35);
+      background: rgba(52,211,153,0.12);
+      color: #34d399;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .follower-remove-btn {
+      padding: 2px 7px;
+      border-radius: 5px;
+      border: 1px solid rgba(239,68,68,0.35);
+      background: rgba(239,68,68,0.08);
+      color: #ef4444;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* ── Sequence Tracker (sidebar) ───────────────────────  */
+    .sidebar-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .sidebar-card-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sidebar-card-title .sub { font-size: 0.65rem; color: var(--muted); text-transform: none; letter-spacing: 0; font-weight: 400; }
+
+    .now-acting-card {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 7px;
+      border: 1px solid rgba(239,68,68,0.35);
+      background: rgba(239,68,68,0.08);
+    }
+    .now-acting-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .now-acting-title {
+      font-size: 0.64rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fca5a5;
+    }
+    .now-acting-seq {
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: #ef4444;
+      border: 1px solid rgba(239,68,68,0.45);
+      border-radius: 999px;
+      padding: 1px 8px;
+      background: rgba(239,68,68,0.12);
+    }
+    .now-acting-name {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+    .now-acting-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+    .now-acting-empty {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .seq-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+    .seq-entry {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 7px 8px;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.82rem;
+      transition: all 0.15s;
+    }
+    .seq-entry.active-turn {
+      background: rgba(239,68,68,0.12);
+      border-color: rgba(239,68,68,0.4);
+    }
+    .seq-num {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ef4444;
+      min-width: 30px;
+      text-align: center;
+      line-height: 1.1;
+      padding-top: 1px;
+    }
+    .seq-body { flex: 1; min-width: 0; }
+    .seq-name-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .seq-label { font-weight: 700; color: var(--text); }
+    .seq-type  { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; padding: 1px 5px; background: rgba(255,255,255,0.05); border-radius: 3px; }
+    .seq-meta-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+    .seq-hp {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(52,211,153,0.35);
+      color: #34d399;
+      background: rgba(52,211,153,0.08);
+    }
+    .seq-hp.low   { border-color: rgba(251,191,36,0.4); color:#fbbf24; background:rgba(251,191,36,0.08); }
+    .seq-hp.crit  { border-color: rgba(239,68,68,0.4);  color:#ef4444; background:rgba(239,68,68,0.08); }
+    .seq-status {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .seq-status-hostile  { background:rgba(239,68,68,0.15);  color:#ef4444;  border:1px solid rgba(239,68,68,0.4);  }
+    .seq-status-neutral  { background:rgba(250,204,21,0.15); color:#facc15;  border:1px solid rgba(250,204,21,0.4); }
+    .seq-status-friendly { background:rgba(52,211,153,0.15); color:#34d399;  border:1px solid rgba(52,211,153,0.4); }
+    .seq-faction {
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+    .seq-conds { display:flex; gap:3px; flex-wrap:wrap; margin-top:3px; }
+    .seq-remove {
+      background: none;
+      border: none;
+      color: rgba(239,68,68,0.35);
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0 3px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      align-self: flex-start;
+    }
+    .seq-remove:hover { color: #ef4444; }
+
+    .seq-controls { display: flex; gap: 6px; margin-bottom: 10px; }
+    .seq-btn {
+      flex: 1;
+      padding: 5px 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: #fff;
+    }
+    .seq-btn-sort { background: rgba(96,165,250,0.25); color: #60a5fa; border: 1px solid rgba(96,165,250,0.4); }
+    .seq-btn-next { background: linear-gradient(135deg,#ef4444,#dc2626); }
+    .seq-btn-reset { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid rgba(255,255,255,0.1); }
+
+    .combat-roll-card {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 7px;
+      border: 1px solid rgba(96,165,250,0.25);
+      background: rgba(96,165,250,0.08);
+    }
+    .combat-roll-title {
+      font-size: 0.64rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #93c5fd;
+      margin-bottom: 8px;
+    }
+    .combat-roll-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .combat-roll-field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .combat-roll-field.full { grid-column: 1 / -1; }
+    .combat-roll-label {
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .combat-picker-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      max-height: 132px;
+      overflow-y: auto;
+      padding: 4px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 5px;
+      background: rgba(0,0,0,0.18);
+    }
+    .combat-picker-btn {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      border-radius: 5px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 3px 7px;
+      cursor: pointer;
+      line-height: 1.2;
+    }
+    .combat-picker-btn:hover {
+      border-color: rgba(96,165,250,0.35);
+      color: var(--text);
+    }
+    .combat-picker-btn.active {
+      border-color: rgba(96,165,250,0.55);
+      background: rgba(96,165,250,0.16);
+      color: #93c5fd;
+    }
+    #distance-hex-list .combat-picker-btn {
+      min-width: 42px;
+      text-align: center;
+    }
+    .combat-roll-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .combat-roll-btn {
+      flex: 1;
+      min-width: 96px;
+      padding: 5px 8px;
+      border-radius: 5px;
+      border: 1px solid rgba(96,165,250,0.35);
+      background: rgba(96,165,250,0.14);
+      color: #93c5fd;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .combat-roll-result {
+      margin-top: 8px;
+      font-size: 0.74rem;
+      color: var(--text);
+      line-height: 1.45;
+      padding: 7px 8px;
+      border-radius: 5px;
+      background: rgba(0,0,0,0.22);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .combat-roll-note {
+      margin-top: 7px;
+      font-size: 0.66rem;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .seq-add-npc {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 8px;
+    }
+    .seq-add-npc input { flex: 1; font-size: 0.75rem; padding: 4px 7px; }
+    .seq-add-npc .seq-npc-num { width: 48px; text-align: center; }
+    .seq-add-npc button {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 9px;
+      background: rgba(239,68,68,0.15);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #ef4444;
+      border-radius: 5px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* ── Session Notes ─────────────────────────────────────  */
+    #session-notes {
+      width: 100%;
+      min-height: 160px;
+      resize: vertical;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.82rem;
+      padding: 8px 10px;
+      font-family: inherit;
+      line-height: 1.5;
+    }
+    #session-notes:focus { outline: none; border-color: rgba(96,165,250,0.3); }
+    #notes-saved {
+      font-size: 0.7rem;
+      color: #34d399;
+      opacity: 0;
+      transition: opacity 0.3s;
+      margin-top: 4px;
+    }
+    #notes-saved.show { opacity: 1; }
+
+    /* ── Empty State ──────────────────────────────────────  */
+    .empty-state {
+      text-align: center;
+      padding: 32px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .empty-state .icon { font-size: 2rem; margin-bottom: 8px; }
+
+    /* ── NPC Generator Modal ──────────────────────────────  */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 200;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 16px;
+      overflow-y: auto;
+    }
+    .modal-box {
+      background: #0b1220;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      width: 100%;
+      max-width: 680px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .modal-header-title {
+      background: linear-gradient(135deg, #ef4444, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.3rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+    .modal-close:hover { color: #ef4444; }
+
+    .modal-body { padding: 18px; }
+
+    .gen-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 20px;
+    }
+    .gen-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .gen-field.full { grid-column: 1 / -1; }
+    .gen-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .gen-input {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 5px;
+      color: var(--text);
+      padding: 7px 10px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      width: 100%;
+    }
+    .gen-input:focus { outline: none; border-color: rgba(96,165,250,0.45); }
+
+    .gen-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .gen-btn-generate {
+      flex: 1;
+      padding: 9px 18px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: #fff;
+      transition: opacity 0.15s;
+    }
+    .gen-btn-generate:hover { opacity: 0.88; }
+    .gen-btn-reroll {
+      padding: 9px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid rgba(251,191,36,0.4);
+      border-radius: 7px;
+      cursor: pointer;
+      background: rgba(251,191,36,0.1);
+      color: #fbbf24;
+      transition: opacity 0.15s;
+    }
+    .gen-btn-reroll:hover { opacity: 0.8; }
+    .gen-btn-add {
+      flex: 1;
+      padding: 9px 18px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #34d399, #059669);
+      color: #fff;
+      transition: opacity 0.15s;
+    }
+    .gen-btn-add:hover { opacity: 0.88; }
+    .gen-btn-back {
+      padding: 9px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 7px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+
+    /* Preview panel inside modal */
+    .gen-preview {
+      margin-top: 2px;
+      max-height: 65vh;
+      overflow-y: auto;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 14px;
+    }
+    .gen-preview-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(239,68,68,0.15);
+      border: 1px solid rgba(239,68,68,0.4);
+      color: #ef4444;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .gen-preview-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .gen-preview-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    /* ── Responsive ───────────────────────────────────────  */
+    @media (max-width: 900px) {
+      #combat-layout { grid-template-columns: 1fr; }
+      #combat-right  { position: static; }
+      .special-grid  { grid-template-columns: repeat(4, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<div id="gm-root">
+
+  <!-- Top Bar -->
+  <header id="topbar">
+    <h1>☢ GM Screen</h1>
+    <button class="tb-btn tb-btn-upload" id="upload-btn">⬆ Upload Characters</button>
+    <button class="tb-btn tb-btn-dice"   id="dice-toggle-btn">🎲 Dice Roller</button>
+    <button class="tb-btn" style="background:linear-gradient(135deg,#ef4444,#b91c1c);" id="gen-npc-btn">☠ Generate NPC</button>
+    <a href="index.html" class="tb-btn tb-btn-back">← Back</a>
+    <input type="file" id="file-input" accept=".json" multiple />
+  </header>
+
+  <!-- Dice Roller Panel -->
+  <div id="dice-panel">
+    <button class="dice-btn" data-sides="4">d4</button>
+    <button class="dice-btn" data-sides="6">d6</button>
+    <button class="dice-btn" data-sides="8">d8</button>
+    <button class="dice-btn" data-sides="10">d10</button>
+    <button class="dice-btn" data-sides="12">d12</button>
+    <button class="dice-btn" data-sides="20">d20</button>
+    <button class="dice-btn" data-sides="100">d100</button>
+    <div id="dice-modifier-wrap">
+      <label for="dice-modifier">Mod</label>
+      <input type="number" id="dice-modifier" value="0" step="1" class="npc-input" style="width:56px" />
+    </div>
+    <div id="dice-result">—</div>
+    <div id="dice-history"></div>
+  </div>
+
+  <!-- Tab Bar -->
+  <nav id="tab-bar">
+    <button class="tab-btn active" data-tab="players">
+      ⚡ Players <span class="tab-count" id="tab-players-count"></span>
+    </button>
+    <button class="tab-btn" data-tab="encounter">
+      ☠ Encounter <span class="tab-count" id="tab-encounter-count"></span>
+    </button>
+    <button class="tab-btn" data-tab="combat">
+      🎯 Combat
+    </button>
+    <button class="tab-btn" data-tab="notes">
+      📝 Notes
+    </button>
+  </nav>
+
+  <!-- Tab Panels -->
+  <div id="tab-panels">
+
+    <!-- ── Players Tab ─────────────────────────────────── -->
+    <div class="tab-panel active" id="tab-panel-players">
+      <div id="drop-zone">
+        <div class="icon" style="font-size:2rem">📂</div>
+        <p><b>Drop character JSON files here</b></p>
+        <p style="font-size:0.8rem">or click Upload Characters above — multiple files supported</p>
+      </div>
+      <div id="char-list"></div>
+    </div>
+
+    <!-- ── Encounter Tab ───────────────────────────────── -->
+    <div class="tab-panel" id="tab-panel-encounter">
+      <div id="npc-ref-wrap" style="display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:0.82rem;color:var(--muted)">
+        <span>Distance reference point:</span>
+        <input type="text" id="npc-ref-input" class="npc-input" placeholder="e.g. Party" maxlength="40" style="width:140px;padding:4px 8px;font-size:0.82rem;border-radius:5px" />
+      </div>
+      <div id="npc-list"></div>
+      <div class="encounter-action-row">
+        <button id="add-npc-btn">☠ Generate &amp; Add NPC</button>
+        <button id="add-critter-btn">🐾 Generate &amp; Add Critter</button>
+        <button id="add-robot-btn">🤖 Generate &amp; Add Robot</button>
+      </div>
+      <div id="follower-pool-wrap">
+        <div class="follower-pool-title">Follower Pool</div>
+        <div id="follower-pool-list">
+          <div class="empty-state" style="padding:12px;font-size:0.8rem">No saved followers yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Combat Tab ──────────────────────────────────── -->
+    <div class="tab-panel" id="tab-panel-combat">
+      <div id="combat-layout">
+
+        <!-- Left: Sequence Tracker -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">
+            Sequence Tracker
+            <span class="sub">2 × PE · higher acts first</span>
+          </div>
+
+          <div class="now-acting-card" id="now-acting-card">
+            <div class="now-acting-empty">Press Next Turn to begin.</div>
+          </div>
+
+          <div class="seq-controls">
+            <button class="seq-btn seq-btn-sort"  id="seq-sort-btn">↓ Sort</button>
+            <button class="seq-btn seq-btn-next"  id="seq-next-btn">Next Turn ▶</button>
+            <button class="seq-btn seq-btn-reset" id="seq-reset-btn">Reset</button>
+          </div>
+
+          <div class="combat-roll-card">
+            <div class="combat-roll-title">Attack / Defense Resolver</div>
+            <div class="combat-roll-grid">
+              <div class="combat-roll-field full">
+                <label class="combat-roll-label" for="combat-target-select">Target</label>
+                <div id="combat-target-list" class="combat-picker-list">
+                  <span style="font-size:0.72rem;color:var(--muted)">No targets available.</span>
+                </div>
+              </div>
+              <div class="combat-roll-field">
+                <label class="combat-roll-label" for="attack-target-input">Attack Target</label>
+                <input id="attack-target-input" type="number" min="1" max="100" class="npc-input" value="50" />
+              </div>
+              <div class="combat-roll-field">
+                <label class="combat-roll-label" for="attack-mod-input">Attack Mod</label>
+                <input id="attack-mod-input" type="number" step="1" class="npc-input" value="0" />
+              </div>
+              <div class="combat-roll-field">
+                <label class="combat-roll-label" for="defense-target-input">Defense Target</label>
+                <input id="defense-target-input" type="number" min="1" max="100" class="npc-input" value="50" />
+              </div>
+              <div class="combat-roll-field">
+                <label class="combat-roll-label" for="defense-ac-mod-input">Defense AC Mod</label>
+                <input id="defense-ac-mod-input" type="number" step="1" class="npc-input" value="0" readonly />
+              </div>
+              <div class="combat-roll-field">
+                <label class="combat-roll-label" for="distance-hex-select">Distance (Hex)</label>
+                <div id="distance-hex-list" class="combat-picker-list"></div>
+              </div>
+              <div class="combat-roll-field">
+                <label class="combat-roll-label" for="defense-mod-input">Defense Mod</label>
+                <input id="defense-mod-input" type="number" step="1" class="npc-input" value="0" />
+              </div>
+            </div>
+            <div class="combat-roll-actions">
+              <button class="combat-roll-btn" id="roll-attack-btn">Roll Attack</button>
+              <button class="combat-roll-btn" id="roll-defense-btn">Roll Defense</button>
+              <button class="combat-roll-btn" id="resolve-attack-defense-btn">Resolve A vs D</button>
+            </div>
+            <div class="combat-roll-result" id="combat-roll-result">Ready.</div>
+            <div class="combat-roll-note">d100 rules: <b>00 = Strategic Win</b> (automatic decisive success). <b>99 = near-fail</b>; without positive modifiers, no save attempt applies.<br>Defense mod total = AC + distance + manual defense mod.</div>
+          </div>
+
+          <div class="seq-list" id="seq-list">
+            <div class="empty-state" style="padding:12px;font-size:0.8rem">Load characters or add NPCs to begin.</div>
+          </div>
+
+          <!-- Manual one-off NPC -->
+          <div class="seq-add-npc">
+            <input type="text"   id="seq-npc-name" class="npc-input" placeholder="NPC name" />
+            <input type="number" id="seq-npc-num"  class="npc-input seq-npc-num" placeholder="SEQ" min="0" />
+            <button id="seq-add-btn">+ Add</button>
+          </div>
+        </div>
+      </div><!-- /combat-layout -->
+    </div>
+
+    <!-- ── Notes Tab ───────────────────────────────────── -->
+    <div class="tab-panel" id="tab-panel-notes">
+      <div class="sidebar-card" style="max-width:980px">
+        <div class="sidebar-card-title">Session Notes</div>
+        <textarea id="session-notes" placeholder="GM notes for this session…"></textarea>
+        <div id="notes-saved">✓ Saved</div>
+      </div>
+    </div>
+
+  </div><!-- /tab-panels -->
+</div><!-- /gm-root -->
+
+<!-- NPC Generator Modal -->
+<div id="npc-gen-modal" class="modal-overlay" style="display:none" aria-modal="true" role="dialog">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-header-title">☠ NPC Generator</span>
+      <button class="modal-close" id="gen-modal-close" aria-label="Close">✕</button>
+    </div>
+
+    <!-- Form -->
+    <div id="npc-gen-form-wrap" class="modal-body">
+      <div class="gen-form-grid">
+        <div class="gen-field full">
+          <label class="gen-label" for="gen-name">Name <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(leave blank to auto-generate)</span></label>
+          <input id="gen-name" type="text" class="gen-input" placeholder="e.g. Razor Cain" maxlength="60" />
+        </div>
+        <div class="gen-field">
+          <label class="gen-label" for="gen-race">Race</label>
+          <select id="gen-race" class="gen-input">
+            <option value="Human">Human</option>
+            <option value="Ghoul">Ghoul</option>
+              <option value="Super Mutants">Super Mutants</option>
+          </select>
+        </div>
+        <div class="gen-field">
+          <label class="gen-label" for="gen-level">Level</label>
+          <input id="gen-level" type="number" class="gen-input" min="1" max="30" value="5" />
+        </div>
+        <div class="gen-field">
+          <label class="gen-label" for="gen-faction">Faction</label>
+          <select id="gen-faction" class="gen-input">
+            <option value="Custom">— None / Custom —</option>
+            <option>NCR</option>
+            <option>Brotherhood of Steel</option>
+            <option>Raiders</option>
+            <option>Vault Dwellers</option>
+            <option>Super Mutants</option>
+            <option>Enclave</option>
+            <option>Followers of the Apocalypse</option>
+            <option>Talon Company</option>
+            <option>Gunners</option>
+            <option>Institute</option>
+            <option>Minutemen</option>
+            <option>Caesar's Legion</option>
+          </select>
+        </div>
+        <div class="gen-field">
+          <label class="gen-label" for="gen-archetype">Archetype</label>
+          <select id="gen-archetype" class="gen-input">
+            <option value="soldier">Soldier — balanced combat (STR/PE/END)</option>
+            <option value="sniper">Sniper — ranged precision (PE/AG)</option>
+            <option value="brawler">Brawler — melee &amp; unarmed (STR/END/AG)</option>
+            <option value="medic">Medic — healer/support (IN/PE)</option>
+            <option value="tech">Tech — science &amp; repair (IN)</option>
+            <option value="diplomat">Diplomat — social skills (CH/IN)</option>
+            <option value="thief">Thief — stealth &amp; locks (AG/PE)</option>
+            <option value="raider">Raider — brutal offense (STR/AG)</option>
+            <option value="heavy">Heavy — big guns (STR/END)</option>
+            <option value="scout">Scout — outdoors &amp; recon (PE/AG)</option>
+          </select>
+        </div>
+        <div class="gen-field">
+          <label class="gen-label" for="gen-sex">Sex</label>
+          <select id="gen-sex" class="gen-input">
+            <option value="">Random</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        <div class="gen-field">
+          <label class="gen-label" for="gen-age">Age</label>
+          <input id="gen-age" type="number" class="gen-input" min="21" max="200" placeholder="Random" />
+        </div>
+        <div class="gen-field">
+          <label class="gen-label" for="gen-armor">Armor Type</label>
+          <select id="gen-armor" class="gen-input">
+            <option value="">Auto (by level/faction)</option>
+            <option value="light">Light</option>
+            <option value="medium">Medium</option>
+            <option value="heavy">Heavy</option>
+          </select>
+        </div>
+      </div>
+      <div class="gen-actions">
+        <button class="gen-btn-generate" id="gen-generate-btn">Generate</button>
+      </div>
+    </div>
+
+    <!-- Preview (shown after generation) -->
+    <div id="npc-gen-preview-wrap" class="modal-body" style="display:none">
+      <div id="npc-gen-preview"></div>
+      <div class="gen-actions">
+        <button class="gen-btn-back" id="gen-back-btn">← Back</button>
+        <button class="gen-btn-reroll" id="gen-reroll-btn">🎲 Reroll</button>
+        <button class="gen-btn-add" id="gen-add-btn">+ Add to Encounter Table</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Critter Generator Modal -->
+<div id="critter-gen-modal" class="modal-overlay" style="display:none" aria-modal="true" role="dialog">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-header-title" id="critter-modal-title">🐾 Critter Generator</span>
+      <button class="modal-close" id="critter-modal-close" aria-label="Close">✕</button>
+    </div>
+
+    <div id="critter-gen-form-wrap" class="modal-body">
+      <div class="gen-form-grid">
+        <div class="gen-field">
+          <label class="gen-label" id="critter-template-label" for="critter-template">Template</label>
+          <select id="critter-template" class="gen-input"></select>
+        </div>
+        <div class="gen-field">
+          <label class="gen-label" for="critter-level">Level</label>
+          <input id="critter-level" type="number" class="gen-input" min="1" max="30" value="1" />
+        </div>
+        <div class="gen-field full">
+          <label class="gen-label" for="critter-name">Name <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(editable)</span></label>
+          <input id="critter-name" type="text" class="gen-input" placeholder="Critter name" maxlength="60" />
+        </div>
+      </div>
+      <div class="gen-actions">
+        <button class="gen-btn-generate" id="critter-generate-btn">Generate</button>
+      </div>
+    </div>
+
+    <div id="critter-gen-preview-wrap" class="modal-body" style="display:none">
+      <div id="critter-gen-preview"></div>
+      <div class="gen-actions">
+        <button class="gen-btn-back" id="critter-back-btn">← Back</button>
+        <button class="gen-btn-reroll" id="critter-reroll-btn">🎲 Reroll Name</button>
+        <button class="gen-btn-add" id="critter-add-btn">+ Add to Encounter Table</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="npc-generator.js"></script>
+<script src="gm.js"></script>
+
+<!-- Child Status Confirmation Modal -->
+<div id="child-confirm-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:300;display:none;align-items:center;justify-content:center">
+  <div style="background:#0b1220;border:2px solid #ef4444;border-radius:10px;padding:28px 32px;max-width:420px;width:90%;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.8)">
+    <div style="font-size:2rem;margin-bottom:10px">⚠</div>
+    <div style="font-size:1.1rem;font-weight:700;color:#ef4444;margin-bottom:10px">Are you sure?</div>
+    <div style="font-size:0.9rem;color:#e6eef6;line-height:1.6;margin-bottom:22px">The target is a child.<br><b>Remind the party.</b></div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button id="child-confirm-cancel" style="padding:8px 20px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#9aa6b2;font-weight:600;cursor:pointer">Cancel</button>
+      <button id="child-confirm-ok" style="padding:8px 20px;border-radius:6px;border:none;background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;font-weight:700;cursor:pointer">Proceed</button>
+    </div>
+  </div>
+</div>

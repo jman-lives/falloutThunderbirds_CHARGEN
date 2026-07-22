@@ -1,15 +1,51 @@
 function qs(id){return document.getElementById(id)}
 
+const GAME_STATE_VERSION = 2;
+
+function loadStoredCharacterFromAnyKey() {
+  const keys = ['characterData', 'falloutCharacter'];
+  for (const key of keys) {
+    const raw = localStorage.getItem(key);
+    if (!raw) continue;
+    try {
+      return JSON.parse(raw);
+    } catch (err) {
+      console.warn('Failed to parse character from key:', key, err);
+    }
+  }
+  return null;
+}
+
+function buildForwardCompatibleCharacter(character) {
+  const normalized = { ...(character || {}) };
+  const stats = normalized.stats || {};
+  const gameState = normalized.gameState && typeof normalized.gameState === 'object' ? normalized.gameState : {};
+
+  normalized.gameState = {
+    version: GAME_STATE_VERSION,
+    currentHP: Number.isFinite(parseInt(gameState.currentHP)) ? parseInt(gameState.currentHP) : (stats.Hit_Points || 15),
+    currentAP: Number.isFinite(parseInt(gameState.currentAP)) ? parseInt(gameState.currentAP) : (stats.Action_Points || 8),
+    activeItemIndex: Number.isFinite(parseInt(gameState.activeItemIndex)) ? parseInt(gameState.activeItemIndex) : 0,
+    equipmentSelection: gameState.equipmentSelection || normalized.gameEquipmentSelection || null,
+    savedAt: new Date().toISOString(),
+    source: gameState.source || 'core-script'
+  };
+
+  return normalized;
+}
+
+function persistCharacterToAllStores(character) {
+  const normalized = buildForwardCompatibleCharacter(character);
+  localStorage.setItem('falloutCharacter', JSON.stringify(normalized));
+  localStorage.setItem('characterData', JSON.stringify(normalized));
+  return normalized;
+}
+
 // Log character data from localStorage at page load
 function logCharacterFromStorage() {
-  const character = localStorage.getItem('falloutCharacter');
-  if (character) {
-    try {
-      const charData = JSON.parse(character);
-      console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', charData);
-    } catch (e) {
-      console.warn('Failed to parse character data from localStorage:', e);
-    }
+  const charData = loadStoredCharacterFromAnyKey();
+  if (charData) {
+    console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', charData);
   } else {
     console.log('%c[NO CHARACTER IN STORAGE]', 'color: #FF9800; font-weight: bold;');
   }
@@ -581,14 +617,9 @@ function getFormData(){
     });
   } else {
     // We're on advancement.html without checkboxes - preserve from localStorage
-    const stored = localStorage.getItem('falloutCharacter');
-    if (stored) {
-      try {
-        const savedData = JSON.parse(stored);
-        tagSkills = savedData.tagSkills || {};
-      } catch (err) {
-        console.warn('Could not parse saved character data for tagSkills');
-      }
+    const savedData = loadStoredCharacterFromAnyKey();
+    if (savedData) {
+      tagSkills = savedData.tagSkills || {};
     }
   }
 
@@ -648,6 +679,7 @@ function getFormData(){
     },
     notes: (qs('notes')?.value)||null,
     selectedTraits: getSelectedTraits(),
+    reputation: [],
     createdAt: new Date().toISOString()
   }
 }
@@ -739,10 +771,9 @@ function saveCharacterData() {
   if (!formData || !formData.name) {
     console.warn('WARNING: Form data is invalid or has no name!', formData);
   }
-  localStorage.setItem('falloutCharacter', JSON.stringify(formData));
-  // Clear any old characterData from previous uploads to avoid conflicts
-  localStorage.removeItem('characterData');
+  const normalized = persistCharacterToAllStores(formData);
   console.log('Saved to localStorage. Retrieving to verify:', localStorage.getItem('falloutCharacter'));
+  console.log('Saved normalized characterData key:', localStorage.getItem('characterData'));
 }
 
 // #region Stats Calculations
@@ -1250,9 +1281,9 @@ function updateSkillDisplay() {
   // Load skill increases from localStorage (applied during leveling)
   let characterData = {};
   try {
-    const stored = localStorage.getItem('falloutCharacter');
-    if (stored) {
-      characterData = JSON.parse(stored);
+    const storedData = loadStoredCharacterFromAnyKey();
+    if (storedData) {
+      characterData = storedData;
     }
   } catch (e) {
     console.warn('Could not load character data from localStorage:', e);
@@ -1359,7 +1390,7 @@ function updateSkillDisplay() {
 
 function randomizeCharacter(){
   console.log('randomizeCharacter called');
-  const sampleNames = ['Alex','Riley','Mack','Nova','Harper','Jules','Casey','Rowan','Rex','Ivy']
+  const sampleNames = ['Alex','Riley','Mack','Nova','Harper','Jules','Casey','Rowan','Rex','Ivy','Zane','Quinn','Blaze','Skyler','Ash','Dakota','Ember','Phoenix','Sage','River','Jaden','Cameron','Finley','Jordan','Parker','Reese','Taylor','Morgan','Sawyer','Tatum','Wren','Zephyr','Indigo','Onyx','Cobalt','Emberly','Lennox','Sloane','Sterling','Haven','Oakley','Remy','Sierra','Vale','Winter','Zion','Arden','Briar','Cypress','Darian','Ellis','Fable','Greer','Hollis','Jory','Kieran','Lior','Marlo','Nico','Orion','Perry','Quincy','Riven','Shiloh','Tarian','Umber','Vesper','Wilder','Xen','Yarrow','Zaire','Azura','Blaise','Cairo','Dove','Emrys','Falcon','Galen','Halo','Isley','Jovi','Kaya','Lyric','Mira','Nyx','Oberon','Pax','Quilla','Rune','Solace','Thorne','Ulric','Vail','Wrenna','Xara','Yara','Zella','Ashby','Bryn','Cedar','Darian','Eden','Frost','Gray','Hale','Indie','Jace','Kendall','Lark','Maven','Niall','Oak','Pheonix','Quinlan','Reign','Sable','Talon','Umber','Vale','Wynn','Xylo','Yule','Zephyrine'];
   const genders = ['Male','Female']
   const races = ['Human','Ghoul']
   const occupation = ['Scavenger','Engineer','Trader','Medic','Soldier','Mechanic','Scientist']
@@ -1547,7 +1578,8 @@ function getTimestamp() {
 }
 
 function downloadJSON(obj, filename){
-  const blob = new Blob([JSON.stringify(obj,null,2)],{type:'application/json'})
+  const normalized = buildForwardCompatibleCharacter(obj)
+  const blob = new Blob([JSON.stringify(normalized,null,2)],{type:'application/json'})
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -1573,6 +1605,7 @@ function handleFileLoad(file){
     try{
       const data = JSON.parse(e.target.result)
       setFormData(data)
+      persistCharacterToAllStores(getFormData())
       alert('Loaded character JSON')
     }catch(err){
       alert('Invalid JSON file')

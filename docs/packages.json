@@ -5,6 +5,12 @@
       "name": "Survivor Package",
       "description": "Basic armor, a 10mm pistol, and essential supplies for survival.",
       "icon": "🛡️",
+      "reputation": [
+        {
+          "name": "Wastelander",
+          "description": "You are accustomed to the harsh realities of the wasteland."
+        }
+      ],
       "showInChargen": true,
       "items": [
         {
@@ -81,6 +87,12 @@
       "name": "Scavenger Package",
       "description": "Light armor, diverse weapons, and tools for exploration.",
       "icon": "🎒",
+      "reputation": [
+        {
+          "name": "Wastelander",
+          "description": "You are accustomed to the harsh realities of the wasteland."
+        }
+      ],
       "showInChargen": true,
       "items": [
         {
@@ -124,6 +136,12 @@
       "description": "Finally, Some Fresh Air.",
       "icon": "⚙️",
       "showInChargen": true,
+      "reputation": [
+        {
+          "name": "Vault Dweller",
+          "description": "You're from an Underground Vault. People will notice the fresh vault suit, so be careful."
+        }
+      ],
       "items": [
         {
           "id": "ammo_10mm",
@@ -174,6 +192,12 @@
       "description": "The Great Spirit Watches Over Us",
       "icon": "🪶",
       "showInChargen": true,
+      "reputation": [
+        {
+          "name": "Tribal",
+          "description": "Your dress, tattoos, and mannerisms denote a Tribal background."
+        }
+      ],
       "items": [
         {
           "id": "equip_rope",
@@ -212,6 +236,12 @@
       "description": "I AM DANGEROUS",
       "icon": "💀",
       "showInChargen": true,
+      "reputation": [
+        {
+          "name": "Tough Guy",
+          "description": "Normal people tend to feel mildly intimidated in your presence."
+        }
+      ],
       "items": [
         {
           "id": "armor_vandal",
@@ -249,6 +279,12 @@
       "name": "Caravan Guard Package",
       "description": "Damn Brahmin Crap Everywhere",
       "icon": "🐂",
+      "reputation": [
+        {
+          "name": "Wastelander",
+          "description": "You are accustomed to the harsh realities of the wasteland."
+        }
+      ],
       "showInChargen": true,
       "items": [
         {
@@ -313,6 +349,12 @@
       "name": "Scientist Package",
       "description": "I FREAKING LOVE SCIENCE",
       "icon": "⚗️",
+      "reputation": [
+        {
+          "name": "Bookish",
+          "description": "People see you as intelligent and well-read."
+        }
+      ],
       "showInChargen": true,
       "items": [
         {
@@ -348,6 +390,12 @@
       "description": "Don't Kill My Buzz",
       "icon": "💉",
       "showInChargen": true,
+      "reputation": [
+        {
+          "name": "Sketchy",
+          "description": "Most people are mildly cautious around you."
+        }
+      ],
       "items": [
         {
           "id": "armor_wastelander",
@@ -397,6 +445,12 @@
       "name": "Medic Package",
       "description": "One Stitch, Two Stitch...",
       "icon": "💊",
+      "reputation": [
+        {
+          "name": "Bookish",
+          "description": "People see you as intelligent and well-read."
+        }
+      ],
       "showInChargen": true,
       "items": [
         {
@@ -435,6 +489,16 @@
       "name": "Wasteland Doctor Package",
       "description": "Dammit Jim, I'm A Doctor, Not A Mechanic",
       "icon": "🩺",
+      "reputation": [
+        {
+          "name": "Bookish",
+          "description": "People see you as intelligent and well-read."
+        },
+        {
+          "name": "Wastelander",
+          "description": "You are accustomed to the harsh realities of the wasteland."
+        }
+      ],
       "showInChargen": true,
       "items": [
         {
@@ -512,6 +576,16 @@
       "description": "Light Fingers, Lighter Trigger Pull",
       "icon": "🔐",
       "showInChargen": true,
+      "reputation": [
+        {
+          "name": "Street Smarts",
+          "description": "You grew up tough."
+        },
+        {
+          "name": "Sketchy",
+          "description": "Most people are mildly cautious around you."
+        }
+      ],
       "items": [
         {
           "id": "chem_stimpak",
@@ -550,6 +624,16 @@
       "description": "Say My Name",
       "icon": "🚬",
       "showInChargen": true,
+      "reputation": [
+        {
+          "name": "Street Smarts",
+          "description": "You grew up tough."
+        },
+        {
+          "name": "Sketchy",
+          "description": "Most people are mildly cautious around you."
+        }
+      ],
       "items": [
         {
           "id": "armor_leather_jacket",
@@ -630,6 +714,12 @@
       "description": "No Codex, No Problem",
       "icon": "⚡",
       "showInChargen": true,
+      "reputation": [
+        {
+          "name": "Brotherhood Dropout",
+          "description": "For one reason or another you didn't make it far."
+        }
+      ],
       "items": [
         {
           "id": "ammo_microfusion_cell",
@@ -652,6 +742,12 @@
       "description": "The Sweet Science",
       "icon": "🥊",
       "showInChargen": true,
+      "reputation": [
+        {
+          "name": "Street Smarts",
+          "description": "You grew up tough."
+        }
+      ],
       "items": [
         {
           "id": "armor_robe",

@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "1.0",
-    "lastUpdated": "2025-12-31",
-    "description": "Complete equipment, weapons, armor, and item database for Fallout TTRPG"
+    "lastUpdated": "2026-07-10",
+    "description": "Complete equipment, weapons, armor, and item database for Fallout TTRPG plus critter templates for encounter generation"
   },
   "ammunition": [
     {
@@ -4767,6 +4767,356 @@
         }
       },
       "addiction": 0
+    }
+  ],
+  "critters": [
+    {
+      "id": "critter_mantis",
+      "name": "Mantis",
+      "category": "critter",
+      "baseStats": {
+        "hp": 10,
+        "sq": 7,
+        "ap": 7,
+        "xp": 50,
+        "cc": 2,
+        "ac": 5
+      },
+      "attacks": [
+        {
+          "name": "Mandible",
+          "chance": 70,
+          "apCost": 3,
+          "damage": "1d6",
+          "effect": "Poison Type B"
+        },
+        {
+          "name": "Claw",
+          "chance": 75,
+          "apCost": 4,
+          "damage": "1d8",
+          "effect": "None"
+        }
+      ]
+    },
+    {
+      "id": "critter_radscorpion",
+      "name": "Radscorpion",
+      "category": "critter",
+      "baseStats": {
+        "hp": 16,
+        "sq": 8,
+        "ap": 8,
+        "xp": 80,
+        "cc": 3,
+        "ac": 7
+      },
+      "attacks": [
+        {
+          "name": "Sting",
+          "chance": 70,
+          "apCost": 4,
+          "damage": "1d10",
+          "effect": "Poison Type C"
+        },
+        {
+          "name": "Pincer",
+          "chance": 65,
+          "apCost": 4,
+          "damage": "1d8",
+          "effect": "Knockdown on crit"
+        }
+      ]
+    },
+    {
+      "id": "critter_gecko",
+      "name": "Gecko",
+      "category": "critter",
+      "baseStats": {
+        "hp": 8,
+        "sq": 7,
+        "ap": 7,
+        "xp": 40,
+        "cc": 2,
+        "ac": 4
+      },
+      "attacks": [
+        {
+          "name": "Bite",
+          "chance": 68,
+          "apCost": 3,
+          "damage": "1d6",
+          "effect": "None"
+        },
+        {
+          "name": "Tail Swipe",
+          "chance": 60,
+          "apCost": 4,
+          "damage": "1d8",
+          "effect": "Stagger on crit"
+        }
+      ]
+    },
+    {
+      "id": "critter_wild_dog",
+      "name": "Wild Dog",
+      "category": "critter",
+      "baseStats": {
+        "hp": 9,
+        "sq": 9,
+        "ap": 7,
+        "xp": 45,
+        "cc": 3,
+        "ac": 6
+      },
+      "attacks": [
+        {
+          "name": "Bite",
+          "chance": 72,
+          "apCost": 3,
+          "damage": "1d6",
+          "effect": "Bleed on crit"
+        },
+        {
+          "name": "Lunge",
+          "chance": 66,
+          "apCost": 4,
+          "damage": "1d8",
+          "effect": "Push target 1 hex"
+        }
+      ]
+    },
+    {
+      "id": "critter_molerat",
+      "name": "Mole Rat",
+      "category": "critter",
+      "baseStats": {
+        "hp": 11,
+        "sq": 8,
+        "ap": 7,
+        "xp": 55,
+        "cc": 2,
+        "ac": 5
+      },
+      "attacks": [
+        {
+          "name": "Bite",
+          "chance": 70,
+          "apCost": 3,
+          "damage": "1d6",
+          "effect": "Disease check on crit"
+        },
+        {
+          "name": "Burrow Ambush",
+          "chance": 62,
+          "apCost": 4,
+          "damage": "1d8",
+          "effect": "Target loses 1 AP next turn"
+        }
+      ]
+    },
+    {
+      "id": "critter_giant_ant",
+      "name": "Giant Ant",
+      "category": "critter",
+      "baseStats": {
+        "hp": 13,
+        "sq": 8,
+        "ap": 8,
+        "xp": 70,
+        "cc": 3,
+        "ac": 7
+      },
+      "attacks": [
+        {
+          "name": "Mandible Bite",
+          "chance": 69,
+          "apCost": 3,
+          "damage": "1d8",
+          "effect": "None"
+        },
+        {
+          "name": "Acid Spit",
+          "chance": 60,
+          "apCost": 5,
+          "damage": "1d10",
+          "effect": "-1 AC for 1 round"
+        }
+      ]
+    },
+    {
+      "id": "critter_bloatfly",
+      "name": "Bloatfly",
+      "category": "critter",
+      "baseStats": {
+        "hp": 7,
+        "sq": 10,
+        "ap": 7,
+        "xp": 35,
+        "cc": 1,
+        "ac": 7
+      },
+      "attacks": [
+        {
+          "name": "Proboscis Jab",
+          "chance": 66,
+          "apCost": 3,
+          "damage": "1d4",
+          "effect": "Minor bleed on crit"
+        },
+        {
+          "name": "Larva Burst",
+          "chance": 58,
+          "apCost": 4,
+          "damage": "1d6",
+          "effect": "Target -10% to hit for 1 round"
+        }
+      ]
+    },
+    {
+      "id": "critter_brahmin",
+      "name": "Brahmin",
+      "category": "critter",
+      "baseStats": {
+        "hp": 18,
+        "sq": 6,
+        "ap": 6,
+        "xp": 60,
+        "cc": 2,
+        "ac": 4
+      },
+      "attacks": [
+        {
+          "name": "Headbutt",
+          "chance": 62,
+          "apCost": 4,
+          "damage": "1d10",
+          "effect": "Knockback 1 hex on crit"
+        },
+        {
+          "name": "Trample",
+          "chance": 55,
+          "apCost": 5,
+          "damage": "1d12",
+          "effect": "Prone on crit"
+        }
+      ]
+    },
+    {
+      "id": "critter_yao_guai",
+      "name": "Yao Guai",
+      "category": "critter",
+      "baseStats": {
+        "hp": 34,
+        "sq": 8,
+        "ap": 9,
+        "xp": 220,
+        "cc": 6,
+        "ac": 9
+      },
+      "attacks": [
+        {
+          "name": "Maul",
+          "chance": 74,
+          "apCost": 5,
+          "damage": "2d10",
+          "effect": "Bleed"
+        },
+        {
+          "name": "Savage Swipe",
+          "chance": 68,
+          "apCost": 4,
+          "damage": "1d12",
+          "effect": "Knockdown on crit"
+        }
+      ]
+    },
+    {
+      "id": "critter_nightstalker",
+      "name": "Nightstalker",
+      "category": "critter",
+      "baseStats": {
+        "hp": 20,
+        "sq": 10,
+        "ap": 9,
+        "xp": 140,
+        "cc": 4,
+        "ac": 10
+      },
+      "attacks": [
+        {
+          "name": "Venom Bite",
+          "chance": 73,
+          "apCost": 4,
+          "damage": "1d10",
+          "effect": "Poison Type B"
+        },
+        {
+          "name": "Constriction",
+          "chance": 64,
+          "apCost": 5,
+          "damage": "1d12",
+          "effect": "Target -1 AP next turn"
+        }
+      ]
+    },
+    {
+      "id": "critter_wanamingo",
+      "name": "Wanamingo",
+      "category": "critter",
+      "baseStats": {
+        "hp": 28,
+        "sq": 8,
+        "ap": 8,
+        "xp": 180,
+        "cc": 5,
+        "ac": 8
+      },
+      "attacks": [
+        {
+          "name": "Rending Claw",
+          "chance": 72,
+          "apCost": 4,
+          "damage": "2d8",
+          "effect": "Bleed on crit"
+        },
+        {
+          "name": "Pounce",
+          "chance": 63,
+          "apCost": 5,
+          "damage": "2d6",
+          "effect": "Push target 1 hex"
+        }
+      ]
+    },
+    {
+      "id": "critter_deathclaw",
+      "name": "Deathclaw",
+      "category": "critter",
+      "baseStats": {
+        "hp": 45,
+        "sq": 10,
+        "ap": 10,
+        "xp": 350,
+        "cc": 8,
+        "ac": 12
+      },
+      "attacks": [
+        {
+          "name": "Razor Claw",
+          "chance": 78,
+          "apCost": 5,
+          "damage": "2d12",
+          "effect": "Severe bleed"
+        },
+        {
+          "name": "Impale",
+          "chance": 66,
+          "apCost": 6,
+          "damage": "3d8",
+          "effect": "Knockdown"
+        }
+      ]
     }
   ]
 }

@@ -276,28 +276,54 @@
     let packagesData = null;
     let databaseData = null;
     let character = null;
+    const GAME_STATE_VERSION = 2;
+
+    function buildForwardCompatibleCharacter(char, source = 'equipmentchoice') {
+      const normalized = { ...(char || {}) };
+      const stats = normalized.stats || {};
+      const gameState = normalized.gameState && typeof normalized.gameState === 'object' ? normalized.gameState : {};
+      normalized.gameState = {
+        version: GAME_STATE_VERSION,
+        currentHP: Number.isFinite(parseInt(gameState.currentHP)) ? parseInt(gameState.currentHP) : (stats.Hit_Points || 15),
+        currentAP: Number.isFinite(parseInt(gameState.currentAP)) ? parseInt(gameState.currentAP) : (stats.Action_Points || 8),
+        activeItemIndex: Number.isFinite(parseInt(gameState.activeItemIndex)) ? parseInt(gameState.activeItemIndex) : 0,
+        equipmentSelection: gameState.equipmentSelection || normalized.gameEquipmentSelection || null,
+        savedAt: new Date().toISOString(),
+        source
+      };
+      return normalized;
+    }
+
+    function persistCharacter(char, source = 'equipmentchoice') {
+      const normalized = buildForwardCompatibleCharacter(char, source);
+      localStorage.setItem('falloutCharacter', JSON.stringify(normalized));
+      localStorage.setItem('characterData', JSON.stringify(normalized));
+      return normalized;
+    }
 
     // Load character data from localStorage
     function loadCharacter() {
-      const stored = localStorage.getItem('falloutCharacter');
-      if (stored) {
+      const keys = ['characterData', 'falloutCharacter'];
+      for (const key of keys) {
+        const stored = localStorage.getItem(key);
+        if (!stored) continue;
         try {
-          const char = JSON.parse(stored);
+          const char = buildForwardCompatibleCharacter(JSON.parse(stored), 'equipmentchoice-load');
           console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', char);
+          persistCharacter(char, 'equipmentchoice-load');
           return char;
         } catch (e) {
-          return null;
+          console.warn('Failed to parse character from key:', key, e);
         }
-      } else {
-        console.log('%c[NO CHARACTER IN STORAGE]', 'color: #FF9800; font-weight: bold;');
       }
+      console.log('%c[NO CHARACTER IN STORAGE]', 'color: #FF9800; font-weight: bold;');
       return null;
     }
 
     // Save character data to localStorage
     function saveCharacter(char) {
-      localStorage.setItem('falloutCharacter', JSON.stringify(char));
-      console.log('%c[CHARACTER SAVED]', 'color: #4CAF50; font-weight: bold;', char);
+      const normalized = persistCharacter(char, 'equipmentchoice-save');
+      console.log('%c[CHARACTER SAVED]', 'color: #4CAF50; font-weight: bold;', normalized);
     }
 
     // Load database
@@ -432,6 +458,22 @@
 
       // Set equipment on character
       character.equipment = equipment;
+
+      // Apply reputation from package if it has any
+      if (pkg.reputation && Array.isArray(pkg.reputation) && pkg.reputation.length > 0) {
+        // Initialize character reputation if it doesn't exist
+        if (!character.reputation) {
+          character.reputation = [];
+        }
+        
+        // Add package reputations to character (avoid duplicates by name)
+        pkg.reputation.forEach(pkgRep => {
+          const exists = character.reputation.some(charRep => charRep.name === pkgRep.name);
+          if (!exists) {
+            character.reputation.push(pkgRep);
+          }
+        });
+      }
 
       // Mark which package was selected
       character.selectedPackage = pkg.id;

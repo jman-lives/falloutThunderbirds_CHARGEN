@@ -219,26 +219,101 @@
   <script src="advancement.js"></script>
   <script>
     let characterData = {};
+    const GAME_STATE_VERSION = 2;
+
+    function loadStoredCharacterFromAnyKey() {
+      const keys = ['characterData', 'falloutCharacter'];
+      for (const key of keys) {
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+        try {
+          return JSON.parse(raw);
+        } catch (err) {
+          console.warn('Failed to parse character from key:', key, err);
+        }
+      }
+      return null;
+    }
+
+    function buildForwardCompatibleCharacter(character, source = 'review') {
+      const normalized = { ...(character || {}) };
+      const stats = normalized.stats || {};
+      const gameState = normalized.gameState && typeof normalized.gameState === 'object' ? normalized.gameState : {};
+
+      normalized.gameState = {
+        version: GAME_STATE_VERSION,
+        currentHP: Number.isFinite(parseInt(gameState.currentHP)) ? parseInt(gameState.currentHP) : (stats.Hit_Points || 15),
+        currentAP: Number.isFinite(parseInt(gameState.currentAP)) ? parseInt(gameState.currentAP) : (stats.Action_Points || 8),
+        activeItemIndex: Number.isFinite(parseInt(gameState.activeItemIndex)) ? parseInt(gameState.activeItemIndex) : 0,
+        equipmentSelection: gameState.equipmentSelection || normalized.gameEquipmentSelection || null,
+        savedAt: new Date().toISOString(),
+        source
+      };
+
+      return normalized;
+    }
+
+    function persistCharacterToAllStores(character, source = 'review') {
+      const normalized = buildForwardCompatibleCharacter(character, source);
+      localStorage.setItem('falloutCharacter', JSON.stringify(normalized));
+      localStorage.setItem('characterData', JSON.stringify(normalized));
+      return normalized;
+    }
+
+    function buildCharacterSheetForExport(character, source = 'review-save') {
+      const normalized = buildForwardCompatibleCharacter(character, source);
+      return {
+        player: normalized.player || '',
+        name: normalized.name || '',
+        race: normalized.race || '',
+        age: normalized.age || '',
+        gender: normalized.gender || '',
+        attributes: normalized.attributes || {},
+        tagSkills: normalized.tagSkills || {},
+        skills: normalized.skills || {},
+        level: normalized.level || 1,
+        totalXP: normalized.totalXP || 0,
+        selectedPerks: normalized.selectedPerks || [],
+        stats: normalized.stats || {},
+        notes: normalized.notes || null,
+        selectedTraits: normalized.selectedTraits || [],
+        reputation: normalized.reputation || [],
+        createdAt: normalized.createdAt || new Date().toISOString(),
+        equipment: normalized.equipment || null,
+        money: normalized.money !== undefined ? normalized.money : 1700,
+        skillIncreases: normalized.skillIncreases || {},
+        skillPointsSpent: normalized.skillPointsSpent || {},
+        skillsConfirmed: normalized.skillsConfirmed || false,
+        perksConfirmed: normalized.perksConfirmed || false,
+        perkEffects: normalized.perkEffects || {},
+        gameState: normalized.gameState,
+        savedAt: new Date().toISOString(),
+        version: normalized.version || '1.0'
+      };
+    }
 
     async function loadCharacterData() {
       try {
         // IMPORTANT: Load from localStorage FIRST (has the most recent advancement data)
         // Only fall back to sessionStorage if localStorage is completely empty
-        let charJSON = localStorage.getItem('falloutCharacter');
-        let source = 'localStorage (advancement data)';
+        let source = 'localStorage';
+        let charData = loadStoredCharacterFromAnyKey();
         
         // Only use sessionStorage as last resort
-        if (!charJSON) {
-          charJSON = sessionStorage.getItem('character');
+        if (!charData) {
+          const charJSON = sessionStorage.getItem('character');
+          if (charJSON) {
+            charData = JSON.parse(charJSON);
+          }
           source = 'sessionStorage (chargen data)';
         }
 
-        if (!charJSON) {
+        if (!charData) {
           showMessage('No character data found. Please create a character first.', 'info');
           return;
         }
 
-        characterData = JSON.parse(charJSON);
+        characterData = persistCharacterToAllStores(charData, 'review-load');
         console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', { source, data: characterData });
 
         // Get equipment if it exists (from sessionStorage or from character object)
@@ -612,39 +687,40 @@
         traitsSection.appendChild(traitsList);
         reviewContent.appendChild(traitsSection);
       }
+
+      // Reputation
+      const reputationSection = document.createElement('div');
+      reputationSection.className = 'review-section';
+      reputationSection.innerHTML = `<h2 class="section-title">Reputation</h2>`;
+      
+      if (characterData.reputation && Array.isArray(characterData.reputation) && characterData.reputation.length > 0) {
+        const reputationList = document.createElement('div');
+        characterData.reputation.forEach(rep => {
+          const repItem = document.createElement('div');
+          repItem.className = 'item-entry';
+          repItem.innerHTML = `
+            <div style="margin-bottom: 8px;">
+              <span class="item-name" style="font-weight: bold; color: #10b981;">✨ ${rep.name}</span>
+              ${rep.description ? `<div style="font-size: 0.85rem; color: #999; margin-top: 4px; font-style: italic;">${rep.description}</div>` : ''}
+            </div>
+          `;
+          reputationList.appendChild(repItem);
+        });
+        reputationSection.appendChild(reputationList);
+      } else {
+        const emptyMessage = document.createElement('p');
+        emptyMessage.style.cssText = 'color: #999; margin: 8px 0; font-style: italic;';
+        emptyMessage.textContent = 'No reputation titles earned yet.';
+        reputationSection.appendChild(emptyMessage);
+      }
+      
+      reviewContent.appendChild(reputationSection);
     }
 
     function saveCharacter() {
       try {
-        // Create a complete character sheet JSON with all data
-        const characterSheet = {
-          // Include all character data
-          player: characterData.player || '',
-          name: characterData.name || '',
-          race: characterData.race || '',
-          age: characterData.age || '',
-          gender: characterData.gender || '',
-          attributes: characterData.attributes || {},
-          tagSkills: characterData.tagSkills || {},
-          skills: characterData.skills || {},
-          level: characterData.level || 1,
-          totalXP: characterData.totalXP || 0,
-          selectedPerks: characterData.selectedPerks || [],
-          stats: characterData.stats || {},
-          notes: characterData.notes || null,
-          selectedTraits: characterData.selectedTraits || [],
-          createdAt: characterData.createdAt || new Date().toISOString(),
-          equipment: characterData.equipment || null,
-          money: characterData.money !== undefined ? characterData.money : 1700,
-          skillIncreases: characterData.skillIncreases || {},
-          skillPointsSpent: characterData.skillPointsSpent || {},
-          skillsConfirmed: characterData.skillsConfirmed || false,
-          perksConfirmed: characterData.perksConfirmed || false,
-          perkEffects: characterData.perkEffects || {},
-          // Add metadata
-          savedAt: new Date().toISOString(),
-          version: '1.0'
-        };
+        characterData = persistCharacterToAllStores(characterData, 'review-save');
+        const characterSheet = buildCharacterSheetForExport(characterData, 'review-save');
 
         console.log('%c[SAVING CHARACTER]', 'color: #4CAF50; font-weight: bold;', characterSheet);
 

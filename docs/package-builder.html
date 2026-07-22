@@ -504,6 +504,23 @@
                         <input type="number" id="pkg-credits" min="0" placeholder="150">
                     </div>
 
+                    <h3 style="color: var(--accent); margin: 20px 0 12px;">✨ Reputations</h3>
+                    <div id="package-reputations" style="margin-bottom: 16px;">
+                        <!-- Reputations will be displayed here -->
+                    </div>
+                    
+                    <div style="background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <label>Reputation Name</label>
+                            <input type="text" id="rep-name" placeholder="Vault Dweller">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <label>Description (optional)</label>
+                            <input type="text" id="rep-description" placeholder="Recognized as coming from a Vault">
+                        </div>
+                        <button class="success" onclick="app.addReputationToPackage()" style="width: 100%;">+ Add Reputation</button>
+                    </div>
+
                     <h3 style="color: var(--accent); margin: 20px 0 12px;">Package Items</h3>
                     <div class="selected-items" id="selected-items">
                         <div class="empty-state">
@@ -664,6 +681,7 @@
                     description: '',
                     icon: '📦',
                     showInChargen: true,
+                    reputation: [],
                     items: [],
                     credits: 0
                 };
@@ -693,6 +711,7 @@
                 document.getElementById('pkg-show-chargen').checked = this.currentPackage.showInChargen !== false;
                 document.getElementById('pkg-credits').value = this.currentPackage.credits || 0;
 
+                this.renderPackageReputations();
                 this.renderSelectedItems();
             },
 
@@ -730,6 +749,65 @@
             removeItemFromPackage(itemId) {
                 this.selectedPackageItems = this.selectedPackageItems.filter(i => i.id !== itemId);
                 this.renderSelectedItems();
+            },
+
+            renderPackageReputations() {
+                const container = document.getElementById('package-reputations');
+                const reputations = this.currentPackage?.reputation || [];
+
+                if (reputations.length === 0) {
+                    container.innerHTML = '<div style="color: var(--muted); font-style: italic; padding: 8px;">No reputations added yet</div>';
+                    return;
+                }
+
+                container.innerHTML = reputations.map((rep, index) => `
+                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: #10b981; margin-bottom: 4px;">✨ ${rep.name}</div>
+                            ${rep.description ? `<div style="font-size: 0.9rem; color: var(--muted);">${rep.description}</div>` : ''}
+                        </div>
+                        <button class="danger" onclick="app.removeReputationFromPackage(${index})" style="padding: 4px 8px; font-size: 0.9rem;">×</button>
+                    </div>
+                `).join('');
+            },
+
+            addReputationToPackage() {
+                if (!this.currentPackage) {
+                    this.showMessage('Please create or select a package first', 'error');
+                    return;
+                }
+
+                const name = document.getElementById('rep-name').value.trim();
+                const description = document.getElementById('rep-description').value.trim();
+
+                if (!name) {
+                    this.showMessage('Reputation name is required', 'error');
+                    return;
+                }
+
+                if (!this.currentPackage.reputation) {
+                    this.currentPackage.reputation = [];
+                }
+
+                this.currentPackage.reputation.push({
+                    name,
+                    description: description || undefined
+                });
+
+                // Clear inputs
+                document.getElementById('rep-name').value = '';
+                document.getElementById('rep-description').value = '';
+
+                this.renderPackageReputations();
+                this.showMessage('Reputation added', 'success');
+            },
+
+            removeReputationFromPackage(index) {
+                if (this.currentPackage?.reputation) {
+                    this.currentPackage.reputation.splice(index, 1);
+                    this.renderPackageReputations();
+                    this.showMessage('Reputation removed', 'success');
+                }
             },
 
             getItemById(itemId) {
@@ -807,6 +885,7 @@
                     description,
                     icon,
                     showInChargen,
+                    reputation: this.currentPackage.reputation || [],
                     items: this.selectedPackageItems,
                     credits
                 };
