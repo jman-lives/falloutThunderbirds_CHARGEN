@@ -383,6 +383,14 @@
         <div id="reputation-container" style="display: none; margin-top: 8px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;"></div>
       </div>
 
+      <div id="barter-section" class="character-sheet">
+        <button id="barter-toggle" onclick="toggleBarterAccordion()" style="width: 100%; padding: 10px; background-color: #f59e0b; color: #111827; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s;">
+          ▼ Show Barter
+        </button>
+        <p style="color: var(--muted); margin: 8px 0 12px 0; font-size: 0.9rem; display: none;" id="barter-desc">Trade using the shared item database and your Barter skill.</p>
+        <div id="barter-container" style="display: none; margin-top: 8px;"></div>
+      </div>
+
     <!-- <div id="tools-section" class="character-sheet" style="grid-column: 1/-1;">
         <button id="tools-toggle" onclick="toggleToolsAccordion()" style="width: 100%; padding: 12px; background-color: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s; font-size: 1.1rem;">
           ▼ Show Selected Tools
@@ -393,7 +401,6 @@
     </div>
 
       <div class="button-group">
-        <button class="btn btn-secondary" onclick="downloadCharacter()">💾 Save & Download Character</button>
         <button class="btn btn-secondary" onclick="downloadCharacter()">💾 Save & Download Character</button>
       </div>
     </div>
@@ -2900,6 +2907,21 @@
     let tempSelectedItems = [null, null, null];
     let draggedItem = null;
     let allAvailableItems = [];
+    let DATABASE_ITEM_INDEX = {};
+    let DATABASE_NAME_INDEX = {};
+
+    const BARTER_STORAGE_VENDOR_INV_KEY = 'barterVendorInventory';
+    const BARTER_STORAGE_VENDOR_CAPS_KEY = 'barterVendorCaps';
+    const BARTER_VENDOR_CAPS_DEFAULT = 1500;
+
+    const barterState = {
+      filter: 'all',
+      query: '',
+      vendorInventory: {},
+      vendorOffer: {},
+      playerOffer: {},
+      vendorCaps: BARTER_VENDOR_CAPS_DEFAULT
+    };
 
     // Item stats for dice table - maps item names to their stats
     // Database will be loaded dynamically
@@ -3024,6 +3046,461 @@
       });
 
       console.log('[ITEM_STATS] Built from database:', Object.keys(ITEM_STATS).length, 'items');
+    }
+
+    function buildDatabaseItemIndexes() {
+      DATABASE_ITEM_INDEX = {};
+      DATABASE_NAME_INDEX = {};
+      if (!DATABASE) return;
+
+      const categories = ['ammunition', 'weapons', 'armor', 'equipment', 'chems'];
+      categories.forEach(category => {
+        (DATABASE[category] || []).forEach(item => {
+          if (!item || !item.id || !item.name) return;
+          const normalizedValue = Number.isFinite(parseInt(item.value)) ? parseInt(item.value) : 0;
+          const normalized = {
+            ...item,
+            category,
+            value: normalizedValue
+          };
+          DATABASE_ITEM_INDEX[item.id] = normalized;
+          DATABASE_NAME_INDEX[item.name] = normalized;
+        });
+      });
+    }
+
+    function loadCharacterFromStorageForBarter() {
+      const keys = ['characterData', 'falloutCharacter'];
+      for (const key of keys) {
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+        try {
+          return JSON.parse(raw);
+        } catch (err) {
+          console.warn('[BARTER STORAGE PARSE ERROR]', key, err);
+        }
+      }
+      return null;
+    }
+
+    function buildDefaultVendorInventory() {
+      const vendorInventory = {};
+      if (!DATABASE) return vendorInventory;
+
+      const categories = ['ammunition', 'weapons', 'armor', 'equipment', 'chems'];
+      categories.forEach(category => {
+        (DATABASE[category] || []).forEach(item => {
+          if (!item || !item.id || !item.name) return;
+          if (item.IsInChargenStore === false) return;
+
+          let quantity = 1;
+          if (category === 'ammunition') quantity = 12;
+          if (category === 'equipment') quantity = 3;
+          if (category === 'chems') quantity = 2;
+
+          vendorInventory[item.id] = quantity;
+        });
+      });
+
+      return vendorInventory;
+    }
+
+    function getBarterSkill(characterData) {
+      return getNumericValue(characterData?.skills?.barter, 0);
+    }
+
+    function getBuyPrice(itemValue, barterSkill) {
+      const value = Math.max(0, getNumericValue(itemValue, 0));
+      const multiplier = Math.max(0.65, 1.15 - (barterSkill / 250));
+      return Math.max(1, Math.round(value * multiplier));
+    }
+
+    function getSellPrice(itemValue, barterSkill) {
+      const value = Math.max(0, getNumericValue(itemValue, 0));
+      const multiplier = Math.min(0.9, 0.35 + (barterSkill / 200));
+      return Math.max(1, Math.round(value * multiplier));
+    }
+
+    function sanitizeBarterOffers(characterData) {
+      const playerItems = characterData?.equipment?.items || {};
+
+      Object.keys(barterState.vendorOffer).forEach(itemId => {
+        const available = getNumericValue(barterState.vendorInventory[itemId], 0);
+        if (available <= 0) {
+          delete barterState.vendorOffer[itemId];
+          return;
+        }
+        barterState.vendorOffer[itemId] = Math.min(getNumericValue(barterState.vendorOffer[itemId], 0), available);
+        if (barterState.vendorOffer[itemId] <= 0) {
+          delete barterState.vendorOffer[itemId];
+        }
+      });
+
+      Object.keys(barterState.playerOffer).forEach(itemName => {
+        const available = getNumericValue(playerItems[itemName], 0);
+        if (available <= 0) {
+          delete barterState.playerOffer[itemName];
+          return;
+        }
+        barterState.playerOffer[itemName] = Math.min(getNumericValue(barterState.playerOffer[itemName], 0), available);
+        if (barterState.playerOffer[itemName] <= 0) {
+          delete barterState.playerOffer[itemName];
+        }
+      });
+    }
+
+    function getBarterTotals(characterData) {
+      const barterSkill = getBarterSkill(characterData);
+      let buyingTotal = 0;
+      let sellingTotal = 0;
+
+      Object.entries(barterState.vendorOffer).forEach(([itemId, quantity]) => {
+        const item = DATABASE_ITEM_INDEX[itemId];
+        if (!item) return;
+        buyingTotal += getBuyPrice(item.value, barterSkill) * getNumericValue(quantity, 0);
+      });
+
+      Object.entries(barterState.playerOffer).forEach(([itemName, quantity]) => {
+        const item = DATABASE_NAME_INDEX[itemName];
+        if (!item) return;
+        sellingTotal += getSellPrice(item.value, barterSkill) * getNumericValue(quantity, 0);
+      });
+
+      return {
+        buyingTotal,
+        sellingTotal,
+        netCost: buyingTotal - sellingTotal,
+        barterSkill
+      };
+    }
+
+    function persistBarterVendorState() {
+      localStorage.setItem(BARTER_STORAGE_VENDOR_INV_KEY, JSON.stringify(barterState.vendorInventory));
+      localStorage.setItem(BARTER_STORAGE_VENDOR_CAPS_KEY, String(barterState.vendorCaps));
+    }
+
+    function initializeBarterSession() {
+      const characterData = loadCharacterFromStorageForBarter();
+      if (!characterData || !DATABASE) return;
+
+      buildDatabaseItemIndexes();
+
+      const storedVendorInventory = parseJsonOrNull(localStorage.getItem(BARTER_STORAGE_VENDOR_INV_KEY));
+      const storedVendorCaps = getNumericValue(localStorage.getItem(BARTER_STORAGE_VENDOR_CAPS_KEY), BARTER_VENDOR_CAPS_DEFAULT);
+
+      barterState.vendorInventory = storedVendorInventory && typeof storedVendorInventory === 'object'
+        ? storedVendorInventory
+        : buildDefaultVendorInventory();
+      barterState.vendorCaps = Math.max(0, storedVendorCaps);
+      barterState.vendorOffer = {};
+      barterState.playerOffer = {};
+      barterState.filter = 'all';
+      barterState.query = '';
+
+      persistBarterVendorState();
+      renderBarterScreen();
+    }
+
+    function queueVendorItem(itemId, delta) {
+      const available = getNumericValue(barterState.vendorInventory[itemId], 0);
+      const current = getNumericValue(barterState.vendorOffer[itemId], 0);
+      const next = Math.max(0, Math.min(available, current + delta));
+      if (next <= 0) {
+        delete barterState.vendorOffer[itemId];
+      } else {
+        barterState.vendorOffer[itemId] = next;
+      }
+      renderBarterScreen();
+    }
+
+    function queuePlayerItem(itemName, delta) {
+      const characterData = loadCharacterFromStorageForBarter();
+      if (!characterData) return;
+
+      try {
+        const available = getNumericValue(characterData?.equipment?.items?.[itemName], 0);
+        const current = getNumericValue(barterState.playerOffer[itemName], 0);
+        const next = Math.max(0, Math.min(available, current + delta));
+        if (next <= 0) {
+          delete barterState.playerOffer[itemName];
+        } else {
+          barterState.playerOffer[itemName] = next;
+        }
+        renderBarterScreen();
+      } catch (err) {
+        console.error('[BARTER PLAYER QUEUE ERROR]', err);
+      }
+    }
+
+    function queuePlayerItemByEncoded(encodedItemName, delta) {
+      const decodedName = decodeURIComponent(encodedItemName || '');
+      queuePlayerItem(decodedName, delta);
+    }
+
+    function updateBarterFilter(value) {
+      barterState.filter = value || 'all';
+      renderBarterScreen();
+    }
+
+    function updateBarterSearch(value) {
+      barterState.query = (value || '').toLowerCase().trim();
+      renderBarterScreen();
+    }
+
+    function clearBarterOffer() {
+      barterState.vendorOffer = {};
+      barterState.playerOffer = {};
+      renderBarterScreen();
+    }
+
+    function pruneEquipmentSelection(selection, inventoryMap) {
+      if (!selection || !selection.slots) return selection;
+      const pruned = {
+        ...selection,
+        slots: {
+          ...selection.slots
+        }
+      };
+      ['primary', 'secondary', 'armor'].forEach(slotKey => {
+        const slotItem = pruned.slots[slotKey];
+        if (slotItem && (!inventoryMap[slotItem.name] || getNumericValue(inventoryMap[slotItem.name], 0) <= 0)) {
+          pruned.slots[slotKey] = null;
+        }
+      });
+      return pruned;
+    }
+
+    function executeBarterDeal() {
+      const characterData = loadCharacterFromStorageForBarter();
+      if (!characterData) return;
+
+      try {
+        if (!characterData.equipment || typeof characterData.equipment !== 'object') {
+          characterData.equipment = { items: {} };
+        }
+        if (!characterData.equipment.items || typeof characterData.equipment.items !== 'object') {
+          characterData.equipment.items = {};
+        }
+        const inventoryMap = characterData.equipment.items;
+
+        sanitizeBarterOffers(characterData);
+        const totals = getBarterTotals(characterData);
+        const playerMoney = getNumericValue(characterData.money, 0);
+
+        const hasAnyItems = Object.keys(barterState.vendorOffer).length > 0 || Object.keys(barterState.playerOffer).length > 0;
+        if (!hasAnyItems) {
+          alert('Select items to trade first.');
+          return;
+        }
+
+        if (totals.netCost > playerMoney) {
+          alert('You do not have enough caps for this trade.');
+          return;
+        }
+
+        if (totals.netCost < 0 && barterState.vendorCaps < Math.abs(totals.netCost)) {
+          alert('Vendor cannot afford this deal.');
+          return;
+        }
+
+        Object.entries(barterState.vendorOffer).forEach(([itemId, quantity]) => {
+          const item = DATABASE_ITEM_INDEX[itemId];
+          if (!item) return;
+          const amount = getNumericValue(quantity, 0);
+          barterState.vendorInventory[itemId] = Math.max(0, getNumericValue(barterState.vendorInventory[itemId], 0) - amount);
+          if (barterState.vendorInventory[itemId] <= 0) {
+            delete barterState.vendorInventory[itemId];
+          }
+          inventoryMap[item.name] = getNumericValue(inventoryMap[item.name], 0) + amount;
+        });
+
+        Object.entries(barterState.playerOffer).forEach(([itemName, quantity]) => {
+          const amount = getNumericValue(quantity, 0);
+          inventoryMap[itemName] = Math.max(0, getNumericValue(inventoryMap[itemName], 0) - amount);
+          if (inventoryMap[itemName] <= 0) {
+            delete inventoryMap[itemName];
+          }
+
+          const item = DATABASE_NAME_INDEX[itemName];
+          if (!item || !item.id) return;
+          barterState.vendorInventory[item.id] = getNumericValue(barterState.vendorInventory[item.id], 0) + amount;
+        });
+
+        characterData.money = playerMoney - totals.netCost;
+        barterState.vendorCaps = Math.max(0, barterState.vendorCaps + totals.netCost);
+
+        const currentSelection = normalizeEquipmentSelection(characterData.gameState?.equipmentSelection || characterData.gameEquipmentSelection);
+        const prunedSelection = pruneEquipmentSelection(currentSelection, inventoryMap);
+        if (prunedSelection) {
+          characterData.gameState = {
+            ...(characterData.gameState || {}),
+            equipmentSelection: prunedSelection,
+            activeItemIndex: getNumericValue(characterData.gameState?.activeItemIndex, 0)
+          };
+          localStorage.setItem('gameEquipmentSelection', JSON.stringify(prunedSelection));
+        }
+
+        localStorage.setItem('characterData', JSON.stringify(characterData));
+        localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
+        persistBarterVendorState();
+
+        clearBarterOffer();
+        renderMoneyDisplay(characterData.money);
+        updateActiveItemDisplay();
+        updateEquippedArmorDisplay();
+      } catch (err) {
+        console.error('[BARTER DEAL ERROR]', err);
+        alert('Trade failed. Please try again.');
+      }
+    }
+
+    function renderBarterScreen() {
+      const container = qs('barter-container');
+      if (!container) return;
+
+      const characterData = loadCharacterFromStorageForBarter();
+      if (!characterData || !DATABASE) {
+        container.innerHTML = '<div style="color: #999;">Barter data is not ready yet.</div>';
+        return;
+      }
+
+      sanitizeBarterOffers(characterData);
+      const totals = getBarterTotals(characterData);
+      const playerMoney = getNumericValue(characterData.money, 0);
+
+      const vendorItems = Object.entries(barterState.vendorInventory)
+        .map(([itemId, quantity]) => ({
+          item: DATABASE_ITEM_INDEX[itemId],
+          itemId,
+          quantity: getNumericValue(quantity, 0)
+        }))
+        .filter(entry => entry.item && entry.quantity > 0)
+        .filter(entry => {
+          if (barterState.filter !== 'all' && entry.item.category !== barterState.filter) return false;
+          if (!barterState.query) return true;
+          return entry.item.name.toLowerCase().includes(barterState.query);
+        })
+        .sort((a, b) => a.item.name.localeCompare(b.item.name));
+
+      const playerItems = Object.entries(characterData?.equipment?.items || {})
+        .map(([itemName, quantity]) => ({
+          itemName,
+          quantity: getNumericValue(quantity, 0),
+          item: DATABASE_NAME_INDEX[itemName] || null
+        }))
+        .filter(entry => entry.quantity > 0 && entry.item)
+        .filter(entry => {
+          if (barterState.filter !== 'all' && entry.item.category !== barterState.filter) return false;
+          if (!barterState.query) return true;
+          return entry.itemName.toLowerCase().includes(barterState.query);
+        })
+        .sort((a, b) => a.itemName.localeCompare(b.itemName));
+
+      const categories = ['all', 'weapons', 'armor', 'ammunition', 'equipment', 'chems'];
+
+      const vendorItemsHtml = vendorItems.length === 0
+        ? '<div style="color: #94a3b8; padding: 8px;">No matching vendor items.</div>'
+        : vendorItems.map(({ item, itemId, quantity }) => {
+            const offerQty = getNumericValue(barterState.vendorOffer[itemId], 0);
+            const buyPrice = getBuyPrice(item.value, totals.barterSkill);
+            return `
+              <div style="padding: 8px; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; background: rgba(255,255,255,0.02);">
+                <div style="font-weight: bold; color: #fbbf24;">${escapeHtml(item.name)}</div>
+                <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">${escapeHtml(item.category)} | ${buyPrice} caps | Stock ${quantity}</div>
+                <div style="display: flex; gap: 4px; margin-top: 6px; align-items: center;">
+                  <button type="button" onclick="queueVendorItem('${itemId}', -1)" style="padding: 2px 8px; border: none; border-radius: 3px; background: #475569; color: #fff; cursor: pointer;">-</button>
+                  <div style="min-width: 26px; text-align: center; color: #f8fafc;">${offerQty}</div>
+                  <button type="button" onclick="queueVendorItem('${itemId}', 1)" style="padding: 2px 8px; border: none; border-radius: 3px; background: #16a34a; color: #fff; cursor: pointer;">+</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+      const playerItemsHtml = playerItems.length === 0
+        ? '<div style="color: #94a3b8; padding: 8px;">No matching player items.</div>'
+        : playerItems.map(({ itemName, quantity, item }) => {
+            const offerQty = getNumericValue(barterState.playerOffer[itemName], 0);
+            const sellPrice = getSellPrice(item.value, totals.barterSkill);
+            const encodedName = encodeURIComponent(itemName);
+            return `
+              <div style="padding: 8px; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; background: rgba(255,255,255,0.02);">
+                <div style="font-weight: bold; color: #c4b5fd;">${escapeHtml(itemName)}</div>
+                <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">${escapeHtml(item.category)} | ${sellPrice} caps | You have ${quantity}</div>
+                <div style="display: flex; gap: 4px; margin-top: 6px; align-items: center;">
+                  <button type="button" onclick="queuePlayerItemByEncoded('${encodedName}', -1)" style="padding: 2px 8px; border: none; border-radius: 3px; background: #475569; color: #fff; cursor: pointer;">-</button>
+                  <div style="min-width: 26px; text-align: center; color: #f8fafc;">${offerQty}</div>
+                  <button type="button" onclick="queuePlayerItemByEncoded('${encodedName}', 1)" style="padding: 2px 8px; border: none; border-radius: 3px; background: #16a34a; color: #fff; cursor: pointer;">+</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+      const netColor = totals.netCost > 0 ? '#f97316' : totals.netCost < 0 ? '#22c55e' : '#e5e7eb';
+      const netLabel = totals.netCost > 0
+        ? `You pay ${totals.netCost} caps`
+        : totals.netCost < 0
+          ? `You receive ${Math.abs(totals.netCost)} caps`
+          : 'Even trade';
+      const canAfford = totals.netCost <= playerMoney;
+      const vendorCanAfford = totals.netCost >= 0 || barterState.vendorCaps >= Math.abs(totals.netCost);
+
+      container.innerHTML = `
+        <div style="display: grid; gap: 12px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
+            <div style="padding: 8px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid #fbbf24; color: #fbbf24;">Your Caps: ${playerMoney.toLocaleString()}</div>
+            <div style="padding: 8px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid #22c55e; color: #22c55e;">Vendor Caps: ${barterState.vendorCaps.toLocaleString()}</div>
+            <div style="padding: 8px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 3px solid #60a5fa; color: #93c5fd;">Barter Skill: ${totals.barterSkill}%</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <select onchange="updateBarterFilter(this.value)" style="padding: 8px; border-radius: 4px; border: 1px solid #475569; background: #0f172a; color: #e2e8f0;">
+              ${categories.map(category => `<option value="${category}" ${barterState.filter === category ? 'selected' : ''}>${category === 'all' ? 'All categories' : category}</option>`).join('')}
+            </select>
+            <input type="text" value="${escapeHtml(barterState.query)}" oninput="updateBarterSearch(this.value)" placeholder="Search items" style="padding: 8px; border-radius: 4px; border: 1px solid #475569; background: #0f172a; color: #e2e8f0;" />
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px;">
+            <div style="background: rgba(15,23,42,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 10px;">
+              <div style="font-weight: bold; color: #fbbf24; margin-bottom: 8px;">Vendor Goods</div>
+              <div style="display: grid; gap: 6px; max-height: 320px; overflow-y: auto;">${vendorItemsHtml}</div>
+            </div>
+            <div style="background: rgba(15,23,42,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 10px;">
+              <div style="font-weight: bold; color: #c4b5fd; margin-bottom: 8px;">Your Inventory</div>
+              <div style="display: grid; gap: 6px; max-height: 320px; overflow-y: auto;">${playerItemsHtml}</div>
+            </div>
+          </div>
+
+          <div style="display: grid; gap: 6px; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="color: #93c5fd;">Buying total: ${totals.buyingTotal} caps</div>
+            <div style="color: #a7f3d0;">Selling total: ${totals.sellingTotal} caps</div>
+            <div style="font-size: 1rem; font-weight: bold; color: ${netColor};">${netLabel}</div>
+            ${!canAfford ? '<div style="color: #ef4444; font-size: 0.85rem;">You cannot afford this trade.</div>' : ''}
+            ${!vendorCanAfford ? '<div style="color: #ef4444; font-size: 0.85rem;">Vendor cannot afford this trade.</div>' : ''}
+            <div style="display: flex; gap: 8px; margin-top: 4px;">
+              <button type="button" onclick="executeBarterDeal()" ${(!canAfford || !vendorCanAfford) ? 'disabled' : ''} style="padding: 8px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: ${(!canAfford || !vendorCanAfford) ? 'not-allowed' : 'pointer'}; background: ${(!canAfford || !vendorCanAfford) ? '#64748b' : '#22c55e'}; color: #111827;">Complete Trade</button>
+              <button type="button" onclick="clearBarterOffer()" style="padding: 8px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; background: #475569; color: #f8fafc;">Clear Offer</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleBarterAccordion() {
+      const container = qs('barter-container');
+      const toggle = qs('barter-toggle');
+      const desc = qs('barter-desc');
+      const isVisible = container.style.display !== 'none';
+
+      if (isVisible) {
+        container.style.display = 'none';
+        desc.style.display = 'none';
+        toggle.textContent = '▶ Show Barter';
+      } else {
+        container.style.display = 'block';
+        desc.style.display = 'block';
+        toggle.textContent = '▼ Hide Barter';
+        renderBarterScreen();
+      }
     }
 
     function formatItemEffectsFromDatabase(item) {
@@ -3574,6 +4051,7 @@
       await loadDatabase();
       loadCharacter();
       updateActiveItemDisplay();
+      initializeBarterSession();
     });
   </script>
 </body>
