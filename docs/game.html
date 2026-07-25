@@ -138,6 +138,7 @@
 <body>
   <main class="container">
     <!-- <h1>Play Game</h1> -->
+    <!-- <h1>Play Game</h1> -->
 
     <div class="controls" style="margin-bottom: 16px; display: flex; gap: 8px; align-items: stretch;">
       <div id="active-item-display" style="flex: 1; padding: 12px; background-color: #10b981; color: white; border-radius: 4px; font-weight: bold; display: flex; align-items: center; justify-content: space-between;">
@@ -160,6 +161,26 @@
 
     <!-- Dice Table for Active Item -->
     <div id="dice-table-container" style="margin-bottom: 16px; background: rgba(255, 255, 255, 0.02); padding: 16px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+      <button id="item-stats-toggle" onclick="toggleItemStatsAccordion()" style="width: 100%; padding: 10px; background-color: #f59e0b; color: #111827; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s; margin-bottom: 12px;">
+        ▼ Item Stats
+      </button>
+      <div id="item-stats-content">
+        <div id="item-flavor-text" style="margin-bottom: 12px; padding: 8px; background: rgba(255, 152, 0, 0.1); border-left: 3px solid #FF9800; border-radius: 2px; color: #FFD700; font-size: 0.85rem; font-style: italic; min-height: 24px;">No item selected</div>
+        <div id="item-description-text" style="margin-bottom: 8px; padding: 8px; background: rgba(96, 165, 250, 0.1); border-left: 3px solid #60a5fa; border-radius: 2px; color: #cbd5e1; font-size: 0.85rem; line-height: 1.4; min-height: 24px;">No description available.</div>
+        <table id="dice-table" style="width: 100%; border-collapse: collapse; color: #aaa; font-size: 0.9rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid #FF9800;">
+              <th style="text-align: left; padding: 8px; color: #FF9800; font-weight: bold;">Stat</th>
+              <th style="text-align: left; padding: 8px; color: #FF9800; font-weight: bold;">Value</th>
+            </tr>
+          </thead>
+          <tbody id="dice-table-body">
+            <tr>
+              <td colspan="2" style="padding: 8px; text-align: center; color: #666;">No item selected</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <button id="item-stats-toggle" onclick="toggleItemStatsAccordion()" style="width: 100%; padding: 10px; background-color: #f59e0b; color: #111827; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s; margin-bottom: 12px;">
         ▼ Item Stats
       </button>
@@ -282,6 +303,7 @@
         </div>
 
         <div class="character-header" style="margin-top: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
+        <div class="character-header" style="margin-top: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
           <div class="stat-block">
             <div class="stat-label">Equipped Armor</div>
             <div class="stat-value" id="char-equipped-armor" style="color: #a78bfa;">—</div>
@@ -293,6 +315,19 @@
           <div class="stat-block">
             <div class="stat-label">Melee Damage</div>
             <div class="stat-value" id="char-melee-damage" style="color: #ef4444;">—</div>
+          </div>
+          <div class="stat-block" style="grid-column: span 2; min-width: 0;">
+            <div class="stat-label">Caps</div>
+            <div class="stat-value" id="char-money" style="color: #fbbf24; margin-bottom: 8px;">—</div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
+              <button type="button" onclick="adjustMoney(1)" style="padding: 4px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #16a34a; color: white; cursor: pointer;">+1</button>
+              <button type="button" onclick="adjustMoney(5)" style="padding: 4px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #16a34a; color: white; cursor: pointer;">+5</button>
+              <button type="button" onclick="adjustMoney(25)" style="padding: 4px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #16a34a; color: white; cursor: pointer;">+25</button>
+              <button type="button" onclick="adjustMoney(-1)" style="padding: 4px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #dc2626; color: white; cursor: pointer;">-1</button>
+              <button type="button" onclick="adjustMoney(-5)" style="padding: 4px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #dc2626; color: white; cursor: pointer;">-5</button>
+              <button type="button" onclick="adjustMoney(-25)" style="padding: 4px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #dc2626; color: white; cursor: pointer;">-25</button>
+            </div>
+            <button id="char-money-reset" type="button" onclick="resetMoney()" style="display: none; margin-top: 6px; width: 100%; padding: 5px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #f59e0b; color: #111827; cursor: pointer;">Reset</button>
           </div>
           <div class="stat-block" style="grid-column: span 2; min-width: 0;">
             <div class="stat-label">Caps</div>
@@ -381,6 +416,14 @@
         <div id="reputation-container" style="display: none; margin-top: 8px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;"></div>
       </div>
 
+      <div id="reputation-section" class="character-sheet">
+        <button id="reputation-toggle" onclick="toggleReputationAccordion()" style="width: 100%; padding: 10px; background-color: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s;">
+          ▼ Show Reputation
+        </button>
+        <p style="color: var(--muted); margin: 8px 0 12px 0; font-size: 0.9rem; display: none;" id="reputation-desc">Personal titles and reputations earned in the wasteland.</p>
+        <div id="reputation-container" style="display: none; margin-top: 8px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;"></div>
+      </div>
+
     <!-- <div id="tools-section" class="character-sheet" style="grid-column: 1/-1;">
         <button id="tools-toggle" onclick="toggleToolsAccordion()" style="width: 100%; padding: 12px; background-color: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s; font-size: 1.1rem;">
           ▼ Show Selected Tools
@@ -391,6 +434,7 @@
     </div>
 
       <div class="button-group">
+        <button class="btn btn-secondary" onclick="downloadCharacter()">💾 Save & Download Character</button>
         <button class="btn btn-secondary" onclick="downloadCharacter()">💾 Save & Download Character</button>
       </div>
     </div>
@@ -520,7 +564,7 @@
     function ensureCharacterGameState(characterData) {
       const workingData = { ...characterData };
       const currentGameState = workingData.gameState && typeof workingData.gameState === 'object' ? workingData.gameState : {};
-      const legacySelection = currentGameState.equipmentSelection || workingData.gameEquipmentSelection || parseJsonOrNull(localStorage.getItem('gameEquipmentSelection')) || parseJsonOrNull(localStorage.getItem('equipmentItemSelection'));
+      const legacySelection = currentGameState.equipmentSelection || workingData.gameEquipmentSelection;
       const selection = normalizeEquipmentSelection(legacySelection) || buildDefaultGameEquipmentSelection(workingData);
       const migrated = !workingData.gameState || workingData.gameState.version !== GAME_STATE_VERSION || !legacySelection;
 
@@ -554,7 +598,7 @@
 
       try {
         const characterData = JSON.parse(stored);
-        const selection = normalizeEquipmentSelection(characterData.gameState?.equipmentSelection || characterData.gameEquipmentSelection || parseJsonOrNull(localStorage.getItem('gameEquipmentSelection')) || parseJsonOrNull(localStorage.getItem('equipmentItemSelection'))) || buildDefaultGameEquipmentSelection(characterData);
+        const selection = normalizeEquipmentSelection(characterData.gameState?.equipmentSelection || characterData.gameEquipmentSelection) || buildDefaultGameEquipmentSelection(characterData);
 
         if (!characterData.gameState || characterData.gameState.version !== GAME_STATE_VERSION || !characterData.gameState.equipmentSelection) {
           characterData.gameState = {
@@ -867,6 +911,34 @@
       } else {
         container.style.display = 'grid';
         toggle.textContent = '▼ Hide Status Effects';
+      }
+    }
+
+    function toggleReputationAccordion() {
+      const container = qs('reputation-container');
+      const toggle = qs('reputation-toggle');
+      const isVisible = container.style.display !== 'none';
+      
+      if (isVisible) {
+        container.style.display = 'none';
+        toggle.textContent = '▶ Show Reputation';
+      } else {
+        container.style.display = 'grid';
+        toggle.textContent = '▼ Hide Reputation';
+      }
+    }
+
+    function toggleItemStatsAccordion() {
+      const container = qs('item-stats-content');
+      const toggle = qs('item-stats-toggle');
+      const isVisible = container.style.display !== 'none';
+
+      if (isVisible) {
+        container.style.display = 'none';
+        toggle.textContent = '▶ Show Item Stats';
+      } else {
+        container.style.display = 'block';
+        toggle.textContent = '▼ Item Stats';
       }
     }
 
@@ -1246,6 +1318,28 @@
       }).join('');
       
       container.innerHTML = effectsHTML;
+    }
+
+    function displayReputation(reputationData) {
+      const container = qs('reputation-container');
+      
+      if (!reputationData || !Array.isArray(reputationData) || reputationData.length === 0) {
+        container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">No reputation titles earned yet.</p>';
+        return;
+      }
+
+      const reputationHTML = reputationData.map(rep => {
+        return `
+          <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid #10b981;">
+            <div style="font-weight: bold; color: #fff; padding: 8px; background-color: rgba(255,255,255,0.05); border-radius: 4px; text-align: center; border: 1px solid #10b981;">
+              ${rep.name}
+            </div>
+            ${rep.description ? `<div style="font-size: 0.85rem; color: var(--muted); margin-top: 8px; line-height: 1.4; text-align: center;">${rep.description}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+      
+      container.innerHTML = reputationHTML;
     }
 
     function displayReputation(reputationData) {
@@ -2150,6 +2244,48 @@
       }
     }
 
+    function renderMoneyDisplay(moneyValue) {
+      const moneyDisplay = qs('char-money');
+      const resetButton = qs('char-money-reset');
+      moneyDisplay.textContent = `${moneyValue.toLocaleString()} caps`;
+      if (resetButton) {
+        resetButton.style.display = moneyValue < 0 ? 'block' : 'none';
+      }
+    }
+
+    function adjustMoney(amount) {
+      const stored = localStorage.getItem('characterData');
+      if (!stored) return;
+
+      try {
+        const characterData = JSON.parse(stored);
+        const currentMoney = Number.isFinite(parseInt(characterData.money)) ? parseInt(characterData.money) : 0;
+        const newMoney = currentMoney + amount;
+
+        characterData.money = newMoney;
+        localStorage.setItem('characterData', JSON.stringify(characterData));
+        localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
+        renderMoneyDisplay(newMoney);
+      } catch (err) {
+        console.error('[MONEY ADJUST ERROR]', err);
+      }
+    }
+
+    function resetMoney() {
+      const stored = localStorage.getItem('characterData');
+      if (!stored) return;
+
+      try {
+        const characterData = JSON.parse(stored);
+        characterData.money = 0;
+        localStorage.setItem('characterData', JSON.stringify(characterData));
+        localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
+        renderMoneyDisplay(0);
+      } catch (err) {
+        console.error('[MONEY RESET ERROR]', err);
+      }
+    }
+
     function resetAP() {
       const stored = localStorage.getItem('characterData');
       const characterData = JSON.parse(stored);
@@ -2259,6 +2395,7 @@
       // Get base AC from character stats
       let baseAC = 0;
       let armorName = 'None';
+      let armorName = 'None';
       if (stored) {
         try {
           const characterData = JSON.parse(stored);
@@ -2269,7 +2406,14 @@
           if (armorSlot && armorSlot.name) {
             armorName = armorSlot.name;
             const armorStats = ITEM_STATS[armorSlot.name];
+          const selection = getEquipmentSelectionState() || buildDefaultGameEquipmentSelection(characterData);
+          const armorSlot = selection?.slots?.armor;
+
+          if (armorSlot && armorSlot.name) {
+            armorName = armorSlot.name;
+            const armorStats = ITEM_STATS[armorSlot.name];
             let armorBonus = 0;
+
 
             if (armorStats && armorStats.armor && armorStats.armor !== '—') {
               const match = armorStats.armor.match(/([+-]?\d+)/);
@@ -2280,7 +2424,16 @@
 
             armorDisplay.textContent = armorName;
             armorClassDisplay.textContent = baseAC + armorBonus;
+
+            armorDisplay.textContent = armorName;
+            armorClassDisplay.textContent = baseAC + armorBonus;
             return;
+          }
+        } catch (e) {
+          console.log('Could not parse character data for AC');
+        }
+      }
+      armorDisplay.textContent = armorName;
           }
         } catch (e) {
           console.log('Could not parse character data for AC');
@@ -2341,10 +2494,26 @@
         alert('No character data found. Please upload a character file.');
         window.location.href = 'index.html';
         return false;
+        return false;
       }
 
       try {
-        const migration = ensureCharacterGameState(JSON.parse(stored));
+        const rawCharacterData = JSON.parse(stored);
+        const characterFingerprint = getCharacterFingerprint(rawCharacterData);
+        const loadedCharacterKey = localStorage.getItem('loadedCharacterKey');
+        const isDifferentCharacter = loadedCharacterKey !== characterFingerprint;
+
+        if (isDifferentCharacter) {
+          localStorage.removeItem('currentHP');
+          localStorage.removeItem('currentAP');
+          localStorage.removeItem('activeItemIndex');
+          localStorage.removeItem('gameEquipmentSelection');
+          localStorage.removeItem('equipmentItemSelection');
+          localStorage.removeItem('burstModeActive');
+          localStorage.setItem('loadedCharacterKey', characterFingerprint);
+        }
+
+        const migration = ensureCharacterGameState(rawCharacterData);
         const characterData = migration.characterData;
         if (migration.migrated) {
           localStorage.setItem('characterData', JSON.stringify(characterData));
@@ -2402,6 +2571,8 @@
         qs('char-level').textContent = levelValue;
         const moneyValue = Number.isFinite(parseInt(characterData.money)) ? parseInt(characterData.money) : 0;
         renderMoneyDisplay(moneyValue);
+        const moneyValue = Number.isFinite(parseInt(characterData.money)) ? parseInt(characterData.money) : 0;
+        renderMoneyDisplay(moneyValue);
         
         // Set Sequence
         qs('char-sequence').textContent = characterData.stats?.Sequence || 0;
@@ -2413,6 +2584,7 @@
         // Check if current HP is saved, otherwise use max HP
         let currentHP = localStorage.getItem('currentHP');
         if (currentHP === null) {
+          currentHP = getNumericValue(characterData.gameState?.currentHP, maxHealthHP);
           currentHP = getNumericValue(characterData.gameState?.currentHP, maxHealthHP);
           localStorage.setItem('currentHP', currentHP);
         } else {
@@ -2430,9 +2602,14 @@
         let currentAP = localStorage.getItem('currentAP');
         if (currentAP === null) {
           currentAP = getNumericValue(characterData.gameState?.currentAP, maxActionPoints);
+          currentAP = getNumericValue(characterData.gameState?.currentAP, maxActionPoints);
           localStorage.setItem('currentAP', currentAP);
         } else {
           currentAP = parseInt(currentAP);
+        }
+
+        if (localStorage.getItem('activeItemIndex') === null) {
+          localStorage.setItem('activeItemIndex', getNumericValue(characterData.gameState?.activeItemIndex, 0));
         }
 
         if (localStorage.getItem('activeItemIndex') === null) {
@@ -2465,9 +2642,15 @@
 
         return true;
 
+        // Display reputation
+        displayReputation(characterData.reputation || []);
+
+        return true;
+
       } catch (err) {
         console.error('[LOAD CHARACTER ERROR]', err);
         alert('Error loading character data: ' + err.message);
+        return false;
         return false;
       }
     }
@@ -2488,11 +2671,26 @@
         };
         localStorage.setItem('characterData', JSON.stringify(characterData));
         localStorage.setItem('gameEquipmentSelection', JSON.stringify(snapshot.equipmentSelection || null));
+        const snapshot = buildGameStateSnapshot(characterData);
+        characterData.gameState = {
+          ...(characterData.gameState || {}),
+          ...snapshot
+        };
+        localStorage.setItem('characterData', JSON.stringify(characterData));
+        localStorage.setItem('gameEquipmentSelection', JSON.stringify(snapshot.equipmentSelection || null));
         
         // Use consistent filename format across all screens
         const charName = characterData.name || 'character';
         const dateStamp = new Date().toISOString().split('T')[0];
         const filename = `${charName.toLowerCase().replace(/\s+/g, '_')}_${dateStamp}.json`;
+
+        const exportSheet = {
+          ...characterData,
+          savedAt: new Date().toISOString(),
+          version: characterData.version || '1.0'
+        };
+
+        const blob = new Blob([JSON.stringify(exportSheet, null, 2)], { type: 'application/json' });
 
         const exportSheet = {
           ...characterData,
@@ -2521,6 +2719,9 @@
       localStorage.removeItem('gameEquipmentSelection');
       localStorage.removeItem('equipmentItemSelection');
       localStorage.removeItem('loadedCharacterKey');
+      localStorage.removeItem('gameEquipmentSelection');
+      localStorage.removeItem('equipmentItemSelection');
+      localStorage.removeItem('loadedCharacterKey');
       window.location.href = 'index.html';
     }
 
@@ -2529,9 +2730,15 @@
       if (!selection) return [];
 
       return [selection.slots?.primary, selection.slots?.secondary].filter(item => item && item.name);
+      const selection = getEquipmentSelectionState();
+      if (!selection) return [];
+
+      return [selection.slots?.primary, selection.slots?.secondary].filter(item => item && item.name);
     }
 
     function updateActiveItemDisplay() {
+      const selection = getEquipmentSelectionState();
+      const activeItemIndex = getNumericValue(localStorage.getItem('activeItemIndex'), selection?.activeItemIndex || 0);
       const selection = getEquipmentSelectionState();
       const activeItemIndex = getNumericValue(localStorage.getItem('activeItemIndex'), selection?.activeItemIndex || 0);
       const items = getEquipmentItems();
@@ -2558,10 +2765,12 @@
         }
       }
       const effectiveIndex = Number.isInteger(activeItemIndex) ? activeItemIndex : 0;
+      const effectiveIndex = Number.isInteger(activeItemIndex) ? activeItemIndex : 0;
       
       if (items.length === 0) {
         // Default to Punch (index 0) or Kick (index 1)
         const defaultAttacks = ['Punch', 'Kick'];
+        const defaultAttack = defaultAttacks[effectiveIndex] || 'Punch';
         const defaultAttack = defaultAttacks[effectiveIndex] || 'Punch';
         nameElement.textContent = defaultAttack;
         swapBtn.style.display = 'inline-block';
@@ -2569,6 +2778,7 @@
         targetedBtn.style.display = hasFastShot ? 'none' : 'inline-block';
         burstBtn.style.display = 'none';
         localStorage.removeItem('burstModeActive');
+        useBtn.textContent = effectiveIndex === 0 ? 'Swing' : 'Strike';
         useBtn.textContent = effectiveIndex === 0 ? 'Swing' : 'Strike';
         displayItemDiceTable(defaultAttack);
         return;
@@ -2645,6 +2855,7 @@
       
       // Both items available
       swapBtn.style.display = 'inline-block';
+      const activeItem = items[effectiveIndex] || items[0];
       const activeItem = items[effectiveIndex] || items[0];
       console.log('[ACTIVE ITEM]', activeItem);
       nameElement.textContent = activeItem.name;
@@ -2838,8 +3049,13 @@
             const stats = {
               flavor: item.flavor || '',
               description: item.description || 'No description available.',
+              flavor: item.flavor || '',
+              description: item.description || 'No description available.',
               dice: item.stats?.damage || '—',
               weight: item.weight ? `${item.weight} lbs` : '—',
+              category,
+              type: item.category || item.type || 'Unknown',
+              effects: formatItemEffectsFromDatabase(item)
               category,
               type: item.category || item.type || 'Unknown',
               effects: formatItemEffectsFromDatabase(item)
@@ -2992,11 +3208,81 @@
         .replace(/'/g, '&#039;');
     }
 
+    function formatItemEffectsFromDatabase(item) {
+      const effects = [];
+
+      if (item?.bonuses && typeof item.bonuses === 'object') {
+        Object.entries(item.bonuses).forEach(([key, value]) => {
+          if (typeof value !== 'number' || value === 0) return;
+          const sign = value > 0 ? '+' : '';
+          const prettyKey = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          effects.push(`${sign}${value} ${prettyKey}`);
+        });
+      }
+
+      if (item?.stats?.ac) {
+        effects.push(`+${item.stats.ac} Armor Class`);
+      }
+
+      if (item?.stats?.dt_dr) {
+        effects.push(`DT/DR ${item.stats.dt_dr}`);
+      }
+
+      return effects.join(' | ');
+    }
+
+    function getItemDescriptionText(itemName) {
+      const stats = ITEM_STATS[itemName] || {};
+      const parts = [];
+
+      if (stats.description) {
+        parts.push(stats.description);
+      }
+
+      if (stats.flavor) {
+        parts.push(`"${stats.flavor}"`);
+      }
+
+      if (stats.effects) {
+        parts.push(`Effects: ${stats.effects}`);
+      }
+
+      return parts.join(' ');
+    }
+
+    function getItemModalDescriptionText(itemName) {
+      const stats = ITEM_STATS[itemName] || {};
+      const parts = [];
+
+      if (stats.description) {
+        parts.push(stats.description);
+      }
+
+      if (stats.effects) {
+        parts.push(`Effects: ${stats.effects}`);
+      }
+
+      return parts.join(' ');
+    }
+
+    function escapeHtml(value) {
+      if (!value) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     function displayItemDiceTable(itemName) {
       const tableBody = qs('dice-table-body');
       const descriptionElement = qs('item-description-text');
+      const descriptionElement = qs('item-description-text');
       const flavorElement = qs('item-flavor-text');
       const stats = ITEM_STATS[itemName] || {
+        flavor: '',
+        description: 'No description available.',
         flavor: '',
         description: 'No description available.',
         dice: '—',
@@ -3010,6 +3296,9 @@
       console.log(`[DISPLAY ITEM] ${itemName} - Stats:`, stats);
       console.log(`[DISPLAY ITEM] Skill value:`, stats.skill);
 
+      // Keep description and flavor separate in the dice table display.
+      descriptionElement.textContent = stats.description || 'No description available.';
+      flavorElement.textContent = stats.flavor ? `"${stats.flavor}"` : 'No flavor text available.';
       // Keep description and flavor separate in the dice table display.
       descriptionElement.textContent = stats.description || 'No description available.';
       flavorElement.textContent = stats.flavor ? `"${stats.flavor}"` : 'No flavor text available.';
@@ -3048,8 +3337,12 @@
           name: name,
           quantity: quantity,
           description: getItemModalDescriptionText(name)
+          quantity: quantity,
+          description: getItemModalDescriptionText(name)
         })) : [];
 
+        const selection = getEquipmentSelectionState() || buildDefaultGameEquipmentSelection(characterData);
+        tempSelectedItems = [selection.slots?.primary || null, selection.slots?.secondary || null, selection.slots?.armor || null];
         const selection = getEquipmentSelectionState() || buildDefaultGameEquipmentSelection(characterData);
         tempSelectedItems = [selection.slots?.primary || null, selection.slots?.secondary || null, selection.slots?.armor || null];
 
@@ -3076,6 +3369,7 @@
       // Filter out items that are already selected (if they have quantity 1)
       const availableForDisplay = allAvailableItems.filter(item => {
         const isSelected = tempSelectedItems.some(selected => selected && (selected.id === item.id || selected.name === item.name));
+        const isSelected = tempSelectedItems.some(selected => selected && (selected.id === item.id || selected.name === item.name));
         return !isSelected;
       });
 
@@ -3086,6 +3380,7 @@
 
       const html = availableForDisplay.map((item) => {
         const quantityDisplay = item.quantity > 1 ? ` <span style="color: #4CAF50;">(x${item.quantity})</span>` : '';
+        const description = escapeHtml(item.description || 'No description available.');
         const description = escapeHtml(item.description || 'No description available.');
         return `
           <div 
@@ -3099,6 +3394,8 @@
             onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#FF9800';"
             onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#666';"
           >
+            <div>${escapeHtml(item.name)}${quantityDisplay}</div>
+            <div style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal; margin-top: 4px; line-height: 1.3;">${description}</div>
             <div>${escapeHtml(item.name)}${quantityDisplay}</div>
             <div style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal; margin-top: 4px; line-height: 1.3;">${description}</div>
           </div>
@@ -3125,6 +3422,7 @@
 
       if (tempSelectedItems[0]) {
         item1Display.innerHTML = `<div style="font-weight: bold; color: #4CAF50;">${escapeHtml(tempSelectedItems[0].name)}</div><div style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal; margin-top: 4px; line-height: 1.3;">${escapeHtml(getItemModalDescriptionText(tempSelectedItems[0].name) || 'No description available.')}</div>`;
+        item1Display.innerHTML = `<div style="font-weight: bold; color: #4CAF50;">${escapeHtml(tempSelectedItems[0].name)}</div><div style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal; margin-top: 4px; line-height: 1.3;">${escapeHtml(getItemModalDescriptionText(tempSelectedItems[0].name) || 'No description available.')}</div>`;
         item1Display.style.color = '#4CAF50';
         item1Remove.style.display = 'block';
       } else {
@@ -3135,6 +3433,7 @@
 
       if (tempSelectedItems[1]) {
         item2Display.innerHTML = `<div style="font-weight: bold; color: #4CAF50;">${escapeHtml(tempSelectedItems[1].name)}</div><div style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal; margin-top: 4px; line-height: 1.3;">${escapeHtml(getItemModalDescriptionText(tempSelectedItems[1].name) || 'No description available.')}</div>`;
+        item2Display.innerHTML = `<div style="font-weight: bold; color: #4CAF50;">${escapeHtml(tempSelectedItems[1].name)}</div><div style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal; margin-top: 4px; line-height: 1.3;">${escapeHtml(getItemModalDescriptionText(tempSelectedItems[1].name) || 'No description available.')}</div>`;
         item2Display.style.color = '#4CAF50';
         item2Remove.style.display = 'block';
       } else {
@@ -3144,6 +3443,7 @@
       }
 
       if (tempSelectedItems[2]) {
+        armorDisplay.innerHTML = `<div style="font-weight: bold; color: #4CAF50;">${escapeHtml(tempSelectedItems[2].name)}</div><div style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal; margin-top: 4px; line-height: 1.3;">${escapeHtml(getItemModalDescriptionText(tempSelectedItems[2].name) || 'No description available.')}</div>`;
         armorDisplay.innerHTML = `<div style="font-weight: bold; color: #4CAF50;">${escapeHtml(tempSelectedItems[2].name)}</div><div style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal; margin-top: 4px; line-height: 1.3;">${escapeHtml(getItemModalDescriptionText(tempSelectedItems[2].name) || 'No description available.')}</div>`;
         armorDisplay.style.color = '#4CAF50';
         armorRemove.style.display = 'block';
@@ -3206,6 +3506,7 @@
           
           // Check if item is already in another slot
           for (let i = 0; i < tempSelectedItems.length; i++) {
+            if (i !== slotIndex && tempSelectedItems[i] && (tempSelectedItems[i].id === touchItem.id || tempSelectedItems[i].name === touchItem.name)) {
             if (i !== slotIndex && tempSelectedItems[i] && (tempSelectedItems[i].id === touchItem.id || tempSelectedItems[i].name === touchItem.name)) {
               touchItem = null;
               touchStartElement = null;
@@ -3279,6 +3580,7 @@
         // Check if item is already in any other slot
         for (let i = 0; i < tempSelectedItems.length; i++) {
           if (i !== slotIndex && tempSelectedItems[i] && (tempSelectedItems[i].id === draggedItem.id || tempSelectedItems[i].name === draggedItem.name)) {
+          if (i !== slotIndex && tempSelectedItems[i] && (tempSelectedItems[i].id === draggedItem.id || tempSelectedItems[i].name === draggedItem.name)) {
             console.log('[EQUIPMENT] Cannot assign same item to multiple slots');
             return;
           }
@@ -3304,6 +3606,7 @@
         const itemName = item.name || `Item ${idx}`;
         const itemId = item.id || idx;
         const isSelected = tempSelectedItems[slotIndex] !== null && 
+                          (tempSelectedItems[slotIndex].id === itemId || tempSelectedItems[slotIndex].id === idx || tempSelectedItems[slotIndex].name === itemName);
                           (tempSelectedItems[slotIndex].id === itemId || tempSelectedItems[slotIndex].id === idx || tempSelectedItems[slotIndex].name === itemName);
         
         const buttonStyle = isSelected
@@ -3336,8 +3639,14 @@
           name,
           quantity
         }));
+        const allItems = Object.entries(characterData.equipment?.items || {}).map(([name, quantity], idx) => ({
+          id: idx,
+          name,
+          quantity
+        }));
         
         if (itemIndex >= 0 && itemIndex < allItems.length) {
+          tempSelectedItems[slotIndex] = toSelectionItem(allItems[itemIndex], slotIndex);
           tempSelectedItems[slotIndex] = toSelectionItem(allItems[itemIndex], slotIndex);
 
           console.log('[EQUIPMENT SELECTION]', `Slot ${slotIndex}:`, tempSelectedItems[slotIndex]);
@@ -3351,6 +3660,38 @@
     }
 
     function saveEquipmentConfiguration() {
+      const stored = localStorage.getItem('characterData');
+      if (!stored) return;
+
+      try {
+        const characterData = JSON.parse(stored);
+        const selection = {
+          version: GAME_STATE_VERSION,
+          source: 'manual',
+          activeItemIndex: getNumericValue(localStorage.getItem('activeItemIndex'), 0),
+          slots: {
+            primary: tempSelectedItems[0] || null,
+            secondary: tempSelectedItems[1] || null,
+            armor: tempSelectedItems[2] || null
+          }
+        };
+
+        characterData.gameState = {
+          ...(characterData.gameState || {}),
+          ...buildGameStateSnapshot(characterData, selection)
+        };
+
+        localStorage.setItem('characterData', JSON.stringify(characterData));
+        localStorage.setItem('gameEquipmentSelection', JSON.stringify(selection));
+        localStorage.setItem('equipmentItemSelection', JSON.stringify([
+          selection.slots.primary,
+          selection.slots.secondary,
+          selection.slots.armor
+        ]));
+        console.log('[EQUIPMENT SAVED]', selection);
+      } catch (err) {
+        console.error('[EQUIPMENT SAVE ERROR]', err);
+      }
       const stored = localStorage.getItem('characterData');
       if (!stored) return;
 
