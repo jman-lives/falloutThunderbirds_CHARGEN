@@ -189,6 +189,39 @@ const TRAITS = {
     restrictions: ['Humans only'],
     briefDescription: 'Attractive to opposite sex'
   },
+  sex_appeal: {
+    name: 'Sex Appeal',
+    description: 'You are desirable to the opposite sex.',
+    effects: '+1 CHA opposite sex, +40% Speech/Barter opposite sex, −1 CHA same sex',
+    restrictions: ['Humans only'],
+    briefDescription: 'Attractive to opposite sex'
+  },
+  son_of_poseidon: {
+    name: 'Son of Poseidon',
+    description: 'Your experience in The Legion in the last few years has led to a better understanding of scouting. 87 tribes synthesizing decades of technique into a regimen you learned with practical applications. ',
+    effects: '+10 to Outdoorsman',
+    restrictions: ['Humans only'],
+    briefDescription: 'Enhanced combat and outdoors resistance'
+  },
+  son_of_mars: {
+    name: 'Son of Mars',
+    description: 'Your experience in The Legion in the last few years has led to a better understanding of scouting. 87 tribes synthesizing decades of technique into a regimen you learned with practical applications. ',
+    effects: '+10 to Outdoorsman',
+    restrictions: ['Humans only'],
+    briefDescription: 'Enhanced combat and outdoors resistance'
+  },
+  chosen_mars: {name: 'Chosen of Mars',
+    description: 'Legion Frumentarii and Legion informants are more likely to not react or act against you, even when in you are in disguise.',
+    effects: '',
+    restrictions: ['Humans only'],
+    briefDescription: 'You bear the Mark of Caesar'},
+  for_i_long_to_see_you: {
+    name: 'For I Long to See You',
+    description: 'You are seeking something greater than yourself.',
+    effects: '+10 Speech when dealing with characters who practice a religion. +1 Perception in dialogue when dealing with atheist characters.',
+    restrictions: ['Humans only'],
+    briefDescription: 'Psalm 42:2'
+  },
   glowing_one: {
     name: 'Glowing One',
     description: 'Radiation has permanently altered you.',

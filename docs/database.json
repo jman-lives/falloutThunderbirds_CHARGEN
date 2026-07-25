@@ -4391,6 +4391,37 @@
       "addiction": 80
     },
     {
+      "id": "chem_turbo",
+      "name": "Turbo",
+      "category": "chems",
+      "type": "stimulant",
+      "value": 40,
+      "weight": 0.5,
+      "description": "Turbo is the new street drug of the post-nuclear world. Turbo comes in an inhaler, much like asthma medicine. After inhalation, the user gains +2 Action Points (up to 13), +1 Strength, and +1 Perception for 1d10 hours. After this time, the character loses two Action Points, 3 Strength, and 3 Perception. Turbo is 80% addictive.",
+      "flavor": "Octane Medicine",
+      "tags": [
+        "chem",
+        "drug",
+        "stimulant",
+        "addictive"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2,
+          "strength": 1,
+          "perception": 1,
+          "duration": "1d10 hours"
+        },
+        "negative": {
+          "action_points": -2,
+          "strength": -3,
+          "perception": -3,
+          "duration": "After positive effects"
+        }
+      },
+      "addiction": 80
+    },
+    {
       "id": "chem_healing_powder",
       "name": "Healing Powder",
       "category": "chems",
