@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Play Game - Fallout Character Generator</title>
+  <link rel="icon" href="data:," />
   <link rel="stylesheet" href="styles.css" />
   <script src="script.js" defer></script>
   <script src="advancement.js" defer></script>
@@ -2395,17 +2396,10 @@
       // Get base AC from character stats
       let baseAC = 0;
       let armorName = 'None';
-      let armorName = 'None';
       if (stored) {
         try {
           const characterData = JSON.parse(stored);
           baseAC = parseInt(characterData.stats?.Armor_Class) || 0;
-          const selection = getEquipmentSelectionState() || buildDefaultGameEquipmentSelection(characterData);
-          const armorSlot = selection?.slots?.armor;
-
-          if (armorSlot && armorSlot.name) {
-            armorName = armorSlot.name;
-            const armorStats = ITEM_STATS[armorSlot.name];
           const selection = getEquipmentSelectionState() || buildDefaultGameEquipmentSelection(characterData);
           const armorSlot = selection?.slots?.armor;
 
@@ -2424,16 +2418,7 @@
 
             armorDisplay.textContent = armorName;
             armorClassDisplay.textContent = baseAC + armorBonus;
-
-            armorDisplay.textContent = armorName;
-            armorClassDisplay.textContent = baseAC + armorBonus;
             return;
-          }
-        } catch (e) {
-          console.log('Could not parse character data for AC');
-        }
-      }
-      armorDisplay.textContent = armorName;
           }
         } catch (e) {
           console.log('Could not parse character data for AC');
@@ -2494,7 +2479,6 @@
         alert('No character data found. Please upload a character file.');
         window.location.href = 'index.html';
         return false;
-        return false;
       }
 
       try {
@@ -2520,16 +2504,6 @@
           localStorage.setItem('gameEquipmentSelection', JSON.stringify(characterData.gameState?.equipmentSelection || null));
         }
         console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', characterData);
-
-        const characterFingerprint = getCharacterFingerprint(characterData);
-        const loadedCharacterKey = localStorage.getItem('loadedCharacterKey');
-        const isDifferentCharacter = loadedCharacterKey !== characterFingerprint;
-        if (isDifferentCharacter) {
-          localStorage.removeItem('currentHP');
-          localStorage.removeItem('currentAP');
-          localStorage.removeItem('activeItemIndex');
-          localStorage.setItem('loadedCharacterKey', characterFingerprint);
-        }
         
         // Initialize trait and perk active states to false if not already set
         const selectedTraits = characterData.selectedTraits || [];
@@ -2571,8 +2545,6 @@
         qs('char-level').textContent = levelValue;
         const moneyValue = Number.isFinite(parseInt(characterData.money)) ? parseInt(characterData.money) : 0;
         renderMoneyDisplay(moneyValue);
-        const moneyValue = Number.isFinite(parseInt(characterData.money)) ? parseInt(characterData.money) : 0;
-        renderMoneyDisplay(moneyValue);
         
         // Set Sequence
         qs('char-sequence').textContent = characterData.stats?.Sequence || 0;
@@ -2584,7 +2556,6 @@
         // Check if current HP is saved, otherwise use max HP
         let currentHP = localStorage.getItem('currentHP');
         if (currentHP === null) {
-          currentHP = getNumericValue(characterData.gameState?.currentHP, maxHealthHP);
           currentHP = getNumericValue(characterData.gameState?.currentHP, maxHealthHP);
           localStorage.setItem('currentHP', currentHP);
         } else {
@@ -2602,14 +2573,9 @@
         let currentAP = localStorage.getItem('currentAP');
         if (currentAP === null) {
           currentAP = getNumericValue(characterData.gameState?.currentAP, maxActionPoints);
-          currentAP = getNumericValue(characterData.gameState?.currentAP, maxActionPoints);
           localStorage.setItem('currentAP', currentAP);
         } else {
           currentAP = parseInt(currentAP);
-        }
-
-        if (localStorage.getItem('activeItemIndex') === null) {
-          localStorage.setItem('activeItemIndex', getNumericValue(characterData.gameState?.activeItemIndex, 0));
         }
 
         if (localStorage.getItem('activeItemIndex') === null) {
@@ -2642,15 +2608,9 @@
 
         return true;
 
-        // Display reputation
-        displayReputation(characterData.reputation || []);
-
-        return true;
-
       } catch (err) {
         console.error('[LOAD CHARACTER ERROR]', err);
         alert('Error loading character data: ' + err.message);
-        return false;
         return false;
       }
     }
@@ -2671,26 +2631,11 @@
         };
         localStorage.setItem('characterData', JSON.stringify(characterData));
         localStorage.setItem('gameEquipmentSelection', JSON.stringify(snapshot.equipmentSelection || null));
-        const snapshot = buildGameStateSnapshot(characterData);
-        characterData.gameState = {
-          ...(characterData.gameState || {}),
-          ...snapshot
-        };
-        localStorage.setItem('characterData', JSON.stringify(characterData));
-        localStorage.setItem('gameEquipmentSelection', JSON.stringify(snapshot.equipmentSelection || null));
         
         // Use consistent filename format across all screens
         const charName = characterData.name || 'character';
         const dateStamp = new Date().toISOString().split('T')[0];
         const filename = `${charName.toLowerCase().replace(/\s+/g, '_')}_${dateStamp}.json`;
-
-        const exportSheet = {
-          ...characterData,
-          savedAt: new Date().toISOString(),
-          version: characterData.version || '1.0'
-        };
-
-        const blob = new Blob([JSON.stringify(exportSheet, null, 2)], { type: 'application/json' });
 
         const exportSheet = {
           ...characterData,
@@ -2719,9 +2664,6 @@
       localStorage.removeItem('gameEquipmentSelection');
       localStorage.removeItem('equipmentItemSelection');
       localStorage.removeItem('loadedCharacterKey');
-      localStorage.removeItem('gameEquipmentSelection');
-      localStorage.removeItem('equipmentItemSelection');
-      localStorage.removeItem('loadedCharacterKey');
       window.location.href = 'index.html';
     }
 
@@ -2730,15 +2672,9 @@
       if (!selection) return [];
 
       return [selection.slots?.primary, selection.slots?.secondary].filter(item => item && item.name);
-      const selection = getEquipmentSelectionState();
-      if (!selection) return [];
-
-      return [selection.slots?.primary, selection.slots?.secondary].filter(item => item && item.name);
     }
 
     function updateActiveItemDisplay() {
-      const selection = getEquipmentSelectionState();
-      const activeItemIndex = getNumericValue(localStorage.getItem('activeItemIndex'), selection?.activeItemIndex || 0);
       const selection = getEquipmentSelectionState();
       const activeItemIndex = getNumericValue(localStorage.getItem('activeItemIndex'), selection?.activeItemIndex || 0);
       const items = getEquipmentItems();
@@ -2765,12 +2701,10 @@
         }
       }
       const effectiveIndex = Number.isInteger(activeItemIndex) ? activeItemIndex : 0;
-      const effectiveIndex = Number.isInteger(activeItemIndex) ? activeItemIndex : 0;
       
       if (items.length === 0) {
         // Default to Punch (index 0) or Kick (index 1)
         const defaultAttacks = ['Punch', 'Kick'];
-        const defaultAttack = defaultAttacks[effectiveIndex] || 'Punch';
         const defaultAttack = defaultAttacks[effectiveIndex] || 'Punch';
         nameElement.textContent = defaultAttack;
         swapBtn.style.display = 'inline-block';
@@ -2778,7 +2712,6 @@
         targetedBtn.style.display = hasFastShot ? 'none' : 'inline-block';
         burstBtn.style.display = 'none';
         localStorage.removeItem('burstModeActive');
-        useBtn.textContent = effectiveIndex === 0 ? 'Swing' : 'Strike';
         useBtn.textContent = effectiveIndex === 0 ? 'Swing' : 'Strike';
         displayItemDiceTable(defaultAttack);
         return;
@@ -2855,7 +2788,6 @@
       
       // Both items available
       swapBtn.style.display = 'inline-block';
-      const activeItem = items[effectiveIndex] || items[0];
       const activeItem = items[effectiveIndex] || items[0];
       console.log('[ACTIVE ITEM]', activeItem);
       nameElement.textContent = activeItem.name;
@@ -3049,13 +2981,8 @@
             const stats = {
               flavor: item.flavor || '',
               description: item.description || 'No description available.',
-              flavor: item.flavor || '',
-              description: item.description || 'No description available.',
               dice: item.stats?.damage || '—',
               weight: item.weight ? `${item.weight} lbs` : '—',
-              category,
-              type: item.category || item.type || 'Unknown',
-              effects: formatItemEffectsFromDatabase(item)
               category,
               type: item.category || item.type || 'Unknown',
               effects: formatItemEffectsFromDatabase(item)
@@ -3278,11 +3205,8 @@
     function displayItemDiceTable(itemName) {
       const tableBody = qs('dice-table-body');
       const descriptionElement = qs('item-description-text');
-      const descriptionElement = qs('item-description-text');
       const flavorElement = qs('item-flavor-text');
       const stats = ITEM_STATS[itemName] || {
-        flavor: '',
-        description: 'No description available.',
         flavor: '',
         description: 'No description available.',
         dice: '—',
@@ -3296,9 +3220,6 @@
       console.log(`[DISPLAY ITEM] ${itemName} - Stats:`, stats);
       console.log(`[DISPLAY ITEM] Skill value:`, stats.skill);
 
-      // Keep description and flavor separate in the dice table display.
-      descriptionElement.textContent = stats.description || 'No description available.';
-      flavorElement.textContent = stats.flavor ? `"${stats.flavor}"` : 'No flavor text available.';
       // Keep description and flavor separate in the dice table display.
       descriptionElement.textContent = stats.description || 'No description available.';
       flavorElement.textContent = stats.flavor ? `"${stats.flavor}"` : 'No flavor text available.';
@@ -3337,12 +3258,8 @@
           name: name,
           quantity: quantity,
           description: getItemModalDescriptionText(name)
-          quantity: quantity,
-          description: getItemModalDescriptionText(name)
         })) : [];
 
-        const selection = getEquipmentSelectionState() || buildDefaultGameEquipmentSelection(characterData);
-        tempSelectedItems = [selection.slots?.primary || null, selection.slots?.secondary || null, selection.slots?.armor || null];
         const selection = getEquipmentSelectionState() || buildDefaultGameEquipmentSelection(characterData);
         tempSelectedItems = [selection.slots?.primary || null, selection.slots?.secondary || null, selection.slots?.armor || null];
 
@@ -3369,7 +3286,6 @@
       // Filter out items that are already selected (if they have quantity 1)
       const availableForDisplay = allAvailableItems.filter(item => {
         const isSelected = tempSelectedItems.some(selected => selected && (selected.id === item.id || selected.name === item.name));
-        const isSelected = tempSelectedItems.some(selected => selected && (selected.id === item.id || selected.name === item.name));
         return !isSelected;
       });
 
@@ -3380,7 +3296,6 @@
 
       const html = availableForDisplay.map((item) => {
         const quantityDisplay = item.quantity > 1 ? ` <span style="color: #4CAF50;">(x${item.quantity})</span>` : '';
-        const description = escapeHtml(item.description || 'No description available.');
         const description = escapeHtml(item.description || 'No description available.');
         return `
           <div 
@@ -3394,8 +3309,6 @@
             onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#FF9800';"
             onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#666';"
           >
-            <div>${escapeHtml(item.name)}${quantityDisplay}</div>
-            <div style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal; margin-top: 4px; line-height: 1.3;">${description}</div>
             <div>${escapeHtml(item.name)}${quantityDisplay}</div>
             <div style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal; margin-top: 4px; line-height: 1.3;">${description}</div>
           </div>
@@ -3507,7 +3420,6 @@
           // Check if item is already in another slot
           for (let i = 0; i < tempSelectedItems.length; i++) {
             if (i !== slotIndex && tempSelectedItems[i] && (tempSelectedItems[i].id === touchItem.id || tempSelectedItems[i].name === touchItem.name)) {
-            if (i !== slotIndex && tempSelectedItems[i] && (tempSelectedItems[i].id === touchItem.id || tempSelectedItems[i].name === touchItem.name)) {
               touchItem = null;
               touchStartElement = null;
               return;
@@ -3580,7 +3492,6 @@
         // Check if item is already in any other slot
         for (let i = 0; i < tempSelectedItems.length; i++) {
           if (i !== slotIndex && tempSelectedItems[i] && (tempSelectedItems[i].id === draggedItem.id || tempSelectedItems[i].name === draggedItem.name)) {
-          if (i !== slotIndex && tempSelectedItems[i] && (tempSelectedItems[i].id === draggedItem.id || tempSelectedItems[i].name === draggedItem.name)) {
             console.log('[EQUIPMENT] Cannot assign same item to multiple slots');
             return;
           }
@@ -3606,7 +3517,6 @@
         const itemName = item.name || `Item ${idx}`;
         const itemId = item.id || idx;
         const isSelected = tempSelectedItems[slotIndex] !== null && 
-                          (tempSelectedItems[slotIndex].id === itemId || tempSelectedItems[slotIndex].id === idx || tempSelectedItems[slotIndex].name === itemName);
                           (tempSelectedItems[slotIndex].id === itemId || tempSelectedItems[slotIndex].id === idx || tempSelectedItems[slotIndex].name === itemName);
         
         const buttonStyle = isSelected
@@ -3639,14 +3549,8 @@
           name,
           quantity
         }));
-        const allItems = Object.entries(characterData.equipment?.items || {}).map(([name, quantity], idx) => ({
-          id: idx,
-          name,
-          quantity
-        }));
         
         if (itemIndex >= 0 && itemIndex < allItems.length) {
-          tempSelectedItems[slotIndex] = toSelectionItem(allItems[itemIndex], slotIndex);
           tempSelectedItems[slotIndex] = toSelectionItem(allItems[itemIndex], slotIndex);
 
           console.log('[EQUIPMENT SELECTION]', `Slot ${slotIndex}:`, tempSelectedItems[slotIndex]);
@@ -3660,38 +3564,6 @@
     }
 
     function saveEquipmentConfiguration() {
-      const stored = localStorage.getItem('characterData');
-      if (!stored) return;
-
-      try {
-        const characterData = JSON.parse(stored);
-        const selection = {
-          version: GAME_STATE_VERSION,
-          source: 'manual',
-          activeItemIndex: getNumericValue(localStorage.getItem('activeItemIndex'), 0),
-          slots: {
-            primary: tempSelectedItems[0] || null,
-            secondary: tempSelectedItems[1] || null,
-            armor: tempSelectedItems[2] || null
-          }
-        };
-
-        characterData.gameState = {
-          ...(characterData.gameState || {}),
-          ...buildGameStateSnapshot(characterData, selection)
-        };
-
-        localStorage.setItem('characterData', JSON.stringify(characterData));
-        localStorage.setItem('gameEquipmentSelection', JSON.stringify(selection));
-        localStorage.setItem('equipmentItemSelection', JSON.stringify([
-          selection.slots.primary,
-          selection.slots.secondary,
-          selection.slots.armor
-        ]));
-        console.log('[EQUIPMENT SAVED]', selection);
-      } catch (err) {
-        console.error('[EQUIPMENT SAVE ERROR]', err);
-      }
       const stored = localStorage.getItem('characterData');
       if (!stored) return;
 
