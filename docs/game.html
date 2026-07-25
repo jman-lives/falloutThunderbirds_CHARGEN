@@ -182,26 +182,6 @@
           </tbody>
         </table>
       </div>
-      <button id="item-stats-toggle" onclick="toggleItemStatsAccordion()" style="width: 100%; padding: 10px; background-color: #f59e0b; color: #111827; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s; margin-bottom: 12px;">
-        ▼ Item Stats
-      </button>
-      <div id="item-stats-content">
-        <div id="item-flavor-text" style="margin-bottom: 12px; padding: 8px; background: rgba(255, 152, 0, 0.1); border-left: 3px solid #FF9800; border-radius: 2px; color: #FFD700; font-size: 0.85rem; font-style: italic; min-height: 24px;">No item selected</div>
-        <div id="item-description-text" style="margin-bottom: 8px; padding: 8px; background: rgba(96, 165, 250, 0.1); border-left: 3px solid #60a5fa; border-radius: 2px; color: #cbd5e1; font-size: 0.85rem; line-height: 1.4; min-height: 24px;">No description available.</div>
-        <table id="dice-table" style="width: 100%; border-collapse: collapse; color: #aaa; font-size: 0.9rem;">
-          <thead>
-            <tr style="border-bottom: 2px solid #FF9800;">
-              <th style="text-align: left; padding: 8px; color: #FF9800; font-weight: bold;">Stat</th>
-              <th style="text-align: left; padding: 8px; color: #FF9800; font-weight: bold;">Value</th>
-            </tr>
-          </thead>
-          <tbody id="dice-table-body">
-            <tr>
-              <td colspan="2" style="padding: 8px; text-align: center; color: #666;">No item selected</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
     </div>
 
     <!-- Equipment Configuration Modal -->
@@ -304,7 +284,6 @@
         </div>
 
         <div class="character-header" style="margin-top: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
-        <div class="character-header" style="margin-top: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
           <div class="stat-block">
             <div class="stat-label">Equipped Armor</div>
             <div class="stat-value" id="char-equipped-armor" style="color: #a78bfa;">—</div>
@@ -316,19 +295,6 @@
           <div class="stat-block">
             <div class="stat-label">Melee Damage</div>
             <div class="stat-value" id="char-melee-damage" style="color: #ef4444;">—</div>
-          </div>
-          <div class="stat-block" style="grid-column: span 2; min-width: 0;">
-            <div class="stat-label">Caps</div>
-            <div class="stat-value" id="char-money" style="color: #fbbf24; margin-bottom: 8px;">—</div>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
-              <button type="button" onclick="adjustMoney(1)" style="padding: 4px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #16a34a; color: white; cursor: pointer;">+1</button>
-              <button type="button" onclick="adjustMoney(5)" style="padding: 4px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #16a34a; color: white; cursor: pointer;">+5</button>
-              <button type="button" onclick="adjustMoney(25)" style="padding: 4px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #16a34a; color: white; cursor: pointer;">+25</button>
-              <button type="button" onclick="adjustMoney(-1)" style="padding: 4px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #dc2626; color: white; cursor: pointer;">-1</button>
-              <button type="button" onclick="adjustMoney(-5)" style="padding: 4px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #dc2626; color: white; cursor: pointer;">-5</button>
-              <button type="button" onclick="adjustMoney(-25)" style="padding: 4px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #dc2626; color: white; cursor: pointer;">-25</button>
-            </div>
-            <button id="char-money-reset" type="button" onclick="resetMoney()" style="display: none; margin-top: 6px; width: 100%; padding: 5px; font-size: 0.75rem; font-weight: bold; border: none; border-radius: 3px; background: #f59e0b; color: #111827; cursor: pointer;">Reset</button>
           </div>
           <div class="stat-block" style="grid-column: span 2; min-width: 0;">
             <div class="stat-label">Caps</div>
@@ -407,14 +373,6 @@
         </button>
         <p style="color: var(--muted); margin: 8px 0 12px 0; font-size: 0.9rem; display: none;" id="effects-desc">Active status effects affecting your character.</p>
         <div id="effects-container" style="display: none; margin-top: 8px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;"></div>
-      </div>
-
-      <div id="reputation-section" class="character-sheet">
-        <button id="reputation-toggle" onclick="toggleReputationAccordion()" style="width: 100%; padding: 10px; background-color: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s;">
-          ▼ Show Reputation
-        </button>
-        <p style="color: var(--muted); margin: 8px 0 12px 0; font-size: 0.9rem; display: none;" id="reputation-desc">Personal titles and reputations earned in the wasteland.</p>
-        <div id="reputation-container" style="display: none; margin-top: 8px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;"></div>
       </div>
 
       <div id="reputation-section" class="character-sheet">
