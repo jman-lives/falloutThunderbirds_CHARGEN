@@ -417,7 +417,7 @@
 
     let maxHP = 15;
 
-    const GAME_STATE_VERSION = 2;
+    const GAME_PAGE_STATE_VERSION = 2;
 
     function parseJsonOrNull(value) {
       if (!value) return null;
@@ -464,7 +464,7 @@
 
       if (Array.isArray(rawSelection)) {
         return {
-          version: GAME_STATE_VERSION,
+          version: GAME_PAGE_STATE_VERSION,
           source: 'legacy-array',
           activeItemIndex: getNumericValue(rawSelection.activeItemIndex, 0),
           slots: {
@@ -477,7 +477,7 @@
 
       if (rawSelection.slots && typeof rawSelection.slots === 'object') {
         return {
-          version: rawSelection.version || GAME_STATE_VERSION,
+          version: rawSelection.version || GAME_PAGE_STATE_VERSION,
           source: rawSelection.source || 'migrated',
           activeItemIndex: getNumericValue(rawSelection.activeItemIndex, 0),
           slots: {
@@ -490,7 +490,7 @@
 
       if (rawSelection.items && Array.isArray(rawSelection.items)) {
         return {
-          version: GAME_STATE_VERSION,
+          version: GAME_PAGE_STATE_VERSION,
           source: rawSelection.source || 'legacy-items',
           activeItemIndex: getNumericValue(rawSelection.activeItemIndex, 0),
           slots: {
@@ -516,7 +516,7 @@
       const armorCandidates = itemEntries.filter(item => isArmorItem(item.name));
 
       return {
-        version: GAME_STATE_VERSION,
+        version: GAME_PAGE_STATE_VERSION,
         source: 'auto-derived',
         activeItemIndex: 0,
         slots: {
@@ -532,11 +532,11 @@
       const currentGameState = workingData.gameState && typeof workingData.gameState === 'object' ? workingData.gameState : {};
       const legacySelection = currentGameState.equipmentSelection || workingData.gameEquipmentSelection;
       const selection = normalizeEquipmentSelection(legacySelection) || buildDefaultGameEquipmentSelection(workingData);
-      const migrated = !workingData.gameState || workingData.gameState.version !== GAME_STATE_VERSION || !legacySelection;
+      const migrated = !workingData.gameState || workingData.gameState.version !== GAME_PAGE_STATE_VERSION || !legacySelection;
 
       workingData.gameState = {
         ...currentGameState,
-        version: GAME_STATE_VERSION,
+        version: GAME_PAGE_STATE_VERSION,
         currentHP: getNumericValue(currentGameState.currentHP, workingData.stats?.Hit_Points || 15),
         currentAP: getNumericValue(currentGameState.currentAP, workingData.stats?.Action_Points || 8),
         activeItemIndex: getNumericValue(currentGameState.activeItemIndex, selection.activeItemIndex || 0),
@@ -566,10 +566,10 @@
         const characterData = JSON.parse(stored);
         const selection = normalizeEquipmentSelection(characterData.gameState?.equipmentSelection || characterData.gameEquipmentSelection) || buildDefaultGameEquipmentSelection(characterData);
 
-        if (!characterData.gameState || characterData.gameState.version !== GAME_STATE_VERSION || !characterData.gameState.equipmentSelection) {
+        if (!characterData.gameState || characterData.gameState.version !== GAME_PAGE_STATE_VERSION || !characterData.gameState.equipmentSelection) {
           characterData.gameState = {
             ...(characterData.gameState || {}),
-            version: GAME_STATE_VERSION,
+            version: GAME_PAGE_STATE_VERSION,
             currentHP: getNumericValue(characterData.gameState?.currentHP, characterData.stats?.Hit_Points || 15),
             currentAP: getNumericValue(characterData.gameState?.currentAP, characterData.stats?.Action_Points || 8),
             activeItemIndex: getNumericValue(characterData.gameState?.activeItemIndex, selection.activeItemIndex || 0),
@@ -589,7 +589,7 @@
     function buildGameStateSnapshot(characterData, selectionOverride = null) {
       const selection = selectionOverride || getEquipmentSelectionState() || buildDefaultGameEquipmentSelection(characterData);
       return {
-        version: GAME_STATE_VERSION,
+        version: GAME_PAGE_STATE_VERSION,
         currentHP: getNumericValue(localStorage.getItem('currentHP'), characterData.stats?.Hit_Points || 15),
         currentAP: getNumericValue(localStorage.getItem('currentAP'), characterData.stats?.Action_Points || 8),
         activeItemIndex: getNumericValue(localStorage.getItem('activeItemIndex'), selection.activeItemIndex || 0),
@@ -767,14 +767,14 @@
             bonusValue += 5;
             bonusBreakdown.push('Smooth Talker +5%');
           }
-          const selectedTraits = characterData.selectedTraits || [];
+          const selectedTraits = getCharacterTraitIds(characterData);
           if (selectedTraits.includes('sex_appeal') && localStorage.getItem('trait_active_sex_appeal') === 'true') {
             bonusValue += 40;
             bonusBreakdown.push('Sex Appeal +40%');
           }
         }
         if (skillId === 'barter') {
-          const selectedTraits = characterData.selectedTraits || [];
+          const selectedTraits = getCharacterTraitIds(characterData);
           if (selectedTraits.includes('sex_appeal') && localStorage.getItem('trait_active_sex_appeal') === 'true') {
             bonusValue += 40;
             bonusBreakdown.push('Sex Appeal +40%');
@@ -967,18 +967,89 @@
       }
     }
 
+    function canonicalizeTraitId(value) {
+      return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/['\"`]/g, '')
+        .replace(/[:;,.!?]+$/g, '')
+        .replace(/\s+/g, '_')
+        .replace(/[^a-z0-9_]/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_+|_+$/g, '');
+    }
+
+    function resolveTraitDefinition(traitEntry) {
+      const rawId = typeof traitEntry === 'string'
+        ? traitEntry
+        : (traitEntry?.id || traitEntry?.traitId || traitEntry?.key || traitEntry?.name || '');
+
+      const catalog = (typeof TRAITS !== 'undefined' && TRAITS) ? TRAITS : {};
+      const candidates = [rawId, canonicalizeTraitId(rawId)].filter(Boolean);
+
+      for (const candidate of candidates) {
+        if (catalog[candidate]) {
+          return { id: candidate, def: catalog[candidate] };
+        }
+      }
+
+      const rawName = typeof traitEntry === 'object' ? traitEntry?.name : '';
+      const canonicalName = canonicalizeTraitId(rawName);
+      if (canonicalName) {
+        for (const [id, def] of Object.entries(catalog)) {
+          const idMatch = canonicalizeTraitId(id) === canonicalName;
+          const nameMatch = canonicalizeTraitId(def?.name || '') === canonicalName;
+          if (idMatch || nameMatch) {
+            return { id, def };
+          }
+        }
+      }
+
+      const fallbackId = canonicalizeTraitId(rawId) || rawId;
+      return { id: fallbackId, def: null };
+    }
+
+    function normalizeSelectedTraits(selectedTraits) {
+      if (!Array.isArray(selectedTraits)) return [];
+
+      return selectedTraits.map((traitEntry) => {
+        const resolved = resolveTraitDefinition(traitEntry);
+        const traitId = resolved.id;
+        const traitDef = resolved.def;
+
+        const fallbackName = traitId
+          ? traitId.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+          : 'Unknown Trait';
+
+        return {
+          id: traitId,
+          name: traitDef?.name || traitEntry?.name || fallbackName,
+          description: traitDef?.description || traitEntry?.description || traitDef?.briefDescription || '',
+          effects: traitDef?.effects || traitEntry?.effects || '',
+        };
+      }).filter(trait => trait.id || trait.name);
+    }
+
+    function getCharacterTraitIds(characterData) {
+      const traitSource = characterData?.selectedTraits || characterData?.traits || [];
+      return normalizeSelectedTraits(traitSource)
+        .map(trait => trait.id)
+        .filter(Boolean);
+    }
+
     function displayCharacterTraits(selectedTraits) {
       const container = qs('traits-container');
+      const normalizedTraits = normalizeSelectedTraits(selectedTraits);
       
-      if (!Array.isArray(selectedTraits) || selectedTraits.length === 0) {
+      if (normalizedTraits.length === 0) {
         container.innerHTML = '<p style="color: #999; grid-column: 1/-1;">This character has no traits.</p>';
         return;
       }
 
       // Separate traits into conditional (toggleable) and non-conditional
       const CONDITIONAL_TRAITS = new Set(['night_person', 'sex_appeal']);
-      const conditionalTraits = selectedTraits.filter(t => CONDITIONAL_TRAITS.has(t));
-      const staticTraits = selectedTraits.filter(t => !CONDITIONAL_TRAITS.has(t));
+      const conditionalTraits = normalizedTraits.filter(t => CONDITIONAL_TRAITS.has(t.id));
+      const staticTraits = normalizedTraits.filter(t => !CONDITIONAL_TRAITS.has(t.id));
       
       // Trait color coding
       const traitColors = {
@@ -990,16 +1061,13 @@
       
       // Display static traits
       html += staticTraits.map(trait => {
-        const traitDef = (typeof TRAITS !== 'undefined' && TRAITS[trait]) 
-          ? TRAITS[trait]
-          : null;
         const borderColor = '#f97316'; // orange for passive traits
-        
-        if (!traitDef) {
+
+        if (!trait.description && !trait.effects) {
           return `
             <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid ${borderColor};">
               <div style="font-weight: bold; color: #fff; padding: 8px; background-color: rgba(255,255,255,0.05); border-radius: 4px; text-align: center; border: 1px solid ${borderColor};">
-                ${trait.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                ${trait.name}
               </div>
             </div>
           `;
@@ -1008,10 +1076,10 @@
         return `
           <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid ${borderColor};">
             <div style="font-weight: bold; color: #fff; padding: 8px; background-color: rgba(255,255,255,0.05); border-radius: 4px; text-align: center; border: 1px solid ${borderColor};">
-              ${traitDef.name}
+              ${trait.name}
             </div>
-            <div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px; line-height: 1.4;">${traitDef.description}</div>
-            ${traitDef.effects ? `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1);"><div style="font-size: 0.7rem; color: #4CAF50; font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">Effects:</div><div style="font-size: 0.75rem; color: #a78bfa;">${traitDef.effects}</div></div>` : ''}
+            ${trait.description ? `<div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px; line-height: 1.4;">${trait.description}</div>` : ''}
+            ${trait.effects ? `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1);"><div style="font-size: 0.7rem; color: #4CAF50; font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">Effects:</div><div style="font-size: 0.75rem; color: #a78bfa;">${trait.effects}</div></div>` : ''}
             <div style="margin-top: 6px; font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Passive</div>
           </div>
         `;
@@ -1019,27 +1087,22 @@
       
       // Display conditional traits with toggles
       html += conditionalTraits.map(trait => {
-        const traitDef = (typeof TRAITS !== 'undefined' && TRAITS[trait]) 
-          ? TRAITS[trait]
-          : null;
-        const isActive = localStorage.getItem(`trait_active_${trait}`) === 'true';
-        const borderColor = traitColors[trait] || '#f97316';
-        const traitName = traitDef 
-          ? traitDef.name 
-          : trait.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        const isActive = localStorage.getItem(`trait_active_${trait.id}`) === 'true';
+        const borderColor = traitColors[trait.id] || '#f97316';
+        const traitName = trait.name;
         
         const toggleButton = `
           <button 
             type="button"
-            onclick="toggleTrait('${trait}')"
+            onclick="toggleTrait('${trait.id}')"
             style="width: 100%; padding: 8px; color: white; border: 2px solid ${isActive ? borderColor : '#666'}; background-color: ${isActive ? borderColor : '#666'}; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s;"
             title="Toggle ${traitName}"
           >
             ${isActive ? '● ' : '○ '}${traitName}
           </button>
         `;
-        
-        if (!traitDef) {
+
+        if (!trait.description && !trait.effects) {
           return `
             <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid ${borderColor};">
               ${toggleButton}
@@ -1051,8 +1114,8 @@
         return `
           <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 4px; border-left: 3px solid ${borderColor};">
             ${toggleButton}
-            <div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px; line-height: 1.4;">${traitDef.description}</div>
-            ${traitDef.effects ? `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1);"><div style="font-size: 0.7rem; color: #4CAF50; font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">Effects:</div><div style="font-size: 0.75rem; color: #a78bfa;">${traitDef.effects}</div></div>` : ''}
+            ${trait.description ? `<div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px; line-height: 1.4;">${trait.description}</div>` : ''}
+            ${trait.effects ? `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1);"><div style="font-size: 0.7rem; color: #4CAF50; font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">Effects:</div><div style="font-size: 0.75rem; color: #a78bfa;">${trait.effects}</div></div>` : ''}
             <div style="margin-top: 6px; font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Conditional</div>
           </div>
         `;
@@ -2101,7 +2164,7 @@
       if (stored) {
         try {
           const characterData = JSON.parse(stored);
-          displayCharacterTraits(characterData.selectedTraits || []);
+          displayCharacterTraits(characterData.selectedTraits || characterData.traits || []);
           
           // Re-calculate attributes and skills with new trait active/inactive state
           updateGameAttributeDisplay();
@@ -2297,7 +2360,7 @@
       try {
         const characterData = JSON.parse(stored);
         const attrs = characterData.attributes || {};
-        const selectedTraits = characterData.selectedTraits || [];
+        const selectedTraits = getCharacterTraitIds(characterData);
         const currentHP = parseInt(localStorage.getItem('currentHP')) || maxHP;
         
         let strength = parseInt(attrs.strength) || 0;
@@ -2404,7 +2467,7 @@
       
       try {
         const characterData = JSON.parse(stored);
-        const selectedTraits = characterData.selectedTraits || [];
+        const selectedTraits = getCharacterTraitIds(characterData);
         const selectedPerks = characterData.selectedPerks || [];
         
         // Base melee damage = (Strength - 5) / 2, minimum 1
@@ -2471,7 +2534,7 @@
         console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', characterData);
         
         // Initialize trait and perk active states to false if not already set
-        const selectedTraits = characterData.selectedTraits || [];
+        const selectedTraits = getCharacterTraitIds(characterData);
         const CONDITIONAL_TRAITS = new Set(['night_person', 'sex_appeal']);
         selectedTraits.forEach(trait => {
           if (CONDITIONAL_TRAITS.has(trait)) {
@@ -2550,8 +2613,8 @@
         // Build AP tracking UI
         renderAPTracker(currentAP, maxActionPoints);
 
-        // Display traits
-        displayCharacterTraits(characterData.selectedTraits || []);
+        // Display traits (support both selectedTraits and legacy traits key)
+        displayCharacterTraits(characterData.selectedTraits || characterData.traits || []);
 
         // Display selected perks (both conditional and unconditional)
         try {
@@ -2660,7 +2723,7 @@
       if (stored) {
         try {
           const characterData = JSON.parse(stored);
-          hasFastShot = characterData.selectedTraits && characterData.selectedTraits.includes('fast_shot');
+          hasFastShot = getCharacterTraitIds(characterData).includes('fast_shot');
         } catch (e) {
           console.error('Error checking for fast_shot trait:', e);
         }
@@ -4005,7 +4068,7 @@
       try {
         const characterData = JSON.parse(stored);
         const selection = {
-          version: GAME_STATE_VERSION,
+          version: GAME_PAGE_STATE_VERSION,
           source: 'manual',
           activeItemIndex: getNumericValue(localStorage.getItem('activeItemIndex'), 0),
           slots: {

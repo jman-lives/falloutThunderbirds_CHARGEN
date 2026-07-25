@@ -3,7 +3,7 @@
 
 function qs(id){return document.getElementById(id)}
 
-const GAME_STATE_VERSION = 2;
+const ADVANCEMENT_GAME_STATE_VERSION = 2;
 
 function loadStoredCharacterFromAnyKey() {
   const keys = ['characterData', 'falloutCharacter'];
@@ -25,7 +25,7 @@ function buildForwardCompatibleCharacter(character, source = 'advancement-page')
   const gameState = normalized.gameState && typeof normalized.gameState === 'object' ? normalized.gameState : {};
 
   normalized.gameState = {
-    version: GAME_STATE_VERSION,
+    version: ADVANCEMENT_GAME_STATE_VERSION,
     currentHP: Number.isFinite(parseInt(gameState.currentHP)) ? parseInt(gameState.currentHP) : (stats.Hit_Points || 15),
     currentAP: Number.isFinite(parseInt(gameState.currentAP)) ? parseInt(gameState.currentAP) : (stats.Action_Points || 8),
     activeItemIndex: Number.isFinite(parseInt(gameState.activeItemIndex)) ? parseInt(gameState.activeItemIndex) : 0,
