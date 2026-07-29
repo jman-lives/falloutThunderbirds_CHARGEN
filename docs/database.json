@@ -672,6 +672,32 @@
       "requirements": "STR 2"
     },
     {
+      "id": "weap_butcher_knife",
+      "name": "Butcher Knife",
+      "category": "weapons",
+      "type": "melee",
+      "value": 30,
+      "weight": 2,
+      "description": "A large knife designed for butchering meat.\nThe serrated edges tend to tear instead of cut, and wounds from this blade are a lot more painful than normal knife wounds.\nButcher knives were constructed from a carbon-based compound instead of a metal, making them more durable, less prone to dulling, and lighter than a normal knife.\nThey are usually 20 to 30 cm long.",
+      "flavor": "Hacks, Wacks, Choppin' that meat",
+      "tags": [
+        "weapon",
+        "melee",
+        "blade",
+        "culinary",
+        "throwing"
+      ],
+      "IsInChargenStore": true,
+      "stats": {
+        "damage": "(1d12+3) + MD",
+        "ap": "S 3 / T 4",
+        "thrownAP": "S 4 / T 5",
+        "range": "1 / 6",
+        "skill": "Melee Weapons"
+      },
+      "requirements": "STR 2"
+    },
+    {
       "id": "weap_sledgehammer",
       "name": "Sledgehammer",
       "category": "weapons",
@@ -4422,6 +4448,85 @@
       "addiction": 80
     },
     {
+      "id": "chem_medx",
+      "name": "Med-X",
+      "category": "chems",
+      "type": "stimulant",
+      "value": 40,
+      "weight": 0.5,
+      "description": "Med-X is a powerful painkiller used in the post-nuclear world. It comes in a small bottle and is ingested orally. After consumption, the user gains +2 Damage Resistance for 1d10 hours. After this time, the character suffers no negative effects. Med-X is 80% addictive.",
+      "flavor": "Painkiller Supreme",
+      "tags": [
+        "chem",
+        "drug",
+        "stimulant",
+        "addictive"
+      ],
+      "effects": {
+        "positive": {
+          "damage_resistance": 2,
+          "duration": "1d10 hours"
+        },
+        "negative": {
+          "duration": "After positive effects"
+        }
+      },
+      "addiction": 80
+    },
+    {
+
+      "id": "chem_morphine",
+      "name": "Morphine",
+      "category": "chems",
+      "type": "painkiller",
+      "value": 40,
+      "weight": 0.5,
+      "description": "Morphine is a powerful painkiller used in the post-nuclear world. It comes in a small bottle and is ingested orally. After consumption, the user gains +2 Damage Resistance for 1d10 hours. After this time, the character suffers no negative effects. Morphine is 60% addictive.",
+      "flavor": "Hay Is For Horses, But This Is For You",
+      "tags": [
+        "chem",
+        "drug",
+        "painkiller",
+        "addictive"
+      ],
+      "effects": {
+        "positive": {
+          "damage_resistance": 2,
+          "duration": "1d10 hours"
+        },
+        "negative": {
+          "duration": "After positive effects"
+        }
+      },
+      "addiction": 60
+    },
+    {
+
+      "id": "chem_Addictol",
+      "name": "Addictol",
+      "category": "chems",
+      "type": "antidote",
+      "value": 40,
+      "weight": 0.5,
+      "description": "Addictol is a powerful antidote used in the post-nuclear world. It comes in a small bottle and is ingested orally. After consumption, the user loses all active side effects of chem use. Addictol is 20% addictive.",
+      "flavor": "One Step At A Time",
+      "tags": [
+        "chem",
+        "drug",
+        "antidote",
+        "addictive"
+      ],
+      "effects": {
+        "positive": {
+          "cure_chem_effects": true
+        },
+        "negative": {
+          "duration": "After positive effects"
+        }
+      },
+      "addiction": 20
+    },
+    {
       "id": "chem_healing_powder",
       "name": "Healing Powder",
       "category": "chems",
@@ -4529,7 +4634,7 @@
       "value": 200,
       "weight": 0.5,
       "description": "Buffout is a kind of temporary steroid, increasing mitochondrial activity in muscles for a brief period of time. Unfortunately, these same chemicals also impair brain function. When swallowed, Buffout increases the user's Strength by 2, Agility by 2, and Endurance by 3. The effects last one-half (round down) of 1d10 hours. After the effects wear off, the user loses 3 Strength, 3 Agility, and 2 Endurance for 1d10 hours. Buffout carries a 30% chance of addiction.",
-      "flavor": "As Seen On InfoWars",
+      "flavor": "As Seen On P2077X",
       "tags": [
         "chem",
         "drug",
@@ -4798,6 +4903,328 @@
         }
       },
       "addiction": 0
+    },
+    {
+      "id": "chem_beer",
+      "name": "Beer",
+      "category": "chems",
+      "type": "alcohol",
+      "value": 2,
+      "weight": 1,
+      "description": "A refreshing alcoholic beverage made from fermented grains. Beer can be consumed socially or to relieve stress. Not addictive.",
+      "flavor": "Cheers!",
+      "tags": [
+        "chem",
+        "alcohol",
+        "beverage"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 18
+    },
+    {
+      "id": "chem_whiskey",
+      "name": "Whiskey",
+      "category": "chems",
+      "type": "alcohol",
+      "value": 10,
+      "weight": 1,
+      "description": "A strong alcoholic beverage made from distilled grains. Whiskey can be consumed socially or to relieve stress. Not addictive.",
+      "flavor": "Cheers!",
+      "tags": [
+        "chem",
+        "alcohol",
+        "beverage"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 18
+    },
+    {
+      "id": "chem_vodka",
+      "name": "Vodka",
+      "category": "chems",
+      "type": "alcohol",
+      "value": 9,
+      "weight": 1,
+      "description": "A strong alcoholic beverage made from distilled grains. Vodka can be consumed socially or to relieve stress. Not addictive.",
+      "flavor": "Cheers!",
+      "tags": [
+        "chem",
+        "alcohol",
+        "beverage"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 18
+    },
+    {
+      "id": "chem_whiskey",
+      "name": "Whiskey",
+      "category": "chems",
+      "type": "alcohol",
+      "value": 10,
+      "weight": 1,
+      "description": "A strong alcoholic beverage made from distilled grains. Whiskey can be consumed socially or to relieve stress. Not addictive.",
+      "flavor": "Cheers!",
+      "tags": [
+        "chem",
+        "alcohol",
+        "beverage"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 18
+    },
+    {
+      "id": "chem_cigarette",
+      "name": "Cigarette Pack",
+      "category": "chems",
+      "type": "tobacco",
+      "value": 5,
+      "weight": 1,
+      "description": "A rolled tobacco product. Cigarettes can be smoked socially or to relieve stress. Highly addictive.",
+      "flavor": "Gotta Quit These Things...",
+      "tags": [
+        "chem",
+        "tobacco",
+        "smoke"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 77
+    },
+    {
+      "id": "chem_cigar",
+      "name": "Cigar Box",
+      "category": "chems",
+      "type": "tobacco",
+      "value": 8,
+      "weight": 2,
+      "description": "A rolled tobacco product. Cigars can be smoked socially or to relieve stress. Highly addictive.",
+      "flavor": "Where's The Party?",
+      "tags": [
+        "chem",
+        "tobacco",
+        "smoke"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 77
+    },
+    {
+      "id": "chem_rum",
+      "name": "Rum",
+      "category": "chems",
+      "type": "alcohol",
+      "value": 9,
+      "weight": 1,
+      "description": "A strong alcoholic beverage made from distilled grains. Rum can be consumed socially or to relieve stress. Not addictive.",
+      "flavor": "Cheers!",
+      "tags": [
+        "chem",
+        "alcohol",
+        "beverage"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 18
+    },
+    {
+      "id": "chem_tequila",
+      "name": "Tequila",
+      "category": "chems",
+      "type": "alcohol",
+      "value": 17,
+      "weight": 1,
+      "description": "A strong alcoholic beverage made from distilled grains. Tequila can be consumed socially or to relieve stress. Not addictive.",
+      "flavor": "Cheers!",
+      "tags": [
+        "chem",
+        "alcohol",
+        "beverage"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 18
+    },
+    {
+      "id": "chem_wine",
+      "name": "Wine",
+      "category": "chems",
+      "type": "alcohol",
+      "value": 15,
+      "weight": 1,
+      "description": "A strong alcoholic beverage made from fermented grapes. Wine can be consumed socially or to relieve stress. Not addictive.",
+      "flavor": "Cheers!",
+      "tags": [
+        "chem",
+        "alcohol",
+        "beverage"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 18
+    },
+    {
+      "id": "chem_moonshine",
+      "name": "Moonshine",
+      "category": "chems",
+      "type": "alcohol",
+      "value": 7,
+      "weight": 1,
+      "description": "A strong alcoholic beverage made from distilled grains. Moonshine can be consumed socially or to relieve stress. Not addictive.",
+      "flavor": "Cheers!",
+      "tags": [
+        "chem",
+        "alcohol",
+        "beverage"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 18
+    },
+    {
+      "id": "chem_sake",
+      "name": "Sake",
+      "category": "chems",
+      "type": "alcohol",
+      "value": 89,
+      "weight": 1,
+      "description": "A strong alcoholic beverage made from fermented rice. Sake can be consumed socially or to relieve stress. Not addictive.",
+      "flavor": "Cheers!",
+      "tags": [
+        "chem",
+        "alcohol",
+        "beverage"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 18
+    },
+    {
+      "id": "chem_absinthe",
+      "name": "Absinthe",
+      "category": "chems",
+      "type": "alcohol",
+      "value": 24,
+      "weight": 1,
+      "description": "A strong alcoholic beverage made from distilled grains. Absinthe can be consumed socially or to relieve stress. Not addictive.",
+      "flavor": "Cheers!",
+      "tags": [
+        "chem",
+        "alcohol",
+        "beverage"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 18
+    },
+    {
+      "id": "chem_brandy",
+      "name": "Brandy",
+      "category": "chems",
+      "type": "alcohol",
+      "value": 15,
+      "weight": 1,
+      "description": "A strong alcoholic beverage made from distilled grains. Brandy can be consumed socially or to relieve stress. Not addictive.",
+      "flavor": "Cheers!",
+      "tags": [
+        "chem",
+        "alcohol",
+        "beverage"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 18
+    },
+    {
+      "id": "chem_cider",
+      "name": "Cider",
+      "category": "chems",
+      "type": "alcohol",
+      "value": 2,
+      "weight": 1,
+      "description": "A strong alcoholic beverage made from fermented apples. Cider can be consumed socially or to relieve stress. Not addictive.",
+      "flavor": "Cheers!",
+      "tags": [
+        "chem",
+        "alcohol",
+        "beverage"
+      ],
+      "IsInChargenStore": false,
+      "effects": {
+        "positive": {
+          "stress_reduction": 10,
+          "duration": "1 hour"
+        }
+      },
+      "addiction": 18
     }
   ],
   "critters": [
