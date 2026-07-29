@@ -1,0 +1,170 @@
+{
+    "player": "jman",
+    "name": "Holman",
+    "race": "Ghoul",
+    "age": 243,
+    "gender": "Male",
+    "attributes": {
+        "strength": 5,
+        "perception": 9,
+        "endurance": 6,
+        "charisma": 1,
+        "intelligence": 5,
+        "agility": 7,
+        "luck": 5
+    },
+    "tagSkills": {
+        "guns": false,
+        "energy_weapons": true,
+        "unarmed": false,
+        "melee_weapons": false,
+        "throwing": false,
+        "first_aid": false,
+        "doctor": false,
+        "sneak": false,
+        "lockpick": false,
+        "steal": false,
+        "traps": false,
+        "science": false,
+        "repair": false,
+        "pilot": false,
+        "speech": false,
+        "barter": false,
+        "gambling": false,
+        "outdoorsman": true
+    },
+    "skills": {
+        "guns": 25,
+        "energy_weapons": 42,
+        "unarmed": 52,
+        "melee_weapons": 42,
+        "throwing": 20,
+        "first_aid": 46,
+        "doctor": 17,
+        "sneak": 20,
+        "lockpick": 22,
+        "steal": 15,
+        "traps": 22,
+        "science": 20,
+        "repair": 15,
+        "pilot": 10,
+        "speech": 30,
+        "barter": 24,
+        "gambling": 45,
+        "outdoorsman": 42
+    },
+    "level": 1,
+    "totalXP": 21000,
+    "selectedPerks": [
+        {
+            "id": "thief",
+            "rank": 1,
+            "lockedAtLevel": 3,
+            "lockedRank": 1
+        },
+        {
+            "id": "adrenaline_rush",
+            "rank": 1,
+            "lockedAtLevel": 6,
+            "lockedRank": 1
+        }
+    ],
+    "stats": {
+        "Hit_Points": 33,
+        "Carry_Weight": 175,
+        "Action_Points": 7,
+        "Sequence": 19,
+        "Melee_Damage": 1,
+        "Critical_Chance": 5,
+        "Healing_Rate": 2,
+        "Poison_Resist": 30,
+        "Radiation_Resist": 12,
+        "Gas_Resist": 0,
+        "Electricity_Resist": 30,
+        "Armor_Class": 5,
+        "DT": {
+            "Normal": 24,
+            "Laser": 6,
+            "Fire": 6,
+            "Plasma": 14,
+            "Explode": 6
+        },
+        "DR": {
+            "Normal": 3,
+            "Laser": 28,
+            "Fire": 21,
+            "Plasma": 12,
+            "Explode": 11
+        }
+    },
+    "notes": null,
+    "selectedTraits": [
+        "Ghoul",
+        "Friendly"
+    ],
+    "reputation": [
+        {
+            "name": "Tribal",
+            "description": "Your dress, tattoos, and mannerisms denote a Tribal background."
+        }
+    ],
+    "createdAt": "2026-07-28T23:51:17.779Z",
+    "gameState": {
+        "version": 2,
+        "currentHP": 33,
+        "currentAP": 7,
+        "activeItemIndex": 0,
+        "equipmentSelection": null,
+        "savedAt": "2026-07-28T23:52:29.362Z",
+        "source": "equipmentchoice-save"
+    },
+    "skillIncreases": {
+        "first_aid": 57,
+        "outdoorsman": 30,
+        "gambling": 58
+    },
+    "skillPointsSpent": {
+        "gambling": 15
+    },
+    "skillsConfirmed": true,
+    "perksConfirmed": true,
+    "perkEffects": {
+        "hpBonusPerLevel": 0,
+        "skillPointsPerLevel": 0,
+        "healingRate": 0,
+        "attributeBonus": {},
+        "damageResistance": 0,
+        "radiationResistance": 0,
+        "bookSkillBonus": 0,
+        "skillBonuses": {
+            "sneak": 10,
+            "lockpick": 10,
+            "steal": 10,
+            "traps": 10
+        },
+        "additionalTagSkills": 0,
+        "sequenceBonus": 0,
+        "charismaBonus": 0,
+        "ignoreRestrictions": false,
+        "ignoreAllRestrictions": false
+    },
+    "money": 330,
+    "equipment": {
+        "items": {
+            "Rope": 2,
+            "Healing Powder": 8,
+            "Voodoo": 1,
+            "Rock": 2,
+            "War Club": 1,
+            "Spear": 3,
+            "Tribal Warrior Armor": 1
+        },
+        "totalCost": 1445,
+        "totalWeight": 58.5,
+        "timestamp": "2026-07-28T23:52:29.362Z",
+        "source": "package",
+        "packageId": "tribal",
+        "packageName": "Tribal Package"
+    },
+    "selectedPackage": "tribal"
+}
