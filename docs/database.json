@@ -4449,6 +4449,26 @@
       "addiction": 80
     },
     {
+      "id": "food_pickled_fish",
+      "name": "Pickled Fish",
+      "category": "food",
+      "type": "food",
+      "value": 25,
+      "weight": 0.5,
+      "description": "A traditional delicacy. Provides a small health boost of 1d3 + Healing Rate.",
+      "flavor": "From Ink Dark Depths",
+      "tags": [
+        "food"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
       "id": "chem_turbo",
       "name": "Turbo",
       "category": "chems",

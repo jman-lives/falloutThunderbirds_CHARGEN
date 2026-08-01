@@ -173,6 +173,42 @@
         max-height: 36vh;
       }
     }
+
+    #inventory-remove-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #inventory-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(0);
+      background: #1e293b;
+      color: #f8fafc;
+      border-left: 4px solid #ef4444;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      z-index: 1200;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    #inventory-toast.visible {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -295,6 +331,21 @@
         <div style="display: flex; gap: 8px; justify-content: flex-end;">
           <button onclick="closeEquipmentModal()" style="padding: 8px 16px; background-color: #666; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Cancel</button>
           <button onclick="saveEquipmentConfiguration()" style="padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="inventory-toast"></div>
+
+    <div id="inventory-remove-modal">
+      <div style="background: #1a1a1a; border: 2px solid #ef4444; border-radius: 8px; padding: 20px; width: min(460px, 92vw);">
+        <h3 style="margin: 0 0 10px; color: #f97316;">Remove Inventory Item</h3>
+        <p id="inventory-remove-modal-text" style="margin: 0 0 12px; color: #ddd;"></p>
+        <label for="inventory-remove-amount" style="display: block; color: #FFD700; font-weight: bold; margin-bottom: 6px;">Amount to remove</label>
+        <input id="inventory-remove-amount" type="number" min="1" step="1" value="1" style="width: 100%; padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #666; border-radius: 4px; margin-bottom: 14px;" />
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button onclick="closeInventoryRemoveModal()" style="padding: 8px 14px; background: #666; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Cancel</button>
+          <button onclick="confirmInventoryItemRemoval()" style="padding: 8px 14px; background: #dc2626; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Remove</button>
         </div>
       </div>
     </div>
@@ -3043,6 +3094,7 @@
     let draggedItem = null;
     let allAvailableItems = [];
     let availableItemsCategoryFilter = 'all';
+    let pendingInventoryRemovalItem = null;
     let DATABASE_ITEM_INDEX = {};
     let DATABASE_NAME_INDEX = {};
 
@@ -4007,6 +4059,173 @@
       }
     }
 
+    function rebuildAvailableItemsFromInventory(equipmentMap) {
+      return Object.entries(equipmentMap || {}).map(([name, quantity], idx) => ({
+        id: idx,
+        name,
+        quantity,
+        description: getItemModalDescriptionText(name)
+      }));
+    }
+
+    function syncTempSelectedItemsWithInventory(inventoryMap) {
+      tempSelectedItems = tempSelectedItems.map(item => {
+        if (!item || !item.name) return null;
+        const nextQty = getNumericValue(inventoryMap[item.name], 0);
+        if (nextQty <= 0) return null;
+        return {
+          ...item,
+          quantity: nextQty
+        };
+      });
+    }
+
+    function promptRemoveInventoryItem(itemId, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      const item = allAvailableItems.find(entry => entry.id === itemId);
+      if (!item) return;
+
+      const quantity = Math.max(1, getNumericValue(item.quantity, 1));
+      if (quantity <= 1) {
+        removeInventoryItemByName(item.name, 1);
+        return;
+      }
+
+      pendingInventoryRemovalItem = {
+        name: item.name,
+        maxQuantity: quantity
+      };
+
+      const modalText = qs('inventory-remove-modal-text');
+      const amountInput = qs('inventory-remove-amount');
+      if (modalText) {
+        modalText.textContent = `How many ${item.name} do you want to remove? (Available: ${quantity})`;
+      }
+      if (amountInput) {
+        amountInput.min = '1';
+        amountInput.max = String(quantity);
+        amountInput.value = '1';
+      }
+
+      qs('inventory-remove-modal').style.display = 'flex';
+    }
+
+    function closeInventoryRemoveModal() {
+      pendingInventoryRemovalItem = null;
+      const modal = qs('inventory-remove-modal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    }
+
+    function confirmInventoryItemRemoval() {
+      if (!pendingInventoryRemovalItem) {
+        closeInventoryRemoveModal();
+        return;
+      }
+
+      const amountInput = qs('inventory-remove-amount');
+      const requestedAmount = getNumericValue(amountInput?.value, 1);
+      const boundedAmount = Math.max(1, Math.min(requestedAmount, pendingInventoryRemovalItem.maxQuantity));
+
+      const { name } = pendingInventoryRemovalItem;
+      closeInventoryRemoveModal();
+      removeInventoryItemByName(name, boundedAmount);
+    }
+
+    function removeInventoryItemByName(itemName, amountToRemove) {
+      const stored = localStorage.getItem('characterData');
+      if (!stored) {
+        alert('No character data found.');
+        return;
+      }
+
+      try {
+        const characterData = JSON.parse(stored);
+        if (!characterData.equipment || typeof characterData.equipment !== 'object') {
+          characterData.equipment = { items: {} };
+        }
+        if (!characterData.equipment.items || typeof characterData.equipment.items !== 'object') {
+          characterData.equipment.items = {};
+        }
+
+        const inventoryMap = characterData.equipment.items;
+        const currentQty = getNumericValue(inventoryMap[itemName], 0);
+        if (currentQty <= 0) {
+          alert('Item is no longer in inventory.');
+          return;
+        }
+
+        const removeAmount = Math.max(1, getNumericValue(amountToRemove, 1));
+        const nextQty = currentQty - removeAmount;
+        if (nextQty > 0) {
+          inventoryMap[itemName] = nextQty;
+        } else {
+          delete inventoryMap[itemName];
+        }
+
+        syncTempSelectedItemsWithInventory(inventoryMap);
+
+        const selection = normalizeEquipmentSelection(characterData.gameState?.equipmentSelection || characterData.gameEquipmentSelection)
+          || buildDefaultGameEquipmentSelection();
+        const updatedSelection = pruneEquipmentSelection(selection, inventoryMap);
+        ['primary', 'secondary', 'armor'].forEach(slotKey => {
+          const slotIndexMap = { primary: 0, secondary: 1, armor: 2 };
+          const slotIndex = slotIndexMap[slotKey];
+          if (updatedSelection.slots[slotKey] && tempSelectedItems[slotIndex]) {
+            updatedSelection.slots[slotKey] = {
+              ...updatedSelection.slots[slotKey],
+              quantity: tempSelectedItems[slotIndex].quantity
+            };
+          }
+        });
+
+        characterData.gameState = {
+          ...(characterData.gameState || {}),
+          ...buildGameStateSnapshot(characterData, updatedSelection)
+        };
+
+        localStorage.setItem('characterData', JSON.stringify(characterData));
+        localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
+        localStorage.setItem('gameEquipmentSelection', JSON.stringify(updatedSelection));
+        localStorage.setItem('equipmentItemSelection', JSON.stringify([
+          updatedSelection.slots.primary,
+          updatedSelection.slots.secondary,
+          updatedSelection.slots.armor
+        ]));
+
+        allAvailableItems = rebuildAvailableItemsFromInventory(inventoryMap);
+        draggedItem = null;
+        touchItem = null;
+
+        populateAvailableItems();
+        updateDropZoneDisplays();
+        updateActiveItemDisplay();
+        updateEquippedArmorDisplay();
+        showInventoryToast(`Removed ${removeAmount} × ${itemName}`);
+      } catch (err) {
+        console.error('[EQUIPMENT REMOVE ERROR]', err);
+        alert('Could not remove item from inventory.');
+      }
+    }
+
+    let _toastTimer = null;
+    function showInventoryToast(message) {
+      const toast = qs('inventory-toast');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add('visible');
+      if (_toastTimer) clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(() => {
+        toast.classList.remove('visible');
+        _toastTimer = null;
+      }, 2800);
+    }
+
     function getItemCategoryForFilter(itemName) {
       return ITEM_STATS[itemName]?.category || 'unknown';
     }
@@ -4052,7 +4271,10 @@
             onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#FF9800';"
             onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#666';"
           >
-            <div>${escapeHtml(item.name)}${quantityDisplay}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+              <div>${escapeHtml(item.name)}${quantityDisplay}</div>
+              <button onclick="promptRemoveInventoryItem(${item.id}, event)" style="padding: 4px 7px; background: #dc2626; color: #fff; border: none; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 0.75rem;" title="Remove from inventory">Remove</button>
+            </div>
             <div style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal; margin-top: 4px; line-height: 1.3;">${description}</div>
           </div>
         `;
@@ -4097,7 +4319,6 @@
       }
 
       if (tempSelectedItems[2]) {
-        armorDisplay.innerHTML = `<div style="font-weight: bold; color: #4CAF50;">${escapeHtml(tempSelectedItems[2].name)}</div><div style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal; margin-top: 4px; line-height: 1.3;">${escapeHtml(getItemModalDescriptionText(tempSelectedItems[2].name) || 'No description available.')}</div>`;
         armorDisplay.innerHTML = `<div style="font-weight: bold; color: #4CAF50;">${escapeHtml(tempSelectedItems[2].name)}</div><div style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal; margin-top: 4px; line-height: 1.3;">${escapeHtml(getItemModalDescriptionText(tempSelectedItems[2].name) || 'No description available.')}</div>`;
         armorDisplay.style.color = '#4CAF50';
         armorRemove.style.display = 'block';
@@ -4349,6 +4570,7 @@
 
     function closeEquipmentModal() {
       qs('equipment-modal').style.display = 'none';
+      closeInventoryRemoveModal();
       tempSelectedItems = [null, null, null];
     }
 

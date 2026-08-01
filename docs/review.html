@@ -219,7 +219,7 @@
   <script src="advancement.js"></script>
   <script>
     let characterData = {};
-    const GAME_STATE_VERSION = 2;
+    const REVIEW_GAME_STATE_VERSION = 2;
 
     function loadStoredCharacterFromAnyKey() {
       const keys = ['characterData', 'falloutCharacter'];
@@ -241,7 +241,7 @@
       const gameState = normalized.gameState && typeof normalized.gameState === 'object' ? normalized.gameState : {};
 
       normalized.gameState = {
-        version: GAME_STATE_VERSION,
+        version: REVIEW_GAME_STATE_VERSION,
         currentHP: Number.isFinite(parseInt(gameState.currentHP)) ? parseInt(gameState.currentHP) : (stats.Hit_Points || 15),
         currentAP: Number.isFinite(parseInt(gameState.currentAP)) ? parseInt(gameState.currentAP) : (stats.Action_Points || 8),
         activeItemIndex: Number.isFinite(parseInt(gameState.activeItemIndex)) ? parseInt(gameState.activeItemIndex) : 0,
@@ -258,6 +258,37 @@
       localStorage.setItem('falloutCharacter', JSON.stringify(normalized));
       localStorage.setItem('characterData', JSON.stringify(normalized));
       return normalized;
+    }
+
+    function toTitleLabel(value, fallback = 'Unknown') {
+      if (!value) return fallback;
+      const text = String(value).replace(/_/g, ' ').trim();
+      if (!text) return fallback;
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    function normalizePerkEntry(perk) {
+      if (typeof perk === 'string') {
+        return { id: perk, rank: 1 };
+      }
+      if (perk && typeof perk === 'object') {
+        return {
+          id: perk.id || perk.name || '',
+          rank: Number.isFinite(parseInt(perk.rank, 10)) ? parseInt(perk.rank, 10) : 1
+        };
+      }
+      return null;
+    }
+
+    function normalizeTraitEntry(trait) {
+      if (typeof trait === 'string') return trait;
+      if (trait && typeof trait === 'object') return trait.id || trait.name || '';
+      return '';
+    }
+
+    function toFiniteNumber(value, fallback = 0) {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : fallback;
     }
 
     function buildCharacterSheetForExport(character, source = 'review-save') {
@@ -584,10 +615,7 @@
       if (characterData.equipment && characterData.equipment.items && Object.keys(characterData.equipment.items).length > 0) {
         const equipmentSection = document.createElement('div');
         equipmentSection.className = 'review-section';
-        equipmentSection.innerHTML = `
-          <h2 class="section-title">Equipment</h2>
-          <div class="items-list" id="equipment-list"></div>
-        `;
+        equipmentSection.innerHTML = `<h2 class="section-title">Equipment</h2>`;
 
         const equipmentList = document.createElement('div');
         equipmentList.className = 'items-list';
@@ -622,11 +650,14 @@
         summaryDiv.style.paddingTop = '12px';
         summaryDiv.style.borderTop = '1px solid rgba(255, 255, 255, 0.1)';
         
+        const totalCost = toFiniteNumber(characterData.equipment.totalCost, 0);
+        const totalWeight = toFiniteNumber(characterData.equipment.totalWeight, 0);
+
         const costRow = document.createElement('div');
         costRow.className = 'stat-row';
         costRow.innerHTML = `
           <span class="stat-label">Total Value:</span>
-          <span class="stat-value">${characterData.equipment.totalCost.toLocaleString()} credits</span>
+          <span class="stat-value">${totalCost.toLocaleString()} credits</span>
         `;
         summaryDiv.appendChild(costRow);
         
@@ -634,7 +665,7 @@
         weightRow.className = 'stat-row';
         weightRow.innerHTML = `
           <span class="stat-label">Total Weight:</span>
-          <span class="stat-value">${characterData.equipment.totalWeight.toFixed(1)} lbs</span>
+          <span class="stat-value">${totalWeight.toFixed(1)} lbs</span>
         `;
         summaryDiv.appendChild(weightRow);
 
@@ -660,11 +691,14 @@
         perksSection.innerHTML = `<h2 class="section-title">Perks</h2>`;
         const perksList = document.createElement('div');
         characterData.selectedPerks.forEach(perk => {
+          const normalizedPerk = normalizePerkEntry(perk);
+          if (!normalizedPerk || !normalizedPerk.id) return;
+
           const perkItem = document.createElement('div');
           perkItem.className = 'item-entry';
           perkItem.innerHTML = `
-            <span class="item-name">${perk.id.replace(/_/g, ' ').charAt(0).toUpperCase() + perk.id.replace(/_/g, ' ').slice(1)}</span>
-            <span class="item-qty">Rank ${perk.rank}</span>
+            <span class="item-name">${toTitleLabel(normalizedPerk.id)}</span>
+            <span class="item-qty">Rank ${normalizedPerk.rank}</span>
           `;
           perksList.appendChild(perkItem);
         });
@@ -679,9 +713,12 @@
         traitsSection.innerHTML = `<h2 class="section-title">Traits</h2>`;
         const traitsList = document.createElement('div');
         characterData.selectedTraits.forEach(trait => {
+          const normalizedTrait = normalizeTraitEntry(trait);
+          if (!normalizedTrait) return;
+
           const traitItem = document.createElement('div');
           traitItem.className = 'item-entry';
-          traitItem.innerHTML = `<span class="item-name">${trait.replace(/_/g, ' ').charAt(0).toUpperCase() + trait.replace(/_/g, ' ').slice(1)}</span>`;
+          traitItem.innerHTML = `<span class="item-name">${toTitleLabel(normalizedTrait)}</span>`;
           traitsList.appendChild(traitItem);
         });
         traitsSection.appendChild(traitsList);
