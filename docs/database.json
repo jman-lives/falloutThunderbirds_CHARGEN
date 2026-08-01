@@ -4453,10 +4453,230 @@
       "name": "Pickled Fish",
       "category": "food",
       "type": "food",
-      "value": 25,
+      "value": 11,
       "weight": 0.5,
       "description": "A traditional delicacy. Provides a small health boost of 1d3 + Healing Rate.",
       "flavor": "From Ink Dark Depths",
+      "tags": [
+        "food"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
+      "id": "food_mutfruit",
+      "name": "Mutfruit",
+      "category": "food",
+      "type": "food",
+      "value": 5,
+      "weight": 0.5,
+      "description": "A traditional delicacy. Provides a small health boost of 1d3 + Healing Rate.",
+      "flavor": "It looks like a crabapple, but tastes like... chicken?!",
+      "tags": [
+        "food"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
+      "id": "food_yumyum",
+      "name": "YumYum Deviled Eggs",
+      "category": "food",
+      "type": "food",
+      "value": 12,
+      "weight": 0.5,
+      "description": "A pre-War delicacy. Provides a small health boost of 1d3 + Healing Rate.",
+      "flavor": "Easy does it... you lil' devil you!",
+      "tags": [
+        "food"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
+      "id": "food_porknbeans",
+      "name": "Pork 'n' Beans",
+      "category": "food",
+      "type": "food",
+      "value": 12,
+      "weight": 0.5,
+      "description": "A pre-War staple. Provides a small health boost of 1d3 + Healing Rate.",
+      "flavor": "Hearty And Filling!",
+      "tags": [
+        "food"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
+      "id": "food_nuka",
+      "name": "Nuka-Cola",
+      "category": "food",
+      "type": "food",
+      "value": 10,
+      "weight": 0.5,
+      "description": "A pre-War staple. Provides a small health boost of 1d3 + Healing Rate.",
+      "flavor": "Nothing Beats The Taste!",
+      "tags": [
+        "food"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },{
+      "id": "food_nuka_quantum",
+      "name": "Nuka-Cola Quantum",
+      "category": "food",
+      "type": "food",
+      "value": 30,
+      "weight": 0.5,
+      "description": "A new blend of the pre-War staple. Provides a small health boost of 1d6 + Healing Rate, but is highly radioactive.",
+      "flavor": "Glows On The Way In And The Way Out",
+      "tags": [
+        "food",
+        "radiation"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
+      "id": "food_sarsparilla",
+      "name": "Sunset Sarsaparilla",
+      "category": "food",
+      "type": "food",
+      "value": 11,
+      "weight": 0.5,
+      "description": "A pre-War, Western staple. Provides a small health boost of 1d3 + Healing Rate.",
+      "flavor": "Freshen Up!",
+      "tags": [
+        "food"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
+      "id": "food_gecko_steak",
+      "name": "Gecko Steak",
+      "category": "food",
+      "type": "food",
+      "value": 9,
+      "weight": 0.5,
+      "description": "A post-War staple. Provides a small health boost of 1d8 + Healing Rate.",
+      "flavor": "There's an eye in mine...",
+      "tags": [
+        "food"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
+      "id": "food_molerat_steak",
+      "name": "Molerat Steak",
+      "category": "food",
+      "type": "food",
+      "value": 11,
+      "weight": 0.5,
+      "description": "A post-War staple. Provides a small health boost of 1d10 + Healing Rate.",
+      "flavor": "Tastes Better Than It Looks",
+      "tags": [
+        "food"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
+      "id": "food_brahmin_steak",
+      "name": "Brahmin Steak",
+      "category": "food",
+      "type": "food",
+      "value": 13,
+      "weight": 0.5,
+      "description": "A post-War staple. Provides a small health boost of 1d12 + Healing Rate.",
+      "flavor": "There's an eye in mine...",
+      "tags": [
+        "food"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
+      "id": "food_banana_yucca",
+      "name": "Banana Yucca Fruit",
+      "category": "food",
+      "type": "food",
+      "value": 4,
+      "weight": 0.5,
+      "description": "A post-War staple. Provides a small health boost of 1d3 + Healing Rate.",
+      "flavor": "Now With Extra Fiber!",
+      "tags": [
+        "food"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
+      "id": "food_dandy_boy_apples",
+      "name": "Dandy Boy Apples",
+      "category": "food",
+      "type": "food",
+      "value": 9,
+      "weight": 0.5,
+      "description": "A pre-War snack. Provides a small health boost of 1d3 + Healing Rate.",
+      "flavor": "Apples So Good They Never Go Bad!",
       "tags": [
         "food"
       ],
