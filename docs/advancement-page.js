@@ -24,6 +24,8 @@ function buildForwardCompatibleCharacter(character, source = 'advancement-page')
   const stats = normalized.stats || {};
   const gameState = normalized.gameState && typeof normalized.gameState === 'object' ? normalized.gameState : {};
 
+  normalized.skills = buildPersistedSkills(normalized);
+
   normalized.gameState = {
     version: ADVANCEMENT_GAME_STATE_VERSION,
     currentHP: Number.isFinite(parseInt(gameState.currentHP)) ? parseInt(gameState.currentHP) : (stats.Hit_Points || 15),
@@ -35,6 +37,61 @@ function buildForwardCompatibleCharacter(character, source = 'advancement-page')
   };
 
   return normalized;
+}
+
+function buildPersistedSkills(character) {
+  if (typeof calculateFinalSkills !== 'function' || typeof getEffectiveAttributes !== 'function' || typeof getAttributesWithPerkBonuses !== 'function') {
+    return { ...(character.skills || {}) };
+  }
+
+  const attributes = character.attributes || {};
+  const selectedTraits = character.selectedTraits || character.traits || [];
+  const tagSkills = character.tagSkills || {};
+  const perkEffects = character.perkEffects || {};
+  const effectiveAttributes = getEffectiveAttributes(attributes, selectedTraits);
+  const attributesWithPerks = getAttributesWithPerkBonuses(effectiveAttributes, perkEffects);
+  const persistedSkills = calculateFinalSkills(attributesWithPerks, tagSkills, selectedTraits);
+
+  Object.entries(character.skillIncreases || {}).forEach(([skillKey, increase]) => {
+    if (!Number.isFinite(increase)) {
+      return;
+    }
+    persistedSkills[skillKey] = (persistedSkills[skillKey] || 0) + increase;
+  });
+
+  if (character.skillsConfirmed) {
+    Object.entries(character.skillPointsSpent || {}).forEach(([skillKey, spentPoints]) => {
+      if (!Number.isFinite(spentPoints) || spentPoints <= 0) {
+        return;
+      }
+      const currentSkillValue = persistedSkills[skillKey] || 0;
+      const pendingGain = calculateSkillGainFromSpentPoints(currentSkillValue, spentPoints, !!tagSkills[skillKey]);
+      persistedSkills[skillKey] = currentSkillValue + pendingGain;
+    });
+  }
+
+  return persistedSkills;
+}
+
+function calculateSkillGainFromSpentPoints(currentSkillValue, spentPoints, isTagged) {
+  let simulatedSkillValue = currentSkillValue;
+  let spent = 0;
+  let totalGain = 0;
+
+  while (spent < spentPoints) {
+    const costThisGain = getSkillProgressionCost(simulatedSkillValue, isTagged);
+    const gainThisSpend = getSkillGainPerSP(simulatedSkillValue, isTagged);
+
+    if (spent + costThisGain > spentPoints) {
+      break;
+    }
+
+    simulatedSkillValue += gainThisSpend;
+    totalGain += gainThisSpend;
+    spent += costThisGain;
+  }
+
+  return totalGain;
 }
 
 function persistCharacterToAllStores(character, source = 'advancement-page') {
@@ -1545,18 +1602,8 @@ function renderOutput(obj){
   if (qs('output')) {
     // Create a display copy with calculated final skills that include leveling increases
     const displayObj = JSON.parse(JSON.stringify(obj)); // Deep copy
-    
-    // If we have skill increases, apply them to the display skills
-    if (displayObj.skillIncreases && displayObj.skills) {
-      const updatedSkills = { ...displayObj.skills };
-      Object.keys(displayObj.skillIncreases).forEach(skillKey => {
-        const increase = displayObj.skillIncreases[skillKey];
-        if (updatedSkills[skillKey] !== undefined) {
-          updatedSkills[skillKey] = Math.min(updatedSkills[skillKey] + increase, 100);
-        }
-      });
-      displayObj.skills = updatedSkills;
-    }
+
+    displayObj.skills = buildPersistedSkills(displayObj);
     
     qs('output').textContent = JSON.stringify(displayObj, null, 2)
   }

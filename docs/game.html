@@ -633,7 +633,11 @@
       const currentGameState = workingData.gameState && typeof workingData.gameState === 'object' ? workingData.gameState : {};
       const legacySelection = currentGameState.equipmentSelection || workingData.gameEquipmentSelection;
       const selection = getResolvedEquipmentSelection(workingData, legacySelection);
-      const migrated = !workingData.gameState || workingData.gameState.version !== GAME_PAGE_STATE_VERSION || !legacySelection;
+      const hydratedSkills = buildPersistedSkillsForGame(workingData);
+      const skillsChanged = haveSkillsChanged(workingData.skills || {}, hydratedSkills);
+      const migrated = !workingData.gameState || workingData.gameState.version !== GAME_PAGE_STATE_VERSION || !legacySelection || skillsChanged;
+
+      workingData.skills = hydratedSkills;
 
       workingData.gameState = {
         ...currentGameState,
@@ -648,6 +652,71 @@
         characterData: workingData,
         migrated
       };
+    }
+
+    function buildPersistedSkillsForGame(characterData) {
+      if (typeof calculateFinalSkills !== 'function' || typeof getEffectiveAttributes !== 'function' || typeof getAttributesWithPerkBonuses !== 'function') {
+        return { ...(characterData.skills || {}) };
+      }
+
+      const attributes = characterData.attributes || {};
+      const selectedTraits = getCharacterTraitIds(characterData);
+      const tagSkills = characterData.tagSkills || {};
+      const perkEffects = characterData.perkEffects || {};
+      const effectiveAttributes = getEffectiveAttributes(attributes, selectedTraits);
+      const attributesWithPerks = getAttributesWithPerkBonuses(effectiveAttributes, perkEffects);
+      const persistedSkills = calculateFinalSkills(attributesWithPerks, tagSkills, selectedTraits);
+
+      Object.entries(characterData.skillIncreases || {}).forEach(([skillKey, increase]) => {
+        if (!Number.isFinite(increase)) {
+          return;
+        }
+        persistedSkills[skillKey] = (persistedSkills[skillKey] || 0) + increase;
+      });
+
+      if (characterData.skillsConfirmed) {
+        Object.entries(characterData.skillPointsSpent || {}).forEach(([skillKey, spentPoints]) => {
+          if (!Number.isFinite(spentPoints) || spentPoints <= 0) {
+            return;
+          }
+          const currentSkillValue = persistedSkills[skillKey] || 0;
+          const pendingGain = calculateSkillGainFromSpentPointsForGame(currentSkillValue, spentPoints, !!tagSkills[skillKey]);
+          persistedSkills[skillKey] = currentSkillValue + pendingGain;
+        });
+      }
+
+      return persistedSkills;
+    }
+
+    function calculateSkillGainFromSpentPointsForGame(currentSkillValue, spentPoints, isTagged) {
+      let simulatedSkillValue = currentSkillValue;
+      let spent = 0;
+      let totalGain = 0;
+
+      while (spent < spentPoints) {
+        const costThisGain = getSkillProgressionCost(simulatedSkillValue, isTagged);
+        const gainThisSpend = getSkillGainPerSP(simulatedSkillValue, isTagged);
+
+        if (spent + costThisGain > spentPoints) {
+          break;
+        }
+
+        simulatedSkillValue += gainThisSpend;
+        totalGain += gainThisSpend;
+        spent += costThisGain;
+      }
+
+      return totalGain;
+    }
+
+    function haveSkillsChanged(currentSkills, nextSkills) {
+      const keys = new Set([...Object.keys(currentSkills || {}), ...Object.keys(nextSkills || {})]);
+      for (const key of keys) {
+        if ((currentSkills[key] || 0) !== (nextSkills[key] || 0)) {
+          return true;
+        }
+      }
+      return false;
     }
 
     function getCharacterFingerprint(characterData) {
@@ -2630,6 +2699,7 @@
         const characterData = migration.characterData;
         if (migration.migrated) {
           localStorage.setItem('characterData', JSON.stringify(characterData));
+          localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
           localStorage.setItem('gameEquipmentSelection', JSON.stringify(characterData.gameState?.equipmentSelection || null));
         }
         console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', characterData);
@@ -3644,6 +3714,15 @@
       const container = qs('barter-container');
       if (!container) return;
 
+      const existingGlobalList = container.querySelector('#barter-global-items-list');
+      const existingVendorList = container.querySelector('#barter-vendor-items-list');
+      const existingPlayerList = container.querySelector('#barter-player-items-list');
+      const scrollSnapshot = {
+        global: existingGlobalList ? existingGlobalList.scrollTop : 0,
+        vendor: existingVendorList ? existingVendorList.scrollTop : 0,
+        player: existingPlayerList ? existingPlayerList.scrollTop : 0
+      };
+
       const characterData = loadCharacterFromStorageForBarter();
       if (!characterData || !DATABASE) {
         container.innerHTML = '<div style="color: #999;">Barter data is not ready yet.</div>';
@@ -3775,17 +3854,17 @@
 
           <div style="background: rgba(15,23,42,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 10px;">
             <div style="font-weight: bold; color: #fbbf24; margin-bottom: 8px;">Global Item Search</div>
-            <div style="display: grid; gap: 6px; max-height: 220px; overflow-y: auto;">${globalSearchItemsHtml}</div>
+            <div id="barter-global-items-list" style="display: grid; gap: 6px; max-height: 220px; overflow-y: auto;">${globalSearchItemsHtml}</div>
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px;">
             <div style="background: rgba(15,23,42,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 10px;">
               <div style="font-weight: bold; color: #fbbf24; margin-bottom: 8px;">Vendor Goods</div>
-              <div style="display: grid; gap: 6px; max-height: 320px; overflow-y: auto;">${vendorItemsHtml}</div>
+              <div id="barter-vendor-items-list" style="display: grid; gap: 6px; max-height: 320px; overflow-y: auto;">${vendorItemsHtml}</div>
             </div>
             <div style="background: rgba(15,23,42,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 10px;">
               <div style="font-weight: bold; color: #c4b5fd; margin-bottom: 8px;">Your Inventory</div>
-              <div style="display: grid; gap: 6px; max-height: 320px; overflow-y: auto;">${playerItemsHtml}</div>
+              <div id="barter-player-items-list" style="display: grid; gap: 6px; max-height: 320px; overflow-y: auto;">${playerItemsHtml}</div>
             </div>
           </div>
 
@@ -3822,6 +3901,21 @@
           }
         });
       }
+
+      const restoreScrollState = () => {
+        const globalList = container.querySelector('#barter-global-items-list');
+        const vendorList = container.querySelector('#barter-vendor-items-list');
+        const playerList = container.querySelector('#barter-player-items-list');
+        if (globalList) globalList.scrollTop = scrollSnapshot.global;
+        if (vendorList) vendorList.scrollTop = scrollSnapshot.vendor;
+        if (playerList) playerList.scrollTop = scrollSnapshot.player;
+      };
+
+      // Use a second frame for Firefox to avoid scroll reset after paint.
+      requestAnimationFrame(() => {
+        restoreScrollState();
+        requestAnimationFrame(restoreScrollState);
+      });
     }
 
     function toggleBarterAccordion() {
