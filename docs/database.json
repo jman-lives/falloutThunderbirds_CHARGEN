@@ -4449,6 +4449,37 @@
       "addiction": 80
     },
     {
+      "id": "chem_rushing_water",
+      "name": "Rushing Water",
+      "category": "chems",
+      "type": "stimulant",
+      "value": 20,
+      "weight": 0.5,
+      "description": "Rushing Water is a watered down version of the popular street drug Jet. Rushing Water comes in an inhaler, much like asthma medicine. After consumption, the user gains +2 Action Points (up to 13), +1 Strength, and +1 Perception for 1d10 hours. After this time, the character loses two Action Points, 3 Strength, and 3 Perception. Rushing Water is 40% addictive.",
+      "flavor": "Ride the Current",
+      "tags": [
+        "chem",
+        "drug",
+        "stimulant",
+        "addictive"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2,
+          "strength": 1,
+          "perception": 1,
+          "duration": "1d10 hours"
+        },
+        "negative": {
+          "action_points": -2,
+          "strength": -3,
+          "perception": -3,
+          "duration": "After positive effects"
+        }
+      },
+      "addiction": 40
+    },
+    {
       "id": "food_pickled_fish",
       "name": "Pickled Fish",
       "category": "food",
@@ -4547,7 +4578,28 @@
         "negative": {}
       },
       "addiction": 0
-    },{
+    },
+    {
+      "id": "food_purified_water",
+      "name": "Purified Water",
+      "category": "food",
+      "type": "food",
+      "value": 15,
+      "weight": 0.5,
+      "description": "Provides a small health boost of 1d3 + Healing Rate.",
+      "flavor": "Refreshing!",
+      "tags": [
+        "food"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
       "id": "food_nuka_quantum",
       "name": "Nuka-Cola Quantum",
       "category": "food",
@@ -4559,6 +4611,48 @@
       "tags": [
         "food",
         "radiation"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
+      "id": "food_broc_flower",
+      "name": "Broc Flower",
+      "category": "food",
+      "type": "food",
+      "value": 4,
+      "weight": 0.5,
+      "description": "A post war crop. Provides a small health boost of 1d3.",
+      "flavor": "Tastes like broccoli and asparagus...",
+      "tags": [
+        "food",
+        "crafting"
+      ],
+      "effects": {
+        "positive": {
+          "action_points": 2
+        },
+        "negative": {}
+      },
+      "addiction": 0
+    },
+    {
+      "id": "food_xander_root",
+      "name": "Xander Root",
+      "category": "food",
+      "type": "food",
+      "value": 3,
+      "weight": 0.5,
+      "description": "A post war crop. Provides a small health boost of 1d3.",
+      "flavor": "Tastes like a mix of ginger and ginseng...",
+      "tags": [
+        "food",
+        "crafting"
       ],
       "effects": {
         "positive": {
@@ -5474,6 +5568,62 @@
         }
       },
       "addiction": 18
+    }
+  ],
+  "recipes": [
+    {
+      "id": "recipe_healing_powder",
+      "name": "Healing Powder",
+      "output": {
+        "itemId": "chem_healing_powder",
+        "quantity": 1
+      },
+      "ingredients": [
+        {
+          "itemId": "food_broc_flower",
+          "quantity": 1
+        },
+        {
+          "itemId": "food_xander_root",
+          "quantity": 1
+        }
+      ],
+      "skillRequirements": {
+        "mode": "any",
+        "checks": [
+          {
+            "skill": "outdoorsman",
+            "minimum": 25
+          }
+        ]
+      }
+    },
+    {
+      "id": "recipe_rushing_water",
+      "name": "Rushing Water",
+      "output": {
+        "itemId": "chem_rushing_water",
+        "quantity": 1
+      },
+      "ingredients": [
+        {
+          "itemId": "chem_jet",
+          "quantity": 1
+        },
+        {
+          "itemId": "food_purified_water",
+          "quantity": 1
+        }
+      ],
+      "skillRequirements": {
+        "mode": "any",
+        "checks": [
+          {
+            "skill": "outdoorsman",
+            "minimum": 50
+          }
+        ]
+      }
     }
   ],
   "critters": [

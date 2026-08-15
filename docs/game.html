@@ -489,6 +489,14 @@
         <div id="barter-container" style="display: none; margin-top: 8px;"></div>
       </div>
 
+      <div id="crafting-section" class="character-sheet">
+        <button id="crafting-toggle" onclick="toggleCraftingAccordion()" style="width: 100%; padding: 10px; background-color: #22c55e; color: #052e16; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s;">
+          ▼ Show Crafting
+        </button>
+        <p style="color: var(--muted); margin: 8px 0 12px 0; font-size: 0.9rem; display: none;" id="crafting-desc">Craft items if you meet recipe requirements and carry the ingredients.</p>
+        <div id="crafting-container" style="display: none; margin-top: 8px;"></div>
+      </div>
+
     <!-- <div id="tools-section" class="character-sheet" style="grid-column: 1/-1;">
         <button id="tools-toggle" onclick="toggleToolsAccordion()" style="width: 100%; padding: 12px; background-color: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: left; transition: all 0.2s; font-size: 1.1rem;">
           ▼ Show Selected Tools
@@ -3210,7 +3218,7 @@
       ITEM_STATS = baseStats;
 
       // Process all categories
-      const categories = ['weapons', 'armor', 'ammunition', 'equipment', 'chems'];
+      const categories = ['weapons', 'armor', 'ammunition', 'equipment', 'chems', 'food'];
       
       categories.forEach(category => {
         if (DATABASE[category]) {
@@ -3311,7 +3319,7 @@
       DATABASE_NAME_INDEX = {};
       if (!DATABASE) return;
 
-      const categories = ['ammunition', 'weapons', 'armor', 'equipment', 'chems'];
+      const categories = ['ammunition', 'weapons', 'armor', 'equipment', 'chems', 'food'];
       categories.forEach(category => {
         (DATABASE[category] || []).forEach(item => {
           if (!item || !item.id || !item.name) return;
@@ -3604,6 +3612,7 @@
         updateActiveItemDisplay();
         updateEquippedArmorDisplay();
         renderBarterScreen();
+        renderCraftingScreen();
 
         const giftSummary = giftedItems.map(entry => `${entry.quantity} × ${entry.name}`).join(', ');
         alert(`Gifted ${giftSummary} to your inventory.\n\n"Thank you GM!"`);
@@ -3704,6 +3713,7 @@
         renderMoneyDisplay(characterData.money);
         updateActiveItemDisplay();
         updateEquippedArmorDisplay();
+        renderCraftingScreen();
       } catch (err) {
         console.error('[BARTER DEAL ERROR]', err);
         alert('Trade failed. Please try again.');
@@ -3933,6 +3943,256 @@
         desc.style.display = 'block';
         toggle.textContent = '▼ Hide Barter/Loot';
         renderBarterScreen();
+      }
+    }
+
+    function getRecipeRequirementSummary(recipe) {
+      const requirements = recipe?.skillRequirements;
+      if (!requirements || !Array.isArray(requirements.checks) || requirements.checks.length === 0) {
+        return 'No skill requirements';
+      }
+
+      const mode = requirements.mode === 'all' ? 'all' : 'any';
+      const parts = requirements.checks.map(check => {
+        const skillName = SKILL_NAMES[check.skill] || String(check.skill || '').replace(/_/g, ' ');
+        const minimum = getNumericValue(check.minimum, 0);
+        return `${skillName} ${minimum}%`;
+      });
+
+      return mode === 'all'
+        ? `Requires all: ${parts.join(' and ')}`
+        : `Requires any: ${parts.join(' or ')}`;
+    }
+
+    function evaluateRecipeEligibility(recipe, characterData, inventoryMap) {
+      const blockers = [];
+      const ingredientStatus = [];
+      const skills = characterData?.skills || {};
+      const requirements = recipe?.skillRequirements;
+
+      if (requirements && Array.isArray(requirements.checks) && requirements.checks.length > 0) {
+        const checks = requirements.checks.map(check => {
+          const skillKey = check.skill;
+          const minimum = getNumericValue(check.minimum, 0);
+          const current = getNumericValue(skills[skillKey], 0);
+          const passes = current >= minimum;
+          return { skillKey, minimum, current, passes };
+        });
+
+        const mode = requirements.mode === 'all' ? 'all' : 'any';
+        const passesSkill = mode === 'all'
+          ? checks.every(check => check.passes)
+          : checks.some(check => check.passes);
+
+        if (!passesSkill) {
+          const checkText = checks.map(check => {
+            const skillLabel = SKILL_NAMES[check.skillKey] || check.skillKey;
+            return `${skillLabel} ${check.current}%/${check.minimum}%`;
+          }).join(', ');
+          blockers.push(`Skill requirement not met (${checkText})`);
+        }
+      }
+
+      const ingredients = Array.isArray(recipe?.ingredients) ? recipe.ingredients : [];
+      ingredients.forEach(ingredient => {
+        const dbIngredient = DATABASE_ITEM_INDEX[ingredient.itemId];
+        const ingredientName = dbIngredient?.name || ingredient.itemId;
+        const requiredQty = Math.max(1, getNumericValue(ingredient.quantity, 1));
+        const availableQty = getNumericValue(inventoryMap[ingredientName], 0);
+        const hasEnough = availableQty >= requiredQty;
+
+        ingredientStatus.push({
+          name: ingredientName,
+          requiredQty,
+          availableQty,
+          hasEnough
+        });
+
+        if (!hasEnough) {
+          blockers.push(`Missing ${ingredientName} (${availableQty}/${requiredQty})`);
+        }
+      });
+
+      return {
+        canCraft: blockers.length === 0,
+        blockers,
+        ingredientStatus
+      };
+    }
+
+    function craftRecipe(recipeId) {
+      if (!DATABASE || !Array.isArray(DATABASE.recipes)) {
+        alert('Crafting data is not loaded yet.');
+        return;
+      }
+
+      const recipe = DATABASE.recipes.find(entry => entry && entry.id === recipeId);
+      if (!recipe) {
+        alert('Recipe not found.');
+        return;
+      }
+
+      const characterData = loadCharacterFromStorageForBarter();
+      if (!characterData) {
+        alert('No character loaded.');
+        return;
+      }
+
+      try {
+        if (!characterData.equipment || typeof characterData.equipment !== 'object') {
+          characterData.equipment = { items: {} };
+        }
+        if (!characterData.equipment.items || typeof characterData.equipment.items !== 'object') {
+          characterData.equipment.items = {};
+        }
+
+        const inventoryMap = characterData.equipment.items;
+        const eligibility = evaluateRecipeEligibility(recipe, characterData, inventoryMap);
+        if (!eligibility.canCraft) {
+          alert(`Cannot craft ${recipe.name}:\n- ${eligibility.blockers.join('\n- ')}`);
+          renderCraftingScreen();
+          return;
+        }
+
+        const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
+        ingredients.forEach(ingredient => {
+          const dbIngredient = DATABASE_ITEM_INDEX[ingredient.itemId];
+          if (!dbIngredient) return;
+          const ingredientName = dbIngredient.name;
+          const requiredQty = Math.max(1, getNumericValue(ingredient.quantity, 1));
+
+          const nextQty = getNumericValue(inventoryMap[ingredientName], 0) - requiredQty;
+          if (nextQty > 0) {
+            inventoryMap[ingredientName] = nextQty;
+          } else {
+            delete inventoryMap[ingredientName];
+          }
+        });
+
+        const outputId = recipe?.output?.itemId;
+        const outputQty = Math.max(1, getNumericValue(recipe?.output?.quantity, 1));
+        const outputItem = DATABASE_ITEM_INDEX[outputId];
+        if (!outputItem) {
+          alert('Crafting output item is missing from the database.');
+          return;
+        }
+
+        inventoryMap[outputItem.name] = getNumericValue(inventoryMap[outputItem.name], 0) + outputQty;
+
+        const currentSelection = normalizeEquipmentSelection(characterData.gameState?.equipmentSelection || characterData.gameEquipmentSelection);
+        const prunedSelection = pruneEquipmentSelection(currentSelection, inventoryMap) || buildDefaultGameEquipmentSelection();
+
+        characterData.gameState = {
+          ...(characterData.gameState || {}),
+          ...buildGameStateSnapshot(characterData, prunedSelection)
+        };
+
+        localStorage.setItem('characterData', JSON.stringify(characterData));
+        localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
+        localStorage.setItem('gameEquipmentSelection', JSON.stringify(prunedSelection));
+
+        if (qs('equipment-modal')?.style.display === 'flex') {
+          allAvailableItems = rebuildAvailableItemsFromInventory(inventoryMap);
+          syncTempSelectedItemsWithInventory(inventoryMap);
+          populateAvailableItems();
+          updateDropZoneDisplays();
+        }
+
+        updateActiveItemDisplay();
+        updateEquippedArmorDisplay();
+        renderCraftingScreen();
+        renderBarterScreen();
+        showInventoryToast(`Crafted ${outputQty} × ${outputItem.name}`);
+      } catch (err) {
+        console.error('[CRAFTING ERROR]', err);
+        alert('Crafting failed. Please try again.');
+      }
+    }
+
+    function renderCraftingScreen() {
+      const container = qs('crafting-container');
+      if (!container) return;
+
+      if (!DATABASE || !Array.isArray(DATABASE.recipes)) {
+        container.innerHTML = '<div style="color: #999;">Crafting recipes are not available.</div>';
+        return;
+      }
+
+      if (!Object.keys(DATABASE_ITEM_INDEX).length) {
+        buildDatabaseItemIndexes();
+      }
+
+      const characterData = loadCharacterFromStorageForBarter();
+      if (!characterData) {
+        container.innerHTML = '<div style="color: #999;">Load a character to use crafting.</div>';
+        return;
+      }
+
+      const inventoryMap = characterData?.equipment?.items || {};
+      const recipes = DATABASE.recipes.filter(recipe => recipe && recipe.id);
+      if (!recipes.length) {
+        container.innerHTML = '<div style="color: #999;">No recipes defined.</div>';
+        return;
+      }
+
+      const recipesHtml = recipes.map(recipe => {
+        const outputItem = DATABASE_ITEM_INDEX[recipe?.output?.itemId];
+        const outputName = outputItem?.name || recipe?.name || 'Unknown Item';
+        const outputQty = Math.max(1, getNumericValue(recipe?.output?.quantity, 1));
+        const eligibility = evaluateRecipeEligibility(recipe, characterData, inventoryMap);
+
+        const ingredientRows = (Array.isArray(recipe.ingredients) ? recipe.ingredients : []).map(ingredient => {
+          const ingredientItem = DATABASE_ITEM_INDEX[ingredient.itemId];
+          const ingredientName = ingredientItem?.name || ingredient.itemId;
+          const requiredQty = Math.max(1, getNumericValue(ingredient.quantity, 1));
+          const availableQty = getNumericValue(inventoryMap[ingredientName], 0);
+          const enough = availableQty >= requiredQty;
+
+          return `<div style="font-size: 0.82rem; color: ${enough ? '#86efac' : '#fca5a5'};">${escapeHtml(ingredientName)}: ${availableQty}/${requiredQty}</div>`;
+        }).join('');
+
+        const blockersHtml = eligibility.blockers.length
+          ? `<div style="margin-top: 8px; font-size: 0.8rem; color: #fca5a5;">${eligibility.blockers.map(reason => `• ${escapeHtml(reason)}`).join('<br>')}</div>`
+          : '<div style="margin-top: 8px; font-size: 0.8rem; color: #86efac;">Ready to craft</div>';
+
+        return `
+          <div style="padding: 10px; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; background: rgba(255,255,255,0.02); display: grid; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; flex-wrap: wrap;">
+              <div>
+                <div style="font-weight: bold; color: #bbf7d0;">${escapeHtml(outputName)} × ${outputQty}</div>
+                <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 2px;">${escapeHtml(getRecipeRequirementSummary(recipe))}</div>
+              </div>
+              <button type="button" onclick="craftRecipe('${recipe.id}')" ${eligibility.canCraft ? '' : 'disabled'} style="padding: 6px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: ${eligibility.canCraft ? 'pointer' : 'not-allowed'}; background: ${eligibility.canCraft ? '#22c55e' : '#64748b'}; color: #052e16;">Craft</button>
+            </div>
+            <div style="display: grid; gap: 4px;">${ingredientRows || '<div style="font-size: 0.82rem; color: #94a3b8;">No ingredients listed</div>'}</div>
+            ${blockersHtml}
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div style="display: grid; gap: 10px;">
+          <div style="font-size: 0.85rem; color: #94a3b8;">Crafting uses your current skills and inventory from this character.</div>
+          ${recipesHtml}
+        </div>
+      `;
+    }
+
+    function toggleCraftingAccordion() {
+      const container = qs('crafting-container');
+      const toggle = qs('crafting-toggle');
+      const desc = qs('crafting-desc');
+      const isVisible = container.style.display !== 'none';
+
+      if (isVisible) {
+        container.style.display = 'none';
+        desc.style.display = 'none';
+        toggle.textContent = '▶ Show Crafting';
+      } else {
+        container.style.display = 'block';
+        desc.style.display = 'block';
+        toggle.textContent = '▼ Hide Crafting';
+        renderCraftingScreen();
       }
     }
 
@@ -4300,6 +4560,7 @@
         updateDropZoneDisplays();
         updateActiveItemDisplay();
         updateEquippedArmorDisplay();
+        renderCraftingScreen();
         showInventoryToast(`Removed ${removeAmount} × ${itemName}`);
       } catch (err) {
         console.error('[EQUIPMENT REMOVE ERROR]', err);
@@ -4674,6 +4935,7 @@
       loadCharacter();
       updateActiveItemDisplay();
       initializeBarterSession();
+      renderCraftingScreen();
     });
   </script>
 </body>
