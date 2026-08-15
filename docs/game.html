@@ -350,6 +350,20 @@
       </div>
     </div>
 
+    <div id="ammo-reload-modal">
+      <div style="background: #1a1a1a; border: 2px solid #2563eb; border-radius: 8px; padding: 20px; width: min(460px, 92vw);">
+        <h3 style="margin: 0 0 10px; color: #60a5fa;">Reload Weapon</h3>
+        <p id="ammo-reload-modal-text" style="margin: 0 0 12px; color: #ddd;"></p>
+        <label for="ammo-reload-select" style="display: block; color: #FFD700; font-weight: bold; margin-bottom: 6px;">Compatible ammo</label>
+        <select id="ammo-reload-select" style="width: 100%; padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #666; border-radius: 4px; margin-bottom: 14px;"></select>
+        <div id="ammo-reload-summary" style="margin: 0 0 14px; color: #cbd5e1; font-size: 0.9rem;"></div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button onclick="closeAmmoReloadModal()" style="padding: 8px 14px; background: #666; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Cancel</button>
+          <button onclick="confirmAmmoReloadSelection()" style="padding: 8px 14px; background: #2563eb; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reload</button>
+        </div>
+      </div>
+    </div>
+
     <div class="game-container">
       <div id="character-info" class="character-sheet">
         <h2 style="margin-top: 0;" id="char-name"></h2>
@@ -653,7 +667,8 @@
         currentHP: getNumericValue(currentGameState.currentHP, workingData.stats?.Hit_Points || 15),
         currentAP: getNumericValue(currentGameState.currentAP, workingData.stats?.Action_Points || 8),
         activeItemIndex: getNumericValue(currentGameState.activeItemIndex, selection.activeItemIndex || 0),
-        equipmentSelection: selection
+        equipmentSelection: selection,
+        weaponAmmo: currentGameState.weaponAmmo || {}
       };
 
       return {
@@ -766,12 +781,14 @@
 
     function buildGameStateSnapshot(characterData, selectionOverride = null) {
       const selection = selectionOverride || getEquipmentSelectionState() || buildDefaultGameEquipmentSelection();
+      const weaponAmmo = characterData?.gameState?.weaponAmmo || {};
       return {
         version: GAME_PAGE_STATE_VERSION,
         currentHP: getNumericValue(localStorage.getItem('currentHP'), characterData.stats?.Hit_Points || 15),
         currentAP: getNumericValue(localStorage.getItem('currentAP'), characterData.stats?.Action_Points || 8),
         activeItemIndex: getNumericValue(localStorage.getItem('activeItemIndex'), selection.activeItemIndex || 0),
         equipmentSelection: selection,
+        weaponAmmo,
         savedAt: new Date().toISOString(),
         source: 'game-screen'
       };
@@ -2705,10 +2722,15 @@
 
         const migration = ensureCharacterGameState(rawCharacterData);
         const characterData = migration.characterData;
+        const ammoMigrated = migrateAmmoInventoryToIds(characterData);
+        const weaponAmmoMigrated = migrateWeaponAmmoStateToIds(characterData);
         if (migration.migrated) {
           localStorage.setItem('characterData', JSON.stringify(characterData));
           localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
           localStorage.setItem('gameEquipmentSelection', JSON.stringify(characterData.gameState?.equipmentSelection || null));
+        } else if (ammoMigrated || weaponAmmoMigrated) {
+          localStorage.setItem('characterData', JSON.stringify(characterData));
+          localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
         }
         console.log('%c[CHARACTER DATA LOADED]', 'color: #4CAF50; font-weight: bold;', characterData);
         
@@ -2831,6 +2853,8 @@
 
       try {
         const characterData = JSON.parse(stored);
+        migrateAmmoInventoryToIds(characterData);
+        migrateWeaponAmmoStateToIds(characterData);
         const snapshot = buildGameStateSnapshot(characterData);
         characterData.gameState = {
           ...(characterData.gameState || {}),
@@ -2879,6 +2903,436 @@
       if (!selection) return [];
 
       return [selection.slots?.primary, selection.slots?.secondary].filter(item => item && item.name);
+    }
+
+    function ensureDatabaseIndexesReady() {
+      if (!DATABASE) return;
+      if (!Object.keys(DATABASE_ITEM_INDEX).length || !Object.keys(DATABASE_NAME_INDEX).length) {
+        buildDatabaseItemIndexes();
+      }
+    }
+
+    function getEquippedSlotEntries() {
+      const selection = getEquipmentSelectionState();
+      if (!selection || !selection.slots) return [];
+
+      return ['primary', 'secondary']
+        .map(slotKey => ({ slotKey, item: selection.slots[slotKey] }))
+        .filter(entry => entry.item && entry.item.name);
+    }
+
+    function getActiveEquippedSlotEntry() {
+      const equippedEntries = getEquippedSlotEntries();
+      const activeItemIndex = getNumericValue(localStorage.getItem('activeItemIndex'), 0);
+      return equippedEntries[activeItemIndex] || null;
+    }
+
+    function getStoredCharacterDataForGame() {
+      const stored = localStorage.getItem('characterData');
+      if (!stored) return null;
+      try {
+        return JSON.parse(stored);
+      } catch (err) {
+        console.error('[CHARACTER PARSE ERROR]', err);
+        return null;
+      }
+    }
+
+    function getWeaponRecordByName(weaponName) {
+      ensureDatabaseIndexesReady();
+      const record = DATABASE_NAME_INDEX[weaponName];
+      if (record && record.category === 'weapons') {
+        return record;
+      }
+      return null;
+    }
+
+    function normalizeAmmoTypeIds(weaponRecord) {
+      if (!weaponRecord) return [];
+      if (Array.isArray(weaponRecord.ammotype)) {
+        return weaponRecord.ammotype.filter(Boolean);
+      }
+      if (weaponRecord.ammotype) {
+        return [weaponRecord.ammotype];
+      }
+      return [];
+    }
+
+    function getAmmoInventoryKey(item) {
+      if (!item) return null;
+      return item.category === 'ammunition' && item.id ? item.id : item.name || item.id || null;
+    }
+
+    function migrateAmmoInventoryToIds(characterData) {
+      if (!characterData || !characterData.equipment || !characterData.equipment.items) {
+        return false;
+      }
+
+      ensureDatabaseIndexesReady();
+
+      const inventoryMap = characterData.equipment.items;
+      let migrated = false;
+      const nextInventory = { ...inventoryMap };
+
+      Object.entries(inventoryMap).forEach(([key, quantity]) => {
+        const ammoRecord = DATABASE_NAME_INDEX[key] || DATABASE_ITEM_INDEX[key];
+        if (!ammoRecord || ammoRecord.category !== 'ammunition' || !ammoRecord.id) {
+          return;
+        }
+
+        const ammoKey = ammoRecord.id;
+        if (ammoKey === key) {
+          return;
+        }
+
+        const normalizedQuantity = getNumericValue(quantity, 0);
+        if (normalizedQuantity <= 0) {
+          delete nextInventory[key];
+          return;
+        }
+
+        nextInventory[ammoKey] = getNumericValue(nextInventory[ammoKey], 0) + normalizedQuantity;
+        delete nextInventory[key];
+        migrated = true;
+      });
+
+      if (migrated) {
+        characterData.equipment.items = nextInventory;
+      }
+
+      return migrated;
+    }
+
+    function migrateWeaponAmmoStateToIds(characterData) {
+      const weaponAmmoState = characterData?.gameState?.weaponAmmo;
+      if (!weaponAmmoState || typeof weaponAmmoState !== 'object') {
+        return false;
+      }
+
+      ensureDatabaseIndexesReady();
+
+      let migrated = false;
+      const nextWeaponAmmoState = { ...weaponAmmoState };
+
+      Object.entries(weaponAmmoState).forEach(([slotKey, slotState]) => {
+        if (!slotState || typeof slotState !== 'object') {
+          return;
+        }
+
+        const resolvedAmmoId = resolveAmmoId(slotState.ammoId || slotState.ammoName);
+        const nextAmmoId = resolvedAmmoId || slotState.ammoId || null;
+        const nextAmmoName = nextAmmoId ? (DATABASE_ITEM_INDEX[nextAmmoId]?.name || slotState.ammoName || nextAmmoId) : (slotState.ammoName || '');
+        const normalizedLoaded = Math.max(0, getNumericValue(slotState.loaded, 0));
+
+        if (nextAmmoId !== slotState.ammoId || nextAmmoName !== slotState.ammoName || normalizedLoaded !== slotState.loaded) {
+          nextWeaponAmmoState[slotKey] = {
+            ...slotState,
+            ammoId: nextAmmoId,
+            ammoName: nextAmmoName,
+            loaded: normalizedLoaded
+          };
+          migrated = true;
+        }
+      });
+
+      if (migrated) {
+        characterData.gameState = {
+          ...(characterData.gameState || {}),
+          weaponAmmo: nextWeaponAmmoState
+        };
+      }
+
+      return migrated;
+    }
+
+    function parseWeaponCapacity(weaponRecord, itemStats) {
+      const candidates = [
+        weaponRecord?.stats?.capacity,
+        weaponRecord?.stats?.magazine,
+        itemStats?.ammo
+      ];
+
+      for (const value of candidates) {
+        const parsed = parseInt(value);
+        if (Number.isFinite(parsed) && parsed > 0) {
+          return parsed;
+        }
+      }
+
+      return 0;
+    }
+
+    function getCompatibleAmmoOptions(weaponRecord, inventoryMap) {
+      ensureDatabaseIndexesReady();
+
+      return normalizeAmmoTypeIds(weaponRecord).map(ammoId => {
+        const ammoRecord = DATABASE_ITEM_INDEX[ammoId] || null;
+        const inventoryKey = ammoId;
+        const count = getNumericValue(inventoryMap?.[inventoryKey], 0) || getNumericValue(inventoryMap?.[ammoRecord?.name], 0);
+
+        return {
+          ammoId,
+          ammoName: ammoRecord?.name || ammoId,
+          inventoryKey,
+          count
+        };
+      });
+    }
+
+    function selectAmmoOption(availableOptions) {
+      if (!availableOptions || !availableOptions.length) return null;
+      if (availableOptions.length === 1) return availableOptions[0];
+
+      const promptText = [
+        'Choose ammo to load (type the number or ammo name):',
+        ...availableOptions.map((option, index) => `${index + 1}. ${option.ammoName} (${option.count} available)`)
+      ].join('\n');
+
+      const choice = window.prompt(promptText, '1');
+      if (choice === null) {
+        return null;
+      }
+
+      const trimmedChoice = choice.trim();
+      const numericChoice = parseInt(trimmedChoice);
+
+      if (Number.isFinite(numericChoice) && numericChoice >= 1 && numericChoice <= availableOptions.length) {
+        return availableOptions[numericChoice - 1];
+      }
+
+      return availableOptions.find(option => option.ammoName.toLowerCase() === trimmedChoice.toLowerCase()) || null;
+    }
+
+    function getWeaponAmmoStateForSlot(characterData, slotKey, weaponName = '') {
+      ensureDatabaseIndexesReady();
+
+      const slotState = characterData?.gameState?.weaponAmmo?.[slotKey] || {};
+      const sameWeapon = !weaponName || !slotState.weaponName || slotState.weaponName === weaponName;
+      if (!sameWeapon) {
+        return {
+          loaded: 0,
+          ammoId: null,
+          ammoName: ''
+        };
+      }
+
+      const loaded = Math.max(0, getNumericValue(slotState.loaded, 0));
+      const ammoId = resolveAmmoId(slotState.ammoId || slotState.ammoName) || null;
+      const ammoName = ammoId ? (DATABASE_ITEM_INDEX[ammoId]?.name || slotState.ammoName || ammoId) : '';
+
+      return {
+        loaded,
+        ammoId,
+        ammoName
+      };
+    }
+
+    function getAmmoCountByIdOrName(inventoryMap, ammoId) {
+      if (!ammoId) return 0;
+      const ammoRecord = DATABASE_ITEM_INDEX[ammoId] || null;
+      return Math.max(
+        getNumericValue(inventoryMap?.[ammoId], 0),
+        getNumericValue(inventoryMap?.[ammoRecord?.name], 0)
+      );
+    }
+
+    function resolveAmmoId(ammoIdOrName) {
+      if (!ammoIdOrName) return null;
+      if (DATABASE_ITEM_INDEX[ammoIdOrName]) {
+        return ammoIdOrName;
+      }
+
+      const canonicalName = String(ammoIdOrName).trim().toLowerCase();
+      const match = Object.values(DATABASE_ITEM_INDEX).find(item => {
+        return item && item.category === 'ammunition' && String(item.name || '').trim().toLowerCase() === canonicalName;
+      });
+
+      return match?.id || null;
+    }
+
+    function getLoadedAmmoDamage(ammoId) {
+      if (!ammoId) return null;
+
+      const ammoRecord = DATABASE_ITEM_INDEX[resolveAmmoId(ammoId) || ammoId] || null;
+      if (ammoRecord?.stats?.damage) {
+        return ammoRecord.stats.damage;
+      }
+
+      const ammoStats = ammoRecord ? ITEM_STATS[ammoRecord.name] : null;
+      if (ammoStats?.dice && ammoStats.dice !== '—') {
+        return ammoStats.dice;
+      }
+
+      return null;
+    }
+
+    function resolveWeaponDamageDisplay(itemName) {
+      const stats = ITEM_STATS[itemName] || {};
+      const weaponRecord = getWeaponRecordByName(itemName);
+      const rawDamage = stats.dice || '—';
+
+      if (!weaponRecord || weaponRecord.category !== 'weapons') {
+        return rawDamage;
+      }
+
+      const ammoDamageMarker = String(rawDamage || '').toLowerCase().includes('ammo damage');
+      if (!ammoDamageMarker) {
+        return rawDamage;
+      }
+
+      const characterData = getStoredCharacterDataForGame();
+      if (!characterData) {
+        return rawDamage;
+      }
+
+      const selection = getResolvedEquipmentSelection(characterData, characterData.gameState?.equipmentSelection || characterData.gameEquipmentSelection);
+      const activeEntry = getActiveEquippedSlotEntry();
+      const slotKey = activeEntry?.item?.name === itemName ? activeEntry.slotKey : null;
+      if (!slotKey) {
+        return rawDamage;
+      }
+
+      const ammoState = getWeaponAmmoStateForSlot(characterData, slotKey, itemName);
+      const ammoDamage = getLoadedAmmoDamage(ammoState.ammoId);
+      if (!ammoDamage) {
+        return rawDamage;
+      }
+
+      const weaponBonus = String(rawDamage).replace(/ammo damage\s*\+\s*/i, '').trim();
+      return `${ammoDamage} + ${weaponBonus}`;
+    }
+
+    function openAmmoReloadModal(activeEntry, activeItem, compatibleAmmo, currentAmmoState, capacity) {
+      const modal = qs('ammo-reload-modal');
+      const select = qs('ammo-reload-select');
+      const text = qs('ammo-reload-modal-text');
+      const summary = qs('ammo-reload-summary');
+
+      if (!modal || !select || !text || !summary) {
+        return false;
+      }
+
+      pendingAmmoReload = {
+        slotKey: activeEntry.slotKey,
+        weaponName: activeItem.name,
+        capacity,
+        currentLoaded: currentAmmoState.loaded,
+        currentAmmoId: currentAmmoState.ammoId,
+        currentAmmoName: currentAmmoState.ammoName,
+        options: compatibleAmmo
+      };
+
+      text.textContent = `${activeItem.name} can use the following ammo types. Choose which one to load from inventory.`;
+      summary.textContent = `Loaded: ${currentAmmoState.loaded}/${capacity}${currentAmmoState.ammoName ? ` (${currentAmmoState.ammoName})` : ''}`;
+
+      select.innerHTML = compatibleAmmo.map(option => {
+        const selected = option.ammoId === currentAmmoState.ammoId || (!currentAmmoState.ammoId && option === compatibleAmmo[0]);
+        return `<option value="${escapeHtml(option.ammoId)}" ${selected ? 'selected' : ''}>${escapeHtml(option.ammoName)} (${option.count} available)</option>`;
+      }).join('');
+
+      modal.style.display = 'flex';
+      return true;
+    }
+
+    function closeAmmoReloadModal() {
+      pendingAmmoReload = null;
+      const modal = qs('ammo-reload-modal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    }
+
+    function confirmAmmoReloadSelection() {
+      if (!pendingAmmoReload) {
+        closeAmmoReloadModal();
+        return;
+      }
+
+      const select = qs('ammo-reload-select');
+      const selectedAmmoId = select?.value;
+      const selectedAmmo = pendingAmmoReload.options.find(option => option.ammoId === selectedAmmoId) || pendingAmmoReload.options[0];
+
+      if (!selectedAmmo) {
+        alert('Please choose compatible ammo to reload.');
+        return;
+      }
+
+      const characterData = getStoredCharacterDataForGame();
+      if (!characterData) {
+        alert('No character data found.');
+        return;
+      }
+
+      if (!characterData.equipment || typeof characterData.equipment !== 'object') {
+        characterData.equipment = { items: {} };
+      }
+      if (!characterData.equipment.items || typeof characterData.equipment.items !== 'object') {
+        characterData.equipment.items = {};
+      }
+
+      const inventoryMap = characterData.equipment.items;
+      const currentAmmoState = getWeaponAmmoStateForSlot(characterData, pendingAmmoReload.slotKey, pendingAmmoReload.weaponName);
+      let loadedRounds = currentAmmoState.loaded;
+
+      if (currentAmmoState.ammoId && currentAmmoState.ammoId !== selectedAmmo.ammoId && loadedRounds > 0) {
+        const confirmSwap = window.confirm(
+          `Switch from ${currentAmmoState.ammoName || currentAmmoState.ammoId} to ${selectedAmmo.ammoName}?\nThis will discard ${loadedRounds} loaded rounds.`
+        );
+        if (!confirmSwap) {
+          return;
+        }
+        loadedRounds = 0;
+      }
+
+      const roundsNeeded = Math.max(0, pendingAmmoReload.capacity - loadedRounds);
+      if (roundsNeeded <= 0) {
+        alert(`${pendingAmmoReload.weaponName} is already fully loaded (${pendingAmmoReload.capacity}/${pendingAmmoReload.capacity}).`);
+        closeAmmoReloadModal();
+        return;
+      }
+
+      const roundsLoaded = Math.min(roundsNeeded, selectedAmmo.count);
+      if (roundsLoaded <= 0) {
+        alert(`No ${selectedAmmo.ammoName} remaining to load.`);
+        return;
+      }
+
+      const nextAmmoCount = selectedAmmo.count - roundsLoaded;
+      if (nextAmmoCount > 0) {
+        inventoryMap[selectedAmmo.inventoryKey] = nextAmmoCount;
+      } else {
+        delete inventoryMap[selectedAmmo.inventoryKey];
+      }
+
+      const newLoadedRounds = loadedRounds + roundsLoaded;
+      characterData.gameState = {
+        ...(characterData.gameState || {}),
+        weaponAmmo: {
+          ...(characterData.gameState?.weaponAmmo || {}),
+          [pendingAmmoReload.slotKey]: {
+            weaponName: pendingAmmoReload.weaponName,
+            ammoId: selectedAmmo.ammoId,
+            loaded: newLoadedRounds
+          }
+        }
+      };
+
+      localStorage.setItem('characterData', JSON.stringify(characterData));
+      localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
+
+      if (qs('equipment-modal')?.style.display === 'flex') {
+        allAvailableItems = rebuildAvailableItemsFromInventory(inventoryMap);
+        syncTempSelectedItemsWithInventory(inventoryMap);
+        populateAvailableItems();
+        updateDropZoneDisplays();
+      }
+
+      updateActiveItemDisplay();
+      renderBarterScreen();
+      renderCraftingScreen();
+      showInventoryToast(`Loaded ${roundsLoaded} × ${selectedAmmo.ammoName}`);
+      alert(`Reloaded ${pendingAmmoReload.weaponName}\n\nAmmo: ${selectedAmmo.ammoName}\nLoaded: +${roundsLoaded} (${newLoadedRounds}/${pendingAmmoReload.capacity})`);
+      closeAmmoReloadModal();
     }
 
     function updateActiveItemDisplay() {
@@ -3078,11 +3532,71 @@
     }
 
     function useActiveItem() {
-      const items = getEquipmentItems();
-      const currentIndex = parseInt(localStorage.getItem('activeItemIndex') || '0');
-      const activeItem = items[currentIndex] || { name: currentIndex === 0 ? 'Punch' : 'Kick' };
-      
-      alert(`Using: ${activeItem.name}\n\nThis would trigger the item's use action. Implementation can include:\n- Consuming item (food, drugs, etc.)\n- Applying effects\n- Rolling dice for item action\n- Etc.`);
+      const activeEntry = getActiveEquippedSlotEntry();
+      if (!activeEntry || !activeEntry.item) {
+        const items = getEquipmentItems();
+        const currentIndex = parseInt(localStorage.getItem('activeItemIndex') || '0');
+        const activeItem = items[currentIndex] || { name: currentIndex === 0 ? 'Punch' : 'Kick' };
+        alert(`Using: ${activeItem.name}\n\nThis would trigger the item's use action. Implementation can include:\n- Consuming item (food, drugs, etc.)\n- Applying effects\n- Rolling dice for item action\n- Etc.`);
+        return;
+      }
+
+      const activeItem = activeEntry.item;
+      const itemStats = ITEM_STATS[activeItem.name] || {};
+      if (itemStats.category !== 'weapons') {
+        alert(`Using: ${activeItem.name}\n\nThis would trigger the item's use action. Implementation can include:\n- Consuming item (food, drugs, etc.)\n- Applying effects\n- Rolling dice for item action\n- Etc.`);
+        return;
+      }
+
+      const characterData = getStoredCharacterDataForGame();
+      if (!characterData) {
+        alert('No character data found.');
+        return;
+      }
+
+      const ammoState = getWeaponAmmoStateForSlot(characterData, activeEntry.slotKey, activeItem.name);
+      const weaponRecord = getWeaponRecordByName(activeItem.name);
+      const capacity = parseWeaponCapacity(weaponRecord, itemStats);
+      const isBurstMode = localStorage.getItem('burstModeActive') === 'true';
+      const apParts = itemStats.apCost ? itemStats.apCost.split('/').map(s => s.trim()) : [];
+      const hasBurst = (apParts.length === 3 && apParts[2] && apParts[2] !== '-') || (apParts.length === 1 && itemStats.apCost && itemStats.apCost.trim().startsWith('B '));
+      const isBurstOnly = apParts.length === 1 && itemStats.apCost && itemStats.apCost.trim().startsWith('B ');
+      const ammoPerAttack = (isBurstOnly || (isBurstMode && hasBurst)) ? 3 : 1;
+
+      if (capacity <= 0) {
+        alert(`${activeItem.name} is missing a valid ammo capacity.`);
+        return;
+      }
+
+      if (ammoState.loaded <= 0) {
+        alert(`${activeItem.name} is empty. Reload before firing.`);
+        return;
+      }
+
+      if (ammoState.loaded < ammoPerAttack) {
+        alert(`${activeItem.name} does not have enough loaded ammo for this attack. Reload first.`);
+        return;
+      }
+
+      const nextLoaded = ammoState.loaded - ammoPerAttack;
+      characterData.gameState = {
+        ...(characterData.gameState || {}),
+        weaponAmmo: {
+          ...(characterData.gameState?.weaponAmmo || {}),
+          [activeEntry.slotKey]: {
+            weaponName: activeItem.name,
+            ammoId: ammoState.ammoId,
+            loaded: nextLoaded
+          }
+        }
+      };
+
+      localStorage.setItem('characterData', JSON.stringify(characterData));
+      localStorage.setItem('falloutCharacter', JSON.stringify(characterData));
+      updateActiveItemDisplay();
+
+      const ammoDamage = getLoadedAmmoDamage(ammoState.ammoId);
+      alert(`${isBurstOnly || (isBurstMode && hasBurst) ? 'Burst' : 'Fire'}: ${activeItem.name}\n\nAmmo used: ${ammoPerAttack}\nRounds remaining: ${nextLoaded}/${capacity}${ammoState.ammoName ? `\nAmmo type: ${ammoState.ammoName}` : ''}${ammoDamage ? `\nAmmo damage: ${ammoDamage}` : ''}`);
     }
 
     function targetedAttack() {
@@ -3118,25 +3632,60 @@
     }
 
     function reloadActiveItem() {
-      const items = getEquipmentItems();
-      const currentIndex = parseInt(localStorage.getItem('activeItemIndex') || '0');
-      const activeItem = items[currentIndex];
-      
-      if (!activeItem) {
+      const activeEntry = getActiveEquippedSlotEntry();
+      if (!activeEntry || !activeEntry.item) {
         alert('No active weapon to reload.');
         return;
       }
-      
+
+      const activeItem = activeEntry.item;
       const itemStats = ITEM_STATS[activeItem.name];
       if (!itemStats || !itemStats.ammo || itemStats.ammo === 'N/A') {
         alert('This item cannot be reloaded.');
         return;
       }
-      
-      const reloadAP = itemStats.reloadap || '2';
-      const ammoType = itemStats.ammotype || 'unknown';
-      
-      alert(`Reloading: ${activeItem.name}\n\nAmmo Type: ${ammoType}\nReload AP Cost: ${reloadAP}\n\nWeapon reloaded!`);
+
+      const characterData = getStoredCharacterDataForGame();
+      if (!characterData) {
+        alert('No character data found.');
+        return;
+      }
+
+      if (!characterData.equipment || typeof characterData.equipment !== 'object') {
+        characterData.equipment = { items: {} };
+      }
+      if (!characterData.equipment.items || typeof characterData.equipment.items !== 'object') {
+        characterData.equipment.items = {};
+      }
+
+      const inventoryMap = characterData.equipment.items;
+      const weaponRecord = getWeaponRecordByName(activeItem.name);
+      const capacity = parseWeaponCapacity(weaponRecord, itemStats);
+      if (capacity <= 0) {
+        alert('This weapon has no valid ammo capacity configured.');
+        return;
+      }
+
+      const compatibleAmmo = getCompatibleAmmoOptions(weaponRecord, inventoryMap);
+      if (!compatibleAmmo.length) {
+        alert(`No compatible ammo types are configured for ${activeItem.name}.`);
+        return;
+      }
+
+      const availableOptions = compatibleAmmo.filter(option => option.count > 0);
+      if (!availableOptions.length) {
+        const requiredAmmo = compatibleAmmo.map(option => option.ammoName).join(', ');
+        alert(`No compatible ammo in inventory.\n\nRequired: ${requiredAmmo}`);
+        return;
+      }
+
+      openAmmoReloadModal(
+        activeEntry,
+        activeItem,
+        availableOptions,
+        getWeaponAmmoStateForSlot(characterData, activeEntry.slotKey, activeItem.name),
+        capacity
+      );
     }
 
     function swapActiveItem() {
@@ -3173,6 +3722,7 @@
     let allAvailableItems = [];
     let availableItemsCategoryFilter = 'all';
     let pendingInventoryRemovalItem = null;
+    let pendingAmmoReload = null;
     let DATABASE_ITEM_INDEX = {};
     let DATABASE_NAME_INDEX = {};
 
@@ -3586,7 +4136,8 @@
           const amount = Math.max(0, getNumericValue(quantity, 0));
           if (amount <= 0) return;
 
-          inventoryMap[item.name] = getNumericValue(inventoryMap[item.name], 0) + amount;
+          const inventoryKey = getAmmoInventoryKey(item);
+          inventoryMap[inventoryKey] = getNumericValue(inventoryMap[inventoryKey], 0) + amount;
           giftedItems.push({ name: item.name, quantity: amount });
         });
 
@@ -3639,6 +4190,10 @@
       return pruned;
     }
 
+    function resolveInventoryItemFromKey(itemKey) {
+      return DATABASE_ITEM_INDEX[itemKey] || DATABASE_NAME_INDEX[itemKey] || null;
+    }
+
     function executeBarterDeal() {
       const characterData = loadCharacterFromStorageForBarter();
       if (!characterData) return;
@@ -3676,7 +4231,8 @@
           const item = DATABASE_ITEM_INDEX[itemId];
           if (!item) return;
           const amount = getNumericValue(quantity, 0);
-          inventoryMap[item.name] = getNumericValue(inventoryMap[item.name], 0) + amount;
+          const inventoryKey = getAmmoInventoryKey(item);
+          inventoryMap[inventoryKey] = getNumericValue(inventoryMap[inventoryKey], 0) + amount;
         });
 
         Object.entries(barterState.playerOffer).forEach(([itemName, quantity]) => {
@@ -3758,10 +4314,11 @@
         .sort((a, b) => a.item.name.localeCompare(b.item.name));
 
       const playerItems = Object.entries(characterData?.equipment?.items || {})
-        .map(([itemName, quantity]) => ({
-          itemName,
+        .map(([itemKey, quantity]) => ({
+          itemKey,
+          itemName: resolveInventoryItemFromKey(itemKey)?.name || itemKey,
           quantity: getNumericValue(quantity, 0),
-          item: DATABASE_NAME_INDEX[itemName] || null
+          item: resolveInventoryItemFromKey(itemKey)
         }))
         .filter(entry => entry.quantity > 0 && entry.item)
         .filter(entry => {
@@ -3998,7 +4555,8 @@
         const dbIngredient = DATABASE_ITEM_INDEX[ingredient.itemId];
         const ingredientName = dbIngredient?.name || ingredient.itemId;
         const requiredQty = Math.max(1, getNumericValue(ingredient.quantity, 1));
-        const availableQty = getNumericValue(inventoryMap[ingredientName], 0);
+        const inventoryKey = dbIngredient ? getAmmoInventoryKey(dbIngredient) : ingredient.itemId;
+        const availableQty = getAmmoCountByIdOrName(inventoryMap, inventoryKey);
         const hasEnough = availableQty >= requiredQty;
 
         ingredientStatus.push({
@@ -4058,14 +4616,14 @@
         ingredients.forEach(ingredient => {
           const dbIngredient = DATABASE_ITEM_INDEX[ingredient.itemId];
           if (!dbIngredient) return;
-          const ingredientName = dbIngredient.name;
+          const ingredientKey = getAmmoInventoryKey(dbIngredient);
           const requiredQty = Math.max(1, getNumericValue(ingredient.quantity, 1));
 
-          const nextQty = getNumericValue(inventoryMap[ingredientName], 0) - requiredQty;
+          const nextQty = getAmmoCountByIdOrName(inventoryMap, ingredientKey) - requiredQty;
           if (nextQty > 0) {
-            inventoryMap[ingredientName] = nextQty;
+            inventoryMap[ingredientKey] = nextQty;
           } else {
-            delete inventoryMap[ingredientName];
+            delete inventoryMap[ingredientKey];
           }
         });
 
@@ -4077,7 +4635,8 @@
           return;
         }
 
-        inventoryMap[outputItem.name] = getNumericValue(inventoryMap[outputItem.name], 0) + outputQty;
+        const outputKey = getAmmoInventoryKey(outputItem);
+        inventoryMap[outputKey] = getNumericValue(inventoryMap[outputKey], 0) + outputQty;
 
         const currentSelection = normalizeEquipmentSelection(characterData.gameState?.equipmentSelection || characterData.gameEquipmentSelection);
         const prunedSelection = pruneEquipmentSelection(currentSelection, inventoryMap) || buildDefaultGameEquipmentSelection();
@@ -4352,11 +4911,27 @@
       descriptionElement.textContent = stats.description || 'No description available.';
       flavorElement.textContent = stats.flavor ? `"${stats.flavor}"` : 'No flavor text available.';
 
+      let ammoDisplay = stats.ammo || 'N/A';
+      if (stats.category === 'weapons' && ammoDisplay !== 'N/A') {
+        const activeEntry = getActiveEquippedSlotEntry();
+        const characterData = getStoredCharacterDataForGame();
+        const weaponRecord = getWeaponRecordByName(itemName);
+        const capacity = parseWeaponCapacity(weaponRecord, stats);
+
+        if (activeEntry && activeEntry.item?.name === itemName && characterData && capacity > 0) {
+          const ammoState = getWeaponAmmoStateForSlot(characterData, activeEntry.slotKey, itemName);
+          ammoDisplay = `${ammoState.loaded}/${capacity}`;
+          if (ammoState.ammoName) {
+            ammoDisplay += ` (${ammoState.ammoName})`;
+          }
+        }
+      }
+
       const rows = [
-        { label: 'Dice', value: stats.dice },
+        { label: 'Dice', value: stats.category === 'weapons' ? resolveWeaponDamageDisplay(itemName) : stats.dice },
         { label: 'AP (S/T/B)', value: stats.apCost || '2/-/-'},
         { label: 'Ammo Type', value: stats.ammotype || 'N/A' },
-        { label: 'Ammo', value: stats.ammo || 'N/A' },
+        { label: 'Ammo', value: ammoDisplay },
         { label: 'Reload AP', value: stats.reloadap || 'N/A' },
         { label: 'Skill', value: stats.skill }
       ];
@@ -4381,12 +4956,15 @@
         const equipment = characterData.equipment || {};
 
         // Store all items for reference
-        allAvailableItems = equipment.items ? Object.entries(equipment.items).map(([name, quantity], idx) => ({
+        allAvailableItems = equipment.items ? Object.entries(equipment.items).map(([itemKey, quantity], idx) => {
+          const resolvedItem = resolveInventoryItemFromKey(itemKey);
+          return {
           id: idx,
-          name: name,
+          name: resolvedItem?.name || itemKey,
           quantity: quantity,
-          description: getItemModalDescriptionText(name)
-        })) : [];
+          description: getItemModalDescriptionText(resolvedItem?.name || itemKey),
+          inventoryKey: itemKey
+        }}) : [];
 
         const selection = getEquipmentSelectionState() || buildDefaultGameEquipmentSelection();
         tempSelectedItems = [selection.slots?.primary || null, selection.slots?.secondary || null, selection.slots?.armor || null];
@@ -4414,18 +4992,22 @@
     }
 
     function rebuildAvailableItemsFromInventory(equipmentMap) {
-      return Object.entries(equipmentMap || {}).map(([name, quantity], idx) => ({
-        id: idx,
-        name,
-        quantity,
-        description: getItemModalDescriptionText(name)
-      }));
+      return Object.entries(equipmentMap || {}).map(([itemKey, quantity], idx) => {
+        const resolvedItem = resolveInventoryItemFromKey(itemKey);
+        return {
+          id: idx,
+          name: resolvedItem?.name || itemKey,
+          quantity,
+          description: getItemModalDescriptionText(resolvedItem?.name || itemKey),
+          inventoryKey: itemKey
+        };
+      });
     }
 
     function syncTempSelectedItemsWithInventory(inventoryMap) {
       tempSelectedItems = tempSelectedItems.map(item => {
         if (!item || !item.name) return null;
-        const nextQty = getNumericValue(inventoryMap[item.name], 0);
+        const nextQty = getAmmoCountByIdOrName(inventoryMap, item.name);
         if (nextQty <= 0) return null;
         return {
           ...item,
