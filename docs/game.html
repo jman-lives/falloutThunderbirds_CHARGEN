@@ -187,6 +187,165 @@
       justify-content: center;
     }
 
+    #ammo-reload-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.72);
+      z-index: 1110;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #ammo-reload-modal-panel {
+      width: min(840px, 95vw);
+      max-height: 84vh;
+      background: #1a1a1a;
+      border: 2px solid #2563eb;
+      border-radius: 8px;
+      padding: 22px;
+      display: grid;
+      grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+      gap: 14px;
+    }
+
+    #ammo-reload-list {
+      min-height: 0;
+      overflow-y: auto;
+      display: grid;
+      gap: 10px;
+      padding-right: 4px;
+    }
+
+    .ammo-option-card {
+      width: 100%;
+      text-align: left;
+      background: #222;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      padding: 10px 12px;
+      color: #e2e8f0;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .ammo-option-card:hover {
+      border-color: #60a5fa;
+      background: #1f2937;
+      transform: translateY(-1px);
+    }
+
+    .ammo-option-card.selected {
+      border-color: #60a5fa;
+      background: rgba(37, 99, 235, 0.25);
+      box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.35) inset;
+    }
+
+    .ammo-option-main {
+      display: grid;
+      gap: 4px;
+    }
+
+    .ammo-option-name {
+      color: #f8fafc;
+      font-weight: bold;
+    }
+
+    .ammo-option-meta {
+      color: #94a3b8;
+      font-size: 0.86rem;
+    }
+
+    .ammo-option-count {
+      color: #bfdbfe;
+      font-weight: bold;
+      font-size: 0.92rem;
+      white-space: nowrap;
+    }
+
+    #active-item-ammo-counter {
+      display: none;
+      margin-top: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: bold;
+      letter-spacing: 0.02em;
+      width: fit-content;
+      border: 1px solid rgba(148, 163, 184, 0.65);
+      background: rgba(15, 23, 42, 0.55);
+      color: #e2e8f0;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #active-item-ammo-counter .ammo-pips {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      max-width: 180px;
+      align-items: center;
+    }
+
+    #active-item-ammo-counter .ammo-pip {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 1px solid rgba(226, 232, 240, 0.55);
+      background: transparent;
+      box-sizing: border-box;
+    }
+
+    #active-item-ammo-counter .ammo-pip.filled {
+      background: currentColor;
+    }
+
+    #active-item-ammo-counter .ammo-counter-label {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      font-weight: bold;
+      color: #f8fafc;
+      white-space: nowrap;
+    }
+
+    #active-item-ammo-counter .ammo-counter-numeric {
+      color: rgba(226, 232, 240, 0.9);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    #active-item-ammo-counter.empty {
+      border-color: rgba(239, 68, 68, 0.75);
+      background: rgba(127, 29, 29, 0.55);
+      color: #fecaca;
+    }
+
+    #active-item-ammo-counter.low {
+      border-color: rgba(249, 115, 22, 0.75);
+      background: rgba(124, 45, 18, 0.55);
+      color: #fed7aa;
+    }
+
+    #active-item-ammo-counter.mid {
+      border-color: rgba(234, 179, 8, 0.75);
+      background: rgba(113, 63, 18, 0.55);
+      color: #fde68a;
+    }
+
+    #active-item-ammo-counter.full {
+      border-color: rgba(34, 197, 94, 0.75);
+      background: rgba(20, 83, 45, 0.55);
+      color: #bbf7d0;
+    }
+
     #inventory-toast {
       position: fixed;
       bottom: 24px;
@@ -221,6 +380,7 @@
         <div>
           <div style="font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-bottom: 4px;">Active Item</div>
           <div id="active-item-name" style="font-size: 1.1rem;">—</div>
+          <div id="active-item-ammo-counter"></div>
         </div>
         <div style="display: flex; gap: 8px;">
           <button id="targeted-attack-btn" onclick="targetedAttack()" style="display: none; padding: 8px 20px; background-color: #eab308; color: white; border: 2px solid #eab308; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1.5rem; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#ca8a04'; this.style.borderColor='#ca8a04'; this.style.transform='translateY(-2px)'" onmouseout="this.style.backgroundColor='#eab308'; this.style.borderColor='#eab308'; this.style.transform='translateY(0)'">🎯</button>
@@ -351,15 +511,17 @@
     </div>
 
     <div id="ammo-reload-modal">
-      <div style="background: #1a1a1a; border: 2px solid #2563eb; border-radius: 8px; padding: 20px; width: min(460px, 92vw);">
-        <h3 style="margin: 0 0 10px; color: #60a5fa;">Reload Weapon</h3>
-        <p id="ammo-reload-modal-text" style="margin: 0 0 12px; color: #ddd;"></p>
-        <label for="ammo-reload-select" style="display: block; color: #FFD700; font-weight: bold; margin-bottom: 6px;">Compatible ammo</label>
-        <select id="ammo-reload-select" style="width: 100%; padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #666; border-radius: 4px; margin-bottom: 14px;"></select>
-        <div id="ammo-reload-summary" style="margin: 0 0 14px; color: #cbd5e1; font-size: 0.9rem;"></div>
+      <div id="ammo-reload-modal-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="margin: 0; color: #60a5fa;">Change Ammo</h3>
+          <button onclick="closeAmmoReloadModal()" style="background: none; border: none; color: #60a5fa; font-size: 1.5rem; cursor: pointer; padding: 0; width: 30px; height: 30px;">✕</button>
+        </div>
+        <p id="ammo-reload-modal-text" style="margin: 0; color: #ddd;"></p>
+        <div id="ammo-reload-summary" style="margin: 0; color: #cbd5e1; font-size: 0.92rem; padding: 10px 12px; background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(96, 165, 250, 0.4); border-radius: 6px;"></div>
+        <div id="ammo-reload-list"></div>
         <div style="display: flex; justify-content: flex-end; gap: 10px;">
           <button onclick="closeAmmoReloadModal()" style="padding: 8px 14px; background: #666; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Cancel</button>
-          <button onclick="confirmAmmoReloadSelection()" style="padding: 8px 14px; background: #2563eb; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reload</button>
+          <button onclick="confirmAmmoReloadSelection()" style="padding: 8px 14px; background: #2563eb; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reload Selected</button>
         </div>
       </div>
     </div>
@@ -3204,13 +3366,17 @@
 
     function openAmmoReloadModal(activeEntry, activeItem, compatibleAmmo, currentAmmoState, capacity) {
       const modal = qs('ammo-reload-modal');
-      const select = qs('ammo-reload-select');
+      const list = qs('ammo-reload-list');
       const text = qs('ammo-reload-modal-text');
       const summary = qs('ammo-reload-summary');
 
-      if (!modal || !select || !text || !summary) {
+      if (!modal || !list || !text || !summary) {
         return false;
       }
+
+      const selectedAmmoId = currentAmmoState.ammoId && compatibleAmmo.some(option => option.ammoId === currentAmmoState.ammoId)
+        ? currentAmmoState.ammoId
+        : compatibleAmmo[0]?.ammoId;
 
       pendingAmmoReload = {
         slotKey: activeEntry.slotKey,
@@ -3219,19 +3385,46 @@
         currentLoaded: currentAmmoState.loaded,
         currentAmmoId: currentAmmoState.ammoId,
         currentAmmoName: currentAmmoState.ammoName,
+        selectedAmmoId,
         options: compatibleAmmo
       };
 
-      text.textContent = `${activeItem.name} can use the following ammo types. Choose which one to load from inventory.`;
+      text.textContent = `${activeItem.name} can use the following ammo types. Select what to load.`;
       summary.textContent = `Loaded: ${currentAmmoState.loaded}/${capacity}${currentAmmoState.ammoName ? ` (${currentAmmoState.ammoName})` : ''}`;
-
-      select.innerHTML = compatibleAmmo.map(option => {
-        const selected = option.ammoId === currentAmmoState.ammoId || (!currentAmmoState.ammoId && option === compatibleAmmo[0]);
-        return `<option value="${escapeHtml(option.ammoId)}" ${selected ? 'selected' : ''}>${escapeHtml(option.ammoName)} (${option.count} available)</option>`;
-      }).join('');
+      renderAmmoReloadOptions();
 
       modal.style.display = 'flex';
       return true;
+    }
+
+    function renderAmmoReloadOptions() {
+      const list = qs('ammo-reload-list');
+      if (!list || !pendingAmmoReload) {
+        return;
+      }
+
+      list.innerHTML = pendingAmmoReload.options.map(option => {
+        const ammoDamage = getLoadedAmmoDamage(option.ammoId) || 'N/A';
+        const isSelected = option.ammoId === pendingAmmoReload.selectedAmmoId;
+        return `
+          <button type="button" class="ammo-option-card ${isSelected ? 'selected' : ''}" onclick="selectAmmoReloadOption('${escapeHtml(option.ammoId)}')">
+            <span class="ammo-option-main">
+              <span class="ammo-option-name">${escapeHtml(option.ammoName)}</span>
+              <span class="ammo-option-meta">Damage: ${escapeHtml(ammoDamage)}${option.ammoId === pendingAmmoReload.currentAmmoId ? ' · Currently loaded type' : ''}</span>
+            </span>
+            <span class="ammo-option-count">${option.count} in inventory</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectAmmoReloadOption(ammoId) {
+      if (!pendingAmmoReload) {
+        return;
+      }
+
+      pendingAmmoReload.selectedAmmoId = ammoId;
+      renderAmmoReloadOptions();
     }
 
     function closeAmmoReloadModal() {
@@ -3248,8 +3441,7 @@
         return;
       }
 
-      const select = qs('ammo-reload-select');
-      const selectedAmmoId = select?.value;
+      const selectedAmmoId = pendingAmmoReload.selectedAmmoId;
       const selectedAmmo = pendingAmmoReload.options.find(option => option.ammoId === selectedAmmoId) || pendingAmmoReload.options[0];
 
       if (!selectedAmmo) {
@@ -3276,11 +3468,15 @@
 
       if (currentAmmoState.ammoId && currentAmmoState.ammoId !== selectedAmmo.ammoId && loadedRounds > 0) {
         const confirmSwap = window.confirm(
-          `Switch from ${currentAmmoState.ammoName || currentAmmoState.ammoId} to ${selectedAmmo.ammoName}?\nThis will discard ${loadedRounds} loaded rounds.`
+          `Switch from ${currentAmmoState.ammoName || currentAmmoState.ammoId} to ${selectedAmmo.ammoName}?\n${loadedRounds} loaded rounds will be returned to inventory.`
         );
         if (!confirmSwap) {
           return;
         }
+
+        const previousAmmoRecord = DATABASE_ITEM_INDEX[currentAmmoState.ammoId] || null;
+        const previousAmmoInventoryKey = getAmmoInventoryKey(previousAmmoRecord) || currentAmmoState.ammoId;
+        inventoryMap[previousAmmoInventoryKey] = getNumericValue(inventoryMap[previousAmmoInventoryKey], 0) + loadedRounds;
         loadedRounds = 0;
       }
 
@@ -3344,19 +3540,63 @@
       
       const display = qs('active-item-display');
       const nameElement = qs('active-item-name');
+      const ammoCounterElement = qs('active-item-ammo-counter');
       const swapBtn = qs('swap-btn');
       const reloadBtn = qs('reload-item-btn');
       const useBtn = qs('use-item-btn');
       const targetedBtn = qs('targeted-attack-btn');
       const burstBtn = qs('burst-mode-toggle-btn');
+
+      const hideAmmoCounter = () => {
+        if (!ammoCounterElement) {
+          return;
+        }
+        ammoCounterElement.style.display = 'none';
+        ammoCounterElement.textContent = '';
+        ammoCounterElement.classList.remove('empty', 'low', 'mid', 'full');
+      };
+
+      const showAmmoCounter = (itemName, itemStats, entryForItem, parsedCharacterData) => {
+        if (!ammoCounterElement) {
+          return;
+        }
+
+        const weaponRecord = getWeaponRecordByName(itemName);
+        const capacity = parseWeaponCapacity(weaponRecord, itemStats);
+        if (capacity <= 0 || !entryForItem) {
+          hideAmmoCounter();
+          return;
+        }
+
+        const ammoState = getWeaponAmmoStateForSlot(parsedCharacterData, entryForItem.slotKey, itemName);
+        const loaded = Math.max(0, Math.min(capacity, getNumericValue(ammoState.loaded, 0)));
+        const ratio = capacity > 0 ? (loaded / capacity) : 0;
+        const levelClass = loaded <= 0 ? 'empty' : ratio <= 0.34 ? 'low' : ratio <= 0.7 ? 'mid' : 'full';
+        const ammoType = ammoState.ammoName || 'Unknown Ammo';
+
+        ammoCounterElement.classList.remove('empty', 'low', 'mid', 'full');
+        ammoCounterElement.classList.add(levelClass);
+        if (capacity < 20) {
+          const pips = Array.from({ length: capacity }, (_, index) => {
+            const filledClass = index < loaded ? 'filled' : '';
+            return `<span class="ammo-pip ${filledClass}"></span>`;
+          }).join('');
+
+          ammoCounterElement.innerHTML = `<span class="ammo-pips" title="Ammo ${loaded}/${capacity}">${pips}</span><span class="ammo-counter-label">${escapeHtml(ammoType)} <span class="ammo-counter-numeric">${loaded}/${capacity}</span></span>`;
+        } else {
+          ammoCounterElement.innerHTML = `<span class="ammo-counter-label">${escapeHtml(ammoType)} <span class="ammo-counter-numeric">${loaded}/${capacity}</span></span>`;
+        }
+        ammoCounterElement.style.display = 'inline-flex';
+      };
       
       // Check if character has Fast Shot trait
       const stored = localStorage.getItem('characterData');
       let hasFastShot = false;
+      let parsedCharacterData = null;
       if (stored) {
         try {
-          const characterData = JSON.parse(stored);
-          hasFastShot = getCharacterTraitIds(characterData).includes('fast_shot');
+          parsedCharacterData = JSON.parse(stored);
+          hasFastShot = getCharacterTraitIds(parsedCharacterData).includes('fast_shot');
         } catch (e) {
           console.error('Error checking for fast_shot trait:', e);
         }
@@ -3374,6 +3614,7 @@
         burstBtn.style.display = 'none';
         localStorage.removeItem('burstModeActive');
         useBtn.textContent = effectiveIndex === 0 ? 'Swing' : 'Strike';
+        hideAmmoCounter();
         displayItemDiceTable(defaultAttack);
         return;
       }
@@ -3390,6 +3631,7 @@
           burstBtn.style.display = 'none';
           localStorage.removeItem('burstModeActive');
           useBtn.textContent = 'Strike';
+          hideAmmoCounter();
           displayItemDiceTable('Kick');
           return;
         }
@@ -3438,6 +3680,7 @@
           
           if (itemStats.ammo && itemStats.ammo !== 'N/A') {
             reloadBtn.style.display = 'inline-block';
+            showAmmoCounter(items[0].name, itemStats, getActiveEquippedSlotEntry(), parsedCharacterData);
             if (isBurstOnly) {
               useBtn.textContent = 'Burst';
             } else {
@@ -3445,6 +3688,7 @@
             }
           } else {
             reloadBtn.style.display = 'none';
+            hideAmmoCounter();
             useBtn.textContent = isMeleeOrUnarmed ? 'Swing' : 'Use';
             // Hide targeted button for 'Use' items (non-weapon items)
             if (!isMeleeOrUnarmed) {
@@ -3457,6 +3701,7 @@
           reloadBtn.style.display = 'none';
           localStorage.removeItem('burstModeActive');
           useBtn.textContent = 'Use';
+          hideAmmoCounter();
         }
         return;
       }
@@ -3464,6 +3709,7 @@
       // Both items available
       swapBtn.style.display = 'inline-block';
       const activeItem = items[effectiveIndex] || items[0];
+      const activeEntry = getActiveEquippedSlotEntry();
       console.log('[ACTIVE ITEM]', activeItem);
       nameElement.textContent = activeItem.name;
       displayItemDiceTable(activeItem.name);
@@ -3509,6 +3755,7 @@
         
         if (itemStats.ammo && itemStats.ammo !== 'N/A') {
           reloadBtn.style.display = 'inline-block';
+          showAmmoCounter(activeItem.name, itemStats, activeEntry, parsedCharacterData);
           if (isBurstOnly) {
             useBtn.textContent = 'Burst';
           } else {
@@ -3516,6 +3763,7 @@
           }
         } else {
           reloadBtn.style.display = 'none';
+          hideAmmoCounter();
           useBtn.textContent = isMeleeOrUnarmed ? 'Swing' : 'Use';
           // Hide targeted button for 'Use' items (non-weapon items)
           if (!isMeleeOrUnarmed) {
@@ -3528,6 +3776,7 @@
         reloadBtn.style.display = 'none';
         localStorage.removeItem('burstModeActive');
         useBtn.textContent = 'Use';
+        hideAmmoCounter();
       }
     }
 
